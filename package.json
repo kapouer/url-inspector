@@ -1,0 +1,36 @@
+{
+  "name": "url-inspector",
+  "version": "0.0.0",
+  "description": "Get metadata with thumbnail of any url",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kapouer/url-inspector.git"
+  },
+  "keywords": [
+    "metadata",
+    "thumbnail",
+    "inspect",
+    "url"
+  ],
+  "author": "Jérémy Lal <kapouer@melix.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kapouer/url-inspector/issues"
+  },
+  "dependencies": {
+    "pool2": "^1.3.0",
+    "webkitgtk": "^3.3.1"
+  },
+  "optionalDependencies": {
+    "canvas": "^1.3.5",
+    "jsdom": "^7.2.1"
+  },
+  "devDependencies": {
+    "expect.js": "^0.3.1",
+    "mocha": "^2.3.4"
+  }
+}
