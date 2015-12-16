@@ -118,7 +118,6 @@ function explore(view, info, opts, cb) {
 		view.run(function(opts, done) {
 			var canvas = document.createElement("canvas");
 			var ctx = canvas.getContext("2d");
-			var origImg = document.querySelector('img');
 			var img = new Image();
 			img.onload = function() {
 				function resize(img, width, height) {
@@ -139,11 +138,10 @@ function explore(view, info, opts, cb) {
 				var target = resize(img, opts.width, opts.height);
 				canvas.width = target.width;
 				canvas.height = target.height;
-
 				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 				done(null, img.width, img.height, canvas.toDataURL(opts.type, opts.quality));
 			};
-			img.src = origImg.src;
+			img.src = document.location.href;
 		}, opts, function(err, width, height, dataURI) {
 			if (err) console.error(err);
 			info.width = width;
