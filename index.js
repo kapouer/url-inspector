@@ -22,7 +22,7 @@ module.exports = function(opts) {
 				display: opts.display,
 				width: opts.width,
 				height: opts.height,
-				verbose: true,
+				verbose: false,
 				cookiePolicy: "never"
 			}, cb);
 		},
