@@ -72,7 +72,8 @@ function inspector(view, opts, url, cb) {
 		width: opts.width,
 		height: opts.height,
 		timeout: opts.timeout,
-		runTimeout: opts.timeout
+		runTimeout: opts.timeout,
+		console: false
 	}, function(err) {
 		// we're not going to get a response
 		if (interrupt) return;
