@@ -1,7 +1,6 @@
 #!/usr/bin/node
 
 var dash = require('dashdash');
-var URL = require('url');
 
 var parser = dash.createParser({options: [
 	{
