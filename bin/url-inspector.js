@@ -7,6 +7,21 @@ var parser = dash.createParser({options: [
 		names: ['help', 'h'],
 		type: 'bool',
 		help: 'Print this help and exit.'
+	},
+	{
+		names: ['width'],
+		type: 'integer',
+		help: 'max thumbnail width'
+	},
+	{
+		names: ['height'],
+		type: 'integer',
+		help: 'max thumbnail height'
+	},
+	{
+		names: ['display'],
+		type: 'string',
+		help: 'X DISPLAY parameter'
 	}
 ]});
 
@@ -26,7 +41,8 @@ if (opts.help || !url) {
 	process.exit(0);
 }
 
-var inspector = require('..')();
+var inspector = require('..')(opts);
+
 inspector(url, function(err, meta) {
 	if (err) {
 		console.error(err);
