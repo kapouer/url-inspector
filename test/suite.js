@@ -28,4 +28,13 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	it("should just work with github.com", function(done) {
+		this.timeout(5000);
+		inspector('https://github.com/kapouer/url-inspector', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('html');
+			expect(meta.size).to.be.greaterThan(10000);
+			done();
+		});
+	});
 });
