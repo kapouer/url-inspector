@@ -78,6 +78,11 @@ function inspector(view, opts, url, cb) {
 		// look only first response
 		if (interrupt) return;
 		if (res.status < 200 || res.status >= 400) return cb(res.status);
+		if (!info.size) res.data(function(err, buf) {
+			// TODO this is racey
+			if (err) return console.error(err);
+			info.size = buf.length;
+		});
 	}).once('data', function(res) {
 		info.size = res.length;
 		if (res.filename) info.name = Path.basename(res.filename);
