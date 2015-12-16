@@ -5,7 +5,9 @@ var Pool2 = require('pool2');
 
 var defaults = {
 	width: 120,
-	height: 90
+	height: 90,
+	quality: 0.85,
+	type: 'image/jpeg'
 };
 
 // youtube, image centrée, vidéo pure - et rien pour le reste
@@ -100,22 +102,39 @@ function explore(view, info, opts, cb) {
 	if (info.type == "image") {
 		view.run(function(opts, done) {
 			var canvas = document.createElement("canvas");
-			var canvasContext = canvas.getContext("2d");
+			var ctx = canvas.getContext("2d");
 			var origImg = document.querySelector('img');
 			var img = new Image();
 			img.onload = function() {
 				// TODO resize + center
-				canvas.width = opts.width;
-				canvas.height = opts.height;
-				canvasContext.drawImage(img, 0, 0, opts.width, opts.height);
-				done(null, img.width, img.height, canvas.toDataURL());
+				function resize(img, width, height) {
+					// img just need to be something with width, height properties
+					var ratio = img.width / width > img.height / height
+						? img.width / width
+						: img.height / height;
+
+					if (ratio > 1) {
+						width = Math.ceil(img.width / ratio);
+						height = Math.ceil(img.height / ratio);
+					} else {
+						width = img.width;
+						height = img.height;
+					}
+					return {width: width, height: height};
+				}
+				var target = resize(img, opts.width, opts.height);
+				canvas.width = target.width;
+				canvas.height = target.height;
+
+				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+				done(null, img.width, img.height, canvas.toDataURL(opts.type, opts.quality));
 			};
 			img.src = origImg.src;
-		}, opts, function(err, width, height, dataURL) {
+		}, opts, function(err, width, height, dataURI) {
 			if (err) console.error(err);
 			info.width = width;
 			info.height = height;
-			info.thumbnail = dataURL;
+			info.thumbnail = dataURI;
 			cb();
 		});
 	} else if (info.type == "html") {
@@ -142,3 +161,4 @@ function mime2type(mime) {
 	else if (mime == "application/xml") type = 'xml';
 	return type;
 }
+
