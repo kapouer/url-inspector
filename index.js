@@ -58,6 +58,8 @@ function inspector(view, opts, url, cb) {
 	info.name = Path.basename(orl.pathname);
 	var interrupt = false;
 
+	if (alternate(url, info, cb)) return;
+
 	view.load(url, {
 		// let only first request go through yet allow redirections
 		filter: function() {
@@ -96,6 +98,10 @@ function inspector(view, opts, url, cb) {
 			});
 		}
 	});
+}
+
+function alternate(url, info, cb) {
+	if (youtube(url, info, cb)) return true;
 }
 
 function explore(view, info, opts, cb) {
@@ -162,3 +168,32 @@ function mime2type(mime) {
 	return type;
 }
 
+function youtube(url, info, cb) {
+	// https://www.youtube.com/embed/CtP8VABF5pk
+	// https://www.youtube.com/watch?v=CtP8VABF5pk
+	// https://youtu.be/CtP8VABF5pk
+	var obj = URL.parse(url, true);
+	if (/youtu\.?be\./.test(obj.hostname) == false) return;
+	var vid;
+	var regm = /(?:^\/embed\/([a-zA-Z0-9]+))/.exec(obj.pathname);
+	if (regm && regm.length == 2) vid = regm[1];
+	if (!vid && obj.path == "/watch") vid = obj.query.v;
+	if (!vid && /^\/[a-zA-Z0-9]+$/.test(obj.pathname)) vid = obj.pathname.substring(1);
+	if (!vid) return;
+	info.thumbnail = "http://img.youtube.com/vi/" + vid + "/default.jpg";
+	info.type = 'video';
+	info.mime = 'text/html';
+	cb(null, info);
+//	request({
+//		url: "https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=" + vid,
+//		type: 'json'
+//	}, function(err, req, obj) {
+//		if (err) return cb(err);
+//		console.log(err, obj);
+//		if (!obj.items.length == 1) return cb(404);
+//		info.name = obj.items[0].snippet.title;
+//		info.duration = obj.items[0].contentDetails.duration;
+//		cb(null, info);
+//	});
+	return true;
+}
