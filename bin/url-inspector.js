@@ -22,6 +22,11 @@ var parser = dash.createParser({options: [
 		names: ['display'],
 		type: 'string',
 		help: 'X DISPLAY parameter'
+	},
+	{
+		names: ['timeout'],
+		type: 'integer',
+		help: 'load timeout in milliseconds'
 	}
 ]});
 

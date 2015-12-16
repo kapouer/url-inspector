@@ -7,7 +7,9 @@ var defaults = {
 	width: 120,
 	height: 90,
 	quality: 0.85,
-	type: 'image/jpeg'
+	type: 'image/jpeg',
+	timeout: 5000,
+	runTimeout: 2000
 };
 
 // youtube, image centrée, vidéo pure - et rien pour le reste
@@ -69,7 +71,8 @@ function inspector(view, opts, url, cb) {
 		},
 		width: opts.width,
 		height: opts.height,
-		cookiepolicy: "never"
+		timeout: opts.timeout,
+		runTimeout: opts.timeout
 	}, function(err) {
 		// we're not going to get a response
 		if (interrupt) return;
