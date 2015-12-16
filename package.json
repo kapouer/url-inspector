@@ -1,6 +1,6 @@
 {
   "name": "url-inspector",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Get metadata with thumbnail of any url",
   "main": "index.js",
   "scripts": {
