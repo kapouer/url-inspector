@@ -112,7 +112,6 @@ function explore(view, info, opts, cb) {
 			var origImg = document.querySelector('img');
 			var img = new Image();
 			img.onload = function() {
-				// TODO resize + center
 				function resize(img, width, height) {
 					// img just need to be something with width, height properties
 					var ratio = img.width / width > img.height / height
