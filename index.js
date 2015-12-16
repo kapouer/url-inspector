@@ -92,8 +92,9 @@ function inspector(view, opts, url, cb) {
 		info.mime = res.mime || "application/octet-stream";
 		info.type = mime2type(info.mime);
 		if (['image', 'html'].indexOf(info.type) >= 0) {
-			this.once('ready', function() {
+			this.when('ready', function(wcb) {
 				// wait until document is loaded
+				wcb();
 				explore(view, info, opts, function(err) {
 					if (err) console.error(err);
 					cb(null, info);
