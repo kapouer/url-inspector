@@ -84,7 +84,7 @@ function inspector(view, opts, url, cb) {
 		info.mime = res.mime || "application/octet-stream";
 		info.type = mime2type(info.mime);
 		if (['image', 'html'].indexOf(info.type) >= 0) {
-			this.once('load', function() {
+			this.once('ready', function() {
 				// wait until document is loaded
 				explore(view, info, opts, function(err) {
 					if (err) console.error(err);
