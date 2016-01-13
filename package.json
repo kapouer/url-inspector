@@ -1,7 +1,7 @@
 {
   "name": "url-inspector",
   "version": "0.0.3",
-  "description": "Get metadata with thumbnail of any url",
+  "description": "Get metadata about any url",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
@@ -15,7 +15,6 @@
   },
   "keywords": [
     "metadata",
-    "thumbnail",
     "inspect",
     "url"
   ],
@@ -26,12 +25,8 @@
   },
   "dependencies": {
     "dashdash": "^1.10.1",
-    "pool2": "^1.3.0",
-    "webkitgtk": "^3.3.2"
-  },
-  "optionalDependencies": {
-    "canvas": "^1.3.5",
-    "jsdom": "^7.2.1"
+    "exiftool": "0.0.3",
+    "pool2": "^1.3.0"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",

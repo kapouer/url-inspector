@@ -15,29 +15,37 @@ Get metadata about any URL:
 * duration  
   *optional*
 * thumbnail  
-  *optional* a URL to a thumbnail. Could be a data-uri.
+  *optional* a URL to a thumbnail
+* all  
+  an object with all additional metadata that was found
 
 
 API
 ---
 
 ```
-var inspector = require('url-inspector')({
-	display: ':0',
-	width: 120,
-	height: 90
+var inspector = require('url-inspector');
+
+var opts = {
+	all: true // return all available metadata, could be big
+};
+
+inspector(url, opts, function(err, data) {
+
 });
 
-inspector(url, function(err, meta) {
+// or simply
 
-});
+inspector(url, function(err, data) {...});
+
 ```
 
 Command-line client
 -------------------
 
+```
 inspector-url <url>
-
+```
 
 License
 -------
