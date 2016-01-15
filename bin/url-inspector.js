@@ -1,6 +1,7 @@
 #!/usr/bin/node
 
 var dash = require('dashdash');
+var debug = require('debug')('url-inspector');
 
 var parser = dash.createParser({options: [
 	{
@@ -9,24 +10,9 @@ var parser = dash.createParser({options: [
 		help: 'Print this help and exit.'
 	},
 	{
-		names: ['width'],
-		type: 'integer',
-		help: 'max thumbnail width'
-	},
-	{
-		names: ['height'],
-		type: 'integer',
-		help: 'max thumbnail height'
-	},
-	{
-		names: ['display'],
-		type: 'string',
-		help: 'X DISPLAY parameter'
-	},
-	{
-		names: ['timeout'],
-		type: 'integer',
-		help: 'load timeout in milliseconds'
+		names: ['all'],
+		type: 'bool',
+		help: 'enable all metadata'
 	}
 ]});
 
@@ -46,9 +32,9 @@ if (opts.help || !url) {
 	process.exit(0);
 }
 
-var inspector = require('..')(opts);
+var inspector = require('..');
 
-inspector(url, function(err, meta) {
+inspector(url, opts, function(err, meta) {
 	if (err) {
 		console.error(err);
 		process.exit(1);

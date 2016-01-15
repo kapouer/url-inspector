@@ -19,6 +19,11 @@ Get metadata about any URL:
 * all  
   an object with all additional metadata that was found
 
+Using these tools:
+
+* exiftool for getting media metadata
+* quvi for getting online video metadata
+* whacko for getting html metadata
 
 API
 ---

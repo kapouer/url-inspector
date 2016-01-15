@@ -1,206 +1,182 @@
-var WebKit = require('webkitgtk');
+var http = require('http');
+var https = require('https');
 var URL = require('url');
-var Path = require('path');
+var BufferList = require('bl');
+var moment = require('moment');
+var MediaTyper = require('media-typer');
+var Dom = require('whacko');
+var Exif = require('exiftool');
+var debug = require('debug')('url-inspector');
+//var Quvi = require('quvi');
+
 var Pool2 = require('pool2');
 
-var defaults = {
-	width: 120,
-	height: 90,
-	quality: 0.85,
-	type: 'image/jpeg',
-	timeout: 5000,
-	runTimeout: 2000
-};
-
-// youtube, image centrée, vidéo pure - et rien pour le reste
-
-module.exports = function(opts) {
-	if (!opts) opts = {};
-	for (var k in defaults) if (opts[k] == undefined) opts[k] = defaults[k];
-	var pool = new Pool2({
-		acquire: function(cb) {
-			var view = new WebKit();
-			view.init({
-				display: opts.display,
-				width: opts.width,
-				height: opts.height,
-				verbose: false,
-				cookiePolicy: "never"
-			}, cb);
-		},
-		dispose: function(client, cb) {
-			client.unload(cb);
-		},
-		destroy: function(client) {
-			client.destroy();
-		},
-		max : 2,
-		min : 1,
-		idleTimeout: 10000,
-		syncInterval: 10000
-	});
-	return function(url, cb) {
-		pool.acquire(function(err, view) {
-			if (err) return cb(err);
-			inspector(view, opts, url, function(err, info) {
-				view.removeAllListeners('response');
-				view.removeAllListeners('load');
-				pool.release(view);
-				cb(err, info);
-			});
-		});
-	};
-};
-
-
-
-function inspector(view, opts, url, cb) {
-	var info = {};
-	var orl = URL.parse(url);
-	info.name = Path.basename(orl.pathname);
-	var interrupt = false;
-
-	if (alternate(url, info, cb)) return;
-
-	view.load(url, {
-		// let only first request go through yet allow redirections
-		filter: function() {
-			if (this.uri != document.location.href) {
-				this.cancel = true;
-			}
-		},
-		width: opts.width,
-		height: opts.height,
-		timeout: opts.timeout,
-		runTimeout: opts.timeout,
-		console: false
-	}, function(err) {
-		// we're not going to get a response
-		if (interrupt) return;
-		if (err && isNaN(parseInt(err))) return cb(err);
-	}).once('response', function(res) {
-		// look only first response
-		if (interrupt) return;
-		if (res.status < 200 || res.status >= 400) return cb(res.status);
-		if (info.size === 0) res.data(function(err, buf) {
-			// TODO this is racey
-			if (err) return console.error(err);
-			info.size = buf.length;
-		});
-	}).once('data', function(res) {
-		info.size = res.length;
-		if (res.filename) info.name = Path.basename(res.filename);
-		info.mime = res.mime || "application/octet-stream";
-		info.type = mime2type(info.mime);
-		if (['image', 'html'].indexOf(info.type) >= 0) {
-			this.when('ready', function(wcb) {
-				// wait until document is loaded
-				wcb();
-				explore(view, info, opts, function(err) {
-					if (err) console.error(err);
-					cb(null, info);
-				});
-			});
-		} else {
-			interrupt = true;
-			this.unload(function(err) {
-				cb(null, info);
-			});
-		}
-	});
-}
-
-function alternate(url, info, cb) {
-	if (youtube(url, info, cb)) return true;
-}
-
-function explore(view, info, opts, cb) {
-	if (info.type == "image") {
-		view.run(function(opts, done) {
-			var canvas = document.createElement("canvas");
-			var ctx = canvas.getContext("2d");
-			var img = new Image();
-			img.onload = function() {
-				function resize(img, width, height) {
-					// img just need to be something with width, height properties
-					var ratio = img.width / width > img.height / height
-						? img.width / width
-						: img.height / height;
-
-					if (ratio > 1) {
-						width = Math.ceil(img.width / ratio);
-						height = Math.ceil(img.height / ratio);
-					} else {
-						width = img.width;
-						height = img.height;
-					}
-					return {width: width, height: height};
-				}
-				var target = resize(img, opts.width, opts.height);
-				canvas.width = target.width;
-				canvas.height = target.height;
-				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-				done(null, img.width, img.height, canvas.toDataURL(opts.type, opts.quality));
-			};
-			img.src = document.location.href;
-		}, opts, function(err, width, height, dataURI) {
-			if (err) console.error(err);
-			info.width = width;
-			info.height = height;
-			info.thumbnail = dataURI;
-			cb();
-		});
-	} else if (info.type == "html") {
-		view.run(function() {
-			return document.title;
-		}, function(err, title) {
-			info.name = title;
-			cb();
-		});
-	} else {
+var pool = new Pool2({
+	acquire: function(cb) {
+		cb(null, {});
+	},
+	dispose: function(client, cb) {
 		cb();
+	},
+	max : 4,
+	min : 1,
+	idleTimeout: 10000,
+	syncInterval: 10000
+});
+
+module.exports = function(url, opts, cb) {
+	if (!cb && typeof opts == "function") {
+		cb = opts;
+		opts = null;
 	}
+	opts = Object.assign({}, { all: false }, opts);
+	pool.acquire(function(err, inst) {
+		if (err) return cb(err);
+		inspector(url, opts, function(err, info) {
+			pool.release(inst);
+			cb(err, info);
+		});
+	});
+};
+
+var inspectors = {
+	image: inspectMedia,
+	audio: inspectMedia,
+	video: inspectMedia,
+	html: inspectHTML,
+	json: inspectJSON,
+	xml: inspectXML,
+	archive: inspectArchive,
+	data: inspectData
+};
+
+function inspector(url, opts, cb) {
+	// 1) fetch http headers
+	var urlObj = URL.parse(encodeURI(url));
+	urlObj.headers = {
+		Accept: '*/*',
+		"User-Agent": "Mozilla/5.0"
+	};
+	debug("fetch url", url);
+	var req = (urlObj.protocol == 'https' ? https : http).request(urlObj, function(res) {
+		if (res.statusCode < 200 || res.statusCode >= 400) return cb(res.statusCode);
+		debug("got response %d with headers", res.statusCode, res.headers);
+		var mimeObj = MediaTyper.parse(res.headers['content-type']);
+		var obj = {
+			mime: MediaTyper.format(mimeObj),
+			type: mime2type(mimeObj),
+			size: res.headers['content-length']
+		};
+		debug("got response (mime, type, length) is (%s, %s, %d)", obj.mime, obj.type, obj.size);
+		inspectors[obj.type](obj, req, res, opts, cb);
+	}).on('error', cb);
+	req.end();
+	// 2) if it's image/video/audio, load more data and use exiftool
+	// 3) else if it's html, try quvi else inspect content
+	// 4) else if it's json/xml, return first lines of prettyfied content
+	// 5) else if it's something compressed, return file list ?
+	// 6) else if it's doc/xls/ppt/pdf/ps, return basic info
+	// 7) else unknown stuff return Content-Length
+
 }
 
-function mime2type(mime) {
+function mime2type(obj) {
 	var type = 'data';
-	if (mime.startsWith('image')) type = 'image';
-	else if (mime.startsWith('audio')) type = 'audio';
-	else if (mime.startsWith('video')) type = 'video';
-	else if (mime == "text/html") type = 'html';
-	else if (mime == "text/css") type = 'css';
-	else if (mime == "text/plain") type = 'text';
-	else if (mime == "application/json") type = 'json';
-	else if (mime == "application/xml") type = 'xml';
+	if (['image', 'audio', 'video'].indexOf(obj.type) >= 0) {
+		type = obj.type;
+	} else if (['html', 'css', 'json', 'xml', 'plain'].indexOf(obj.subtype) >= 0) {
+		type = obj.subtype;
+	} else if (obj.subtype == 'svg') {
+		type = 'image';
+	} else if (['x-gtar', 'x-gtar-compressed', 'x-tar', 'gzip', 'zip'].indexOf(obj.subtype) >= 0) {
+		type = 'archive';
+	}
 	return type;
 }
 
-function youtube(url, info, cb) {
-	// https://www.youtube.com/embed/CtP8VABF5pk
-	// https://www.youtube.com/watch?v=CtP8VABF5pk
-	// https://youtu.be/CtP8VABF5pk
-	var obj = URL.parse(url, true);
-	if (/youtu\.?be\./.test(obj.hostname) == false) return;
-	var vid;
-	var regm = /(?:^\/embed\/([a-zA-Z0-9]+))/.exec(obj.pathname);
-	if (regm && regm.length == 2) vid = regm[1];
-	if (!vid && obj.path == "/watch") vid = obj.query.v;
-	if (!vid && /^\/[a-zA-Z0-9]+$/.test(obj.pathname)) vid = obj.pathname.substring(1);
-	if (!vid) return;
-	info.thumbnail = "http://img.youtube.com/vi/" + vid + "/default.jpg";
-	info.type = 'video';
-	info.mime = 'text/html';
-	cb(null, info);
-//	request({
-//		url: "https://www.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails&id=" + vid,
-//		type: 'json'
-//	}, function(err, req, obj) {
-//		if (err) return cb(err);
-//		console.log(err, obj);
-//		if (!obj.items.length == 1) return cb(404);
-//		info.name = obj.items[0].snippet.title;
-//		info.duration = obj.items[0].contentDetails.duration;
-//		cb(null, info);
-//	});
-	return true;
+function bufferBegin(req, res, length, cb) {
+	var bl = new BufferList();
+	res.on('data', function(buf) {
+		bl.append(buf);
+		if (bl.length >= length) {
+			debug("got %d bytes, aborting", bl.length);
+			req.abort();
+		}
+	});
+	res.on('end', function(buf) {
+		if (buf) bl.append(buf);
+		debug("response ended, got %d bytes", bl.length);
+		cb(null, bl.slice());
+	});
+	res.resume();
+
 }
+
+function importTags(tags, obj, map) {
+	var val, tag, key, prev;
+	for (tag in map) {
+		val = tags[tag];
+		if (val == null) continue;
+		key = map[tag];
+		prev = obj[key];
+		if (prev != null && val != prev) {
+			console.warn(key, "was", prev, "overriden by", val);
+		}
+		obj[key] = val;
+	}
+}
+
+function inspectMedia(obj, req, res, opts, cb) {
+	// load more data
+	bufferBegin(req, res, 2000, function(err, buf) {
+		if (err) return cb(err);
+		Exif.metadata(buf, function(err, tags) {
+			if (err) return cb(err);
+			debug("exiftool got", tags);
+			if (tags && tags.error) return cb(tags.error);
+			if (!tags) return cb();
+			importTags(tags, obj, {
+				imageWidth: 'width',
+				imageHeight: 'height',
+				duration: 'duration',
+				mimeType: 'mime',
+				extension: 'extension',
+				title: 'name',
+				album: 'album'
+			});
+			if (tags.audioBitrate && !tags.duration) {
+				var rate = parseInt(tags.audioBitrate) * 1000 / 8;
+				var duration = moment.duration(obj.size / rate, 'seconds');
+				obj.duration = moment(duration._data).format('HH:mm:ss');
+			}
+			cb(null, obj);
+		});
+	});
+}
+
+function inspectHTML(obj, req, res, opts, cb) {
+	bufferBegin(req, res, 2000, function(err, buf) {
+		if (err) return cb(err);
+		var dom = Dom.load(buf);
+		var title = dom('title, h1');
+		obj.name = title.first().text();
+		cb(null, obj);
+	});
+}
+
+function inspectJSON(obj, req, res, opts, cb) {
+
+}
+
+function inspectXML(obj, req, res, opts, cb) {
+
+}
+
+function inspectArchive(obj, req, res, opts, cb) {
+
+}
+
+function inspectData(obj, req, res, opts, cb) {
+
+}
+
