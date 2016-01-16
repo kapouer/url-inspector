@@ -85,8 +85,15 @@ function inspector(url, opts, cb) {
 function request(urlObj, cb) {
 	debug("request url", urlObj.href);
 	var req = (/^https:?$/.test(urlObj.protocol) ? https : http).request(urlObj, function(res) {
-		if (res.statusCode < 200 || res.statusCode >= 400) return cb(res.statusCode);
-		debug("got response %d with headers", res.statusCode, res.headers);
+		var status = res.statusCode;
+		debug("got response status %d", status);
+		if (status < 200 || status >= 400) return cb(status);
+		if (status >= 300 && status < 400 && res.headers.location) {
+			var redirObj = URL.parse(res.headers.location);
+			redirObj.redirects = (urlObj.redirects || 0) + 1;
+			if (redirObj.redirects >= 5) return cb("Too many http redirects");
+			return request(redirObj, cb);
+		}
 		var mimeObj = MediaTyper.parse(res.headers['content-type']);
 		var obj = {
 			mime: MediaTyper.format(mimeObj),
