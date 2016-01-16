@@ -47,7 +47,7 @@ var inspectors = {
 	html: [inspectHTML, 2000],
 	json: [inspectJSON, 100],
 	xml: [inspectXML, 100],
-	archive: [inspectArchive, 2000],
+	archive: [inspectData, false],
 	data: [inspectData, false]
 };
 
@@ -207,10 +207,6 @@ function inspectJSON(obj, buf, cb) {
 
 function inspectXML(obj, buf, cb) {
 	obj.sample = buf.toString().replace(/\s*/g, '').substring(0, 30);
-	cb(null, obj);
-}
-
-function inspectArchive(obj, buf, cb) {
 	cb(null, obj);
 }
 
