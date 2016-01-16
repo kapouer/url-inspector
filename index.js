@@ -55,7 +55,6 @@ function inspector(url, opts, cb) {
 	url = encodeURI(url);
 	var urlObj = URL.parse(url);
 	urlObj.headers = {
-		Accept: '*/*',
 		"User-Agent": "Mozilla/5.0"
 	};
 	debug("test url", url);
