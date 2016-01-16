@@ -41,9 +41,9 @@ module.exports = function(url, opts, cb) {
 };
 
 var inspectors = {
-	image: [inspectMedia, 8000],
-	audio: [inspectMedia, 8000],
-	video: [inspectMedia, 20000],
+	image: [inspectMedia, 30000],
+	audio: [inspectMedia, 30000],
+	video: [inspectMedia, 100000],
 	html: [inspectHTML, 2000],
 	json: [inspectJSON, 100],
 	xml: [inspectXML, 100],
