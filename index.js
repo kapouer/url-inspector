@@ -1,13 +1,14 @@
 var http = require('http');
 var https = require('https');
 var URL = require('url');
+var Path = require('path');
 var BufferList = require('bl');
 var moment = require('moment');
 var MediaTyper = require('media-typer');
 var Dom = require('whacko');
 var Exif = require('exiftool');
 var debug = require('debug')('url-inspector');
-//var Quvi = require('quvi');
+var quvi = require('./lib/quvi');
 
 var Pool2 = require('pool2');
 
@@ -40,25 +41,49 @@ module.exports = function(url, opts, cb) {
 };
 
 var inspectors = {
-	image: inspectMedia,
-	audio: inspectMedia,
-	video: inspectMedia,
-	html: inspectHTML,
-	json: inspectJSON,
-	xml: inspectXML,
-	archive: inspectArchive,
-	data: inspectData
+	image: [inspectMedia, 8000],
+	audio: [inspectMedia, 8000],
+	video: [inspectMedia, 20000],
+	html: [inspectHTML, 2000],
+	json: [inspectJSON, 100],
+	xml: [inspectXML, 100],
+	archive: [inspectArchive, 2000],
+	data: [inspectData, false]
 };
 
 function inspector(url, opts, cb) {
-	// 1) fetch http headers
-	var urlObj = URL.parse(encodeURI(url));
+	url = encodeURI(url);
+	var urlObj = URL.parse(url);
 	urlObj.headers = {
 		Accept: '*/*',
 		"User-Agent": "Mozilla/5.0"
 	};
-	debug("fetch url", url);
-	var req = (urlObj.protocol == 'https' ? https : http).request(urlObj, function(res) {
+	debug("test url", url);
+	quvi.supports(urlObj.hostname, function(err, yes) {
+		if (err) console.error(err);
+		if (!yes) return request(urlObj, cb);
+		quvi.query(url, function(err, tags) {
+			if (err) return cb(err);
+			debug("quvi tags", tags);
+			var obj = {
+				type: 'video',
+				mime: 'text/html',
+				ext: 'html'
+			};
+			importTags(tags, obj, {
+				page_title: 'name',
+				thumbnail_url: 'thumbnail',
+				duration: 'duration'
+			});
+			if (obj.duration) obj.duration = secondsToDuration(obj.duration);
+			cb(null, obj);
+		});
+	});
+}
+
+function request(urlObj, cb) {
+	debug("request url", urlObj.href);
+	var req = (/^https:?$/.test(urlObj.protocol) ? https : http).request(urlObj, function(res) {
 		if (res.statusCode < 200 || res.statusCode >= 400) return cb(res.statusCode);
 		debug("got response %d with headers", res.statusCode, res.headers);
 		var mimeObj = MediaTyper.parse(res.headers['content-type']);
@@ -68,16 +93,30 @@ function inspector(url, opts, cb) {
 			size: res.headers['content-length']
 		};
 		debug("got response (mime, type, length) is (%s, %s, %d)", obj.mime, obj.type, obj.size);
-		inspectors[obj.type](obj, req, res, opts, cb);
-	}).on('error', cb);
+		var fun = inspectors[obj.type];
+		(function(next) {
+			if (fun[1]) bufferBegin(req, res, fun[1], next);
+			else next();
+		})(function(err, buf) {
+			if (err) console.error(err);
+			fun[0](obj, buf, function(err) {
+				if (err) console.error(err);
+				var basename = Path.basename(urlObj.pathname);
+				var fileext = Path.extname(basename);
+				if (!obj.ext) {
+					obj.ext = fileext.substring(1);
+				}
+				obj.ext = obj.ext.toLowerCase();
+				if (!obj.name) {
+					obj.name = Path.basename(basename, fileext);
+				}
+				cb(null, obj);
+			});
+		});
+	}).on('error', function(err) {
+		return cb(err);
+	});
 	req.end();
-	// 2) if it's image/video/audio, load more data and use exiftool
-	// 3) else if it's html, try quvi else inspect content
-	// 4) else if it's json/xml, return first lines of prettyfied content
-	// 5) else if it's something compressed, return file list ?
-	// 6) else if it's doc/xls/ppt/pdf/ps, return basic info
-	// 7) else unknown stuff return Content-Length
-
 }
 
 function mime2type(obj) {
@@ -88,7 +127,7 @@ function mime2type(obj) {
 		type = obj.subtype;
 	} else if (obj.subtype == 'svg') {
 		type = 'image';
-	} else if (['x-gtar', 'x-gtar-compressed', 'x-tar', 'gzip', 'zip'].indexOf(obj.subtype) >= 0) {
+	} else if (['x-xz', 'x-gtar', 'x-gtar-compressed', 'x-tar', 'gzip', 'zip'].indexOf(obj.subtype) >= 0) {
 		type = 'archive';
 	}
 	return type;
@@ -126,57 +165,56 @@ function importTags(tags, obj, map) {
 	}
 }
 
-function inspectMedia(obj, req, res, opts, cb) {
-	// load more data
-	bufferBegin(req, res, 2000, function(err, buf) {
+function inspectMedia(obj, buf, cb) {
+	Exif.metadata(buf, function(err, tags) {
 		if (err) return cb(err);
-		Exif.metadata(buf, function(err, tags) {
-			if (err) return cb(err);
-			debug("exiftool got", tags);
-			if (tags && tags.error) return cb(tags.error);
-			if (!tags) return cb();
-			importTags(tags, obj, {
-				imageWidth: 'width',
-				imageHeight: 'height',
-				duration: 'duration',
-				mimeType: 'mime',
-				extension: 'extension',
-				title: 'name',
-				album: 'album'
-			});
-			if (tags.audioBitrate && !tags.duration) {
-				var rate = parseInt(tags.audioBitrate) * 1000 / 8;
-				var duration = moment.duration(obj.size / rate, 'seconds');
-				obj.duration = moment(duration._data).format('HH:mm:ss');
-			}
-			cb(null, obj);
+		debug("exiftool got", tags);
+		if (tags && tags.error) return cb(tags.error);
+		if (!tags) return cb();
+		importTags(tags, obj, {
+			imageWidth: 'width',
+			imageHeight: 'height',
+			duration: 'duration',
+			mimeType: 'mime',
+			extension: 'ext',
+			title: 'name',
+			album: 'album'
 		});
-	});
-}
-
-function inspectHTML(obj, req, res, opts, cb) {
-	bufferBegin(req, res, 2000, function(err, buf) {
-		if (err) return cb(err);
-		var dom = Dom.load(buf);
-		var title = dom('title, h1');
-		obj.name = title.first().text();
+		if (tags.audioBitrate && !tags.duration) {
+			var rate = parseInt(tags.audioBitrate) * 1000 / 8;
+			obj.duration = secondsToDuration(obj.size / rate);
+		}
 		cb(null, obj);
 	});
 }
 
-function inspectJSON(obj, req, res, opts, cb) {
-
+function secondsToDuration(num) {
+	var duration = moment.duration(parseInt(num), 'seconds');
+	return moment(duration._data).format('HH:mm:ss');
 }
 
-function inspectXML(obj, req, res, opts, cb) {
-
+function inspectHTML(obj, buf, cb) {
+	var dom = Dom.load(buf);
+	var title = dom('title, h1');
+	obj.name = title.first().text();
+	cb(null, obj);
 }
 
-function inspectArchive(obj, req, res, opts, cb) {
-
+function inspectJSON(obj, buf, cb) {
+	obj.sample = buf.toString().replace(/\s*/g, '').substring(0, 30);
+	cb(null, obj);
 }
 
-function inspectData(obj, req, res, opts, cb) {
+function inspectXML(obj, buf, cb) {
+	obj.sample = buf.toString().replace(/\s*/g, '').substring(0, 30);
+	cb(null, obj);
+}
 
+function inspectArchive(obj, buf, cb) {
+	cb(null, obj);
+}
+
+function inspectData(obj, buf, cb) {
+	cb(null, obj);
 }
 
