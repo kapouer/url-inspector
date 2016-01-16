@@ -55,4 +55,13 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	it("should redirect properly", function(done) {
+		this.timeout(5000);
+		inspector('https://github.com/Stuk/jszip/archive/master.zip', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('archive');
+			done();
+		});
+	});
+
 });
