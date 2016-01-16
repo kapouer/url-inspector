@@ -61,7 +61,9 @@ function inspector(url, opts, cb) {
 	debug("test url", url);
 	quvi.supports(urlObj.hostname, function(err, yes) {
 		if (err) console.error(err);
-		if (!yes) return request(urlObj, cb);
+		if (!yes) {
+			return request(urlObj, cb);
+		}
 		quvi.query(url, function(err, tags) {
 			if (err) return cb(err);
 			debug("quvi tags", tags);
