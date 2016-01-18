@@ -3,16 +3,24 @@ url-inspector
 
 Get metadata about any URL:
 
-* mime  
-  could be different from the Content-Type received from server
-* type  
-  video, audio, css, json, xml, html, data...
-* size  
-  either Content-Length or the size of the whole html document or zero
 * name  
-  could be the file name, the document title, the video or audio title, ...
+  the file name
 * ext  
-  the extension of the file, could be different from the one in the url
+  the inspected (lowercased) extension of the resource - could differ from URL
+* size  
+  either Content-Length or the size of the whole html document or zero if unknown
+* mime  
+  the inspected mime type of the resource - could differ from server Content-Type
+* type  
+  what the resource represents  
+  image, video, audio, link, file, embed
+* html  
+  a canonical html representation of the full resource,  
+  depending on the type and mime, could be img, a, video, audio, iframe tag.
+* title  
+  *optional*
+* favicon  
+  *optional* link to the favicon of the site
 * width, height  
   *optional* dimensions
 * duration  
@@ -24,11 +32,23 @@ Get metadata about any URL:
 * all  
   an object with all additional metadata that was found
 
-Using these tools:
 
-* exiftool for getting media metadata
-* quvi for getting online video metadata
-* whacko for getting html metadata
+Installation
+------------
+
+```
+npm install url-inspector
+```
+
+Add `-g` switch to install the executable.
+
+exiftool executable must be available.
+
+A package is available for debian/ubuntu: libimage-exiftool-perl
+and for fedora: perl-Image-ExifTool.
+Otherwise it is installable from
+http://owl.phy.queensu.ca/~phil/exiftool/
+
 
 API
 ---
@@ -37,7 +57,7 @@ API
 var inspector = require('url-inspector');
 
 var opts = {
-	all: true // return all available metadata, could be big
+	all: true // return all available non-normalized metadata
 };
 
 inspector(url, opts, function(err, obj) {
