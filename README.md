@@ -4,31 +4,45 @@ url-inspector
 Get metadata about any URL:
 
 * name  
-  the file name
-* ext  
-  the inspected (lowercased) extension of the resource - could differ from URL
-* size  
-  either Content-Length or the size of the whole html document or zero if unknown
+  the last component of the url, including the query string
+
+* site  
+  the name of the site, or the domain name
+
 * mime  
   the inspected mime type of the resource - could differ from server Content-Type
+
 * type  
   what the resource represents  
-  image, video, audio, link, file, embed
+  image, video, audio, link, file, embed, archive
+
 * html  
   a canonical html representation of the full resource,  
   depending on the type and mime, could be img, a, video, audio, iframe tag.
-* title  
-  *optional*
+
+* size  
+  *optional* Content-Length of the resource
+
 * favicon  
   *optional* link to the favicon of the site
+
+* title  
+  *optional* the title found in the resource
+
 * width, height  
   *optional* dimensions
+
 * duration  
   *optional*
+
 * thumbnail  
   *optional* a URL to a thumbnail
+
 * sample  
-  *optional* short string extracted from the beginning of the data
+  *optional* short string extracted from the beginning of the data, could be
+  used to represent the data itself. Archives might list some of their files
+  in here.
+
 * all  
   an object with all additional metadata that was found
 
