@@ -11,6 +11,8 @@
   "dependencies": {
     "domt": "^5.2.3",
     "express": "^4.13.3",
+    "request": "^2.67.0",
+    "sharp": "^0.12.2",
     "url-inspector": "^1.2.0"
   }
 }
