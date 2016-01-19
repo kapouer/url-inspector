@@ -39,10 +39,8 @@ This is a node.js module.
 * thumbnail  
   *optional* a URL to a thumbnail
 
-* sample  
-  *optional* short string extracted from the beginning of the data, could be
-  used to represent the data itself. Archives might list some of their files
-  in here.
+* embed  
+  *optional* a URL that can be used in an iframe
 
 * all  
   an object with all additional metadata that was found
