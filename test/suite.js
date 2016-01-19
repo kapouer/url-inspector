@@ -29,6 +29,7 @@ describe("url-inspector", function suite() {
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
 			expect(meta.title).to.be.ok();
+			expect(meta.embed).to.be.ok();
 			expect(meta.width).to.be.ok();
 			expect(meta.height).to.be.ok();
 			expect(meta.duration).to.be.ok();
