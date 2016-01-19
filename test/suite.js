@@ -8,6 +8,7 @@ describe("url-inspector", function suite() {
 			expect(err).to.not.be.ok();
 			expect(meta.title).to.be.ok();
 			expect(meta.type).to.be('archive');
+			expect(meta.ext).to.be('xz');
 			done();
 		});
 	});
@@ -16,6 +17,7 @@ describe("url-inspector", function suite() {
 		inspector('https://upload.wikimedia.org/wikipedia/commons/b/bd/1110_desktop_visual.jpg', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('image');
+			expect(meta.ext).to.be('jpg');
 			expect(meta.title).to.be.ok();
 			expect(meta.width).to.be.ok();
 			expect(meta.height).to.be.ok();
@@ -30,6 +32,7 @@ describe("url-inspector", function suite() {
 			expect(meta.thumbnail).to.be.ok();
 			expect(meta.title).to.be.ok();
 			expect(meta.embed).to.be.ok();
+			expect(meta.ext).to.be('html');
 			expect(meta.width).to.be.ok();
 			expect(meta.height).to.be.ok();
 			expect(meta.duration).to.be.ok();
