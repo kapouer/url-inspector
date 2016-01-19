@@ -74,5 +74,14 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	it("should inspect even when oembed endpoint fails", function(done) {
+		this.timeout(5000);
+		inspector('https://vimeo.com/75809732', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('link');
+			expect(meta.thumbnail).to.be.ok();
+			done();
+		});
+	});
 
 });
