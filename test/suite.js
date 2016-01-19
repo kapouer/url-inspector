@@ -26,6 +26,9 @@ describe("url-inspector", function suite() {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
+			expect(meta.width).to.be.ok();
+			expect(meta.height).to.be.ok();
+			expect(meta.duration).to.be.ok();
 			done();
 		});
 	});
