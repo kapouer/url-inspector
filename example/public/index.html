@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="index.css" />
+<script src="domt.js"></script>
+<script>
+document.addEventListener('focusin', function(e) {
+	var target = e.target;
+	if (target.matches('input')) {
+		target.value = "";
+		target.classList.remove('error');
+	}
+});
+document.addEventListener('paste', function(e) {
+	var target = e.target;
+	if (target.matches('input')) setTimeout(function() {
+		fetch('/inspector?url=' + encodeURIComponent(target.value)).then(function(res) {
+			if (res.status != 200) return Promise.fail(res);
+			return res.json();
+		}).then(function(data) {
+			Domt('.items').merge({data: [data]}, {
+				remove: function(val, context) {
+					if (!val) context.node.remove();
+					return val;
+				},
+				dimension: function(val, context) {
+					var data = context.scope.data;
+					var dim = data.duration;
+					if (!dim && data.width && data.height) dim = data.width + "x" + data.height;
+					if (!dim) {
+						dim = parseInt(data.size / 1000);
+						if (isNaN(dim)) dim = null;
+						else dim += 'KB';
+					}
+					return dim || "";
+				}
+			});
+		}).catch(function(err) {
+			target.blur();
+			target.classList.add('error');
+			console.error(err);
+		});
+	}, 0);
+});
+document.addEventListener('DOMContentLoaded', function() {
+	Domt('.items').empty();
+});
+</script>
+</head>
+<body>
+	<h1>url inspector demo</h1>
+	<div class="form">
+		<input class="add" placeholder="paste a URL here" />
+	</div>
+	<div class="items">
+		<div bind-class class="item [data.type]" repeat="data">
+			<div class="header">
+				<img bind-src="[data.icon]" class="icon" />
+				<span bind-text>[data.title]</span>
+			</div>
+			<img bind-src="data.thumbnail|remove" class="thumbnail" />
+			<span class="url" bind-text>[data.url|remove]</span>
+			<span class="audio" bind-text>[data.album|remove]</span>
+			<div class="footer">
+				<div class="dimension" bind-text>[data.#key|dimension]</div>
+				<div class="extension" bind-text>[data.ext]</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

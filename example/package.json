@@ -1,0 +1,16 @@
+{
+  "name": "url-inspector-example",
+  "version": "0.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "private": true,
+  "dependencies": {
+    "domt": "^5.2.3",
+    "express": "^4.13.3",
+    "url-inspector": "^1.2.0"
+  }
+}
