@@ -1,0 +1,12 @@
+Changes
+=======
+
+Only important and/or breaking changes are documented here.
+
+Version 1.2.0
+-------------
+
+* remove "name" key, in favor of "title" key
+* add "ext" key
+* ensure duration is a duration
+
