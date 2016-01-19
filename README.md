@@ -2,7 +2,7 @@ url-inspector
 =============
 
 Get metadata about any URL,
-using http headers, exiftool, dom inspection, oembed, opengraph, twitter cards.
+using http headers, exiftool, dom inspection, oembed, opengraph, twitter cards, schema.org.
 
 This is a node.js module.
 
