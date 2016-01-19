@@ -16,6 +16,9 @@ This is a node.js module.
 * mime  
   the inspected mime type of the resource - could differ from server Content-Type
 
+* ext  
+  the extension matching the mime type
+
 * type  
   what the resource represents  
   image, video, audio, link, file, embed, archive
