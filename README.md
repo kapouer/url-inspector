@@ -7,8 +7,8 @@ using http headers, exiftool, dom inspection, oembed, opengraph, twitter cards, 
 This is a node.js module.
 
 
-* name  
-  the last component of the url, including the query string
+* title  
+  title of the resource, or filename, or last component of pathname with query
 
 * site  
   the name of the site, or the domain name
@@ -29,9 +29,6 @@ This is a node.js module.
 
 * favicon  
   *optional* link to the favicon of the site
-
-* title  
-  *optional* the title found in the resource
 
 * width, height  
   *optional* dimensions
