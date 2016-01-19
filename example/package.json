@@ -1,13 +1,13 @@
 {
   "name": "url-inspector-example",
-  "version": "0.0.0",
-  "description": "",
+  "version": "1.2.1",
+  "description": "url-inspector sample app",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "private": true,
+  "author": "Jérémy Lal <kapouer@melix.org>",
+  "license": "MIT",
   "dependencies": {
     "domt": "^5.2.3",
     "express": "^4.13.3",
