@@ -6,6 +6,7 @@ describe("url-inspector", function suite() {
 		this.timeout(3000);
 		inspector('https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.3.3.tar.xz', function(err, meta) {
 			expect(err).to.not.be.ok();
+			expect(meta.title).to.be.ok();
 			expect(meta.type).to.be('archive');
 			done();
 		});
@@ -15,6 +16,7 @@ describe("url-inspector", function suite() {
 		inspector('https://upload.wikimedia.org/wikipedia/commons/b/bd/1110_desktop_visual.jpg', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('image');
+			expect(meta.title).to.be.ok();
 			expect(meta.width).to.be.ok();
 			expect(meta.height).to.be.ok();
 			done();
@@ -26,6 +28,7 @@ describe("url-inspector", function suite() {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
+			expect(meta.title).to.be.ok();
 			expect(meta.width).to.be.ok();
 			expect(meta.height).to.be.ok();
 			expect(meta.duration).to.be.ok();
@@ -37,6 +40,7 @@ describe("url-inspector", function suite() {
 		inspector('https://github.com/kapouer/url-inspector', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('link');
+			expect(meta.title).to.be.ok();
 			expect(meta.size).to.not.be.ok();
 			done();
 		});
@@ -62,6 +66,7 @@ describe("url-inspector", function suite() {
 		inspector('https://github.com/Stuk/jszip/archive/master.zip', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('archive');
+			expect(meta.title).to.be.ok();
 			done();
 		});
 	});
