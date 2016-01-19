@@ -1,7 +1,11 @@
 url-inspector
 =============
 
-Get metadata about any URL:
+Get metadata about any URL,
+using http headers, exiftool, dom inspection, oembed, opengraph, twitter cards.
+
+This is a node.js module.
+
 
 * name  
   the last component of the url, including the query string
