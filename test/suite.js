@@ -83,5 +83,23 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	it("should change type if schema has embed", function(done) {
+		this.timeout(5000);
+		inspector('http://video.lefigaro.fr/figaro/video/une-voiture-engloutie-par-un-sinkhole-en-chine/3919138012001/', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('video');
+			expect(meta.thumbnail).to.be.ok();
+			done();
+		});
+	});
+	it("should not change type if schema has no embed", function(done) {
+		this.timeout(5000);
+		inspector('http://www.lefigaro.fr/actualite-france/2016/01/07/01016-20160107LIVWWW00158-en-direct-un-homme-abattu-devant-un-commissariat-de-police-a-paris.php', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('link');
+			expect(meta.thumbnail).to.be.ok();
+			done();
+		});
+	});
 
 });
