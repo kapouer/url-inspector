@@ -1,6 +1,6 @@
 {
   "name": "url-inspector",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Get metadata about any url",
   "main": "lib/inspector.js",
   "scripts": {
