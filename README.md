@@ -6,6 +6,9 @@ using http headers, exiftool, dom inspection, oembed, opengraph, twitter cards, 
 
 This is a node.js module.
 
+A [demo](http://inspector.eda.sarl) using this module is available,
+with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
+
 
 * title  
   title of the resource, or filename, or last component of pathname with query
