@@ -1,8 +1,14 @@
 url-inspector
 =============
 
-Get metadata about any URL,
-using http headers, exiftool, dom inspection, oembed, opengraph, twitter cards, schema.org.
+Get metadata about any URL.
+
+Limited memory and network usage.
+
+It returns and normalizes information found in http headers or in the resource
+itself using exiftool (which knows almost everything about files but html),
+or a sax parser to read oembed, opengraph, twitter cards, schema.org attributes
+or standard html tags.
 
 This is a node.js module.
 
@@ -43,7 +49,7 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   *optional*
 
 * thumbnail  
-  *optional* a URL to a thumbnail
+  *optional* a URL to a thumbnail, could be a data-uri for embedded images
 
 * embed  
   *optional* a URL that can be used in an iframe
@@ -95,6 +101,18 @@ Command-line client
 ```
 inspector-url <url>
 ```
+
+Low resource usage
+------------------
+
+network:
+
+- a maximum of several hundreds of bytes (depending on resource type) is downloaded
+- streaming html and jpg inspection stops as soon as enough metadata is gathered
+
+memory:
+- html is inspected using a sax parser, without building a full DOM.
+
 
 License
 -------
