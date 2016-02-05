@@ -78,7 +78,7 @@ describe("url-inspector", function suite() {
 		this.timeout(5000);
 		inspector('https://vimeo.com/75809732', function(err, meta) {
 			expect(err).to.not.be.ok();
-			expect(meta.type).to.be('link');
+			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
 			done();
 		});

@@ -54,6 +54,9 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 * embed  
   *optional* a URL that can be used in an iframe
 
+* error  
+  *optional* an http error code, or string
+
 * all  
   an object with all additional metadata that was found
 
