@@ -7,6 +7,7 @@ describe("url-inspector", function suite() {
 		inspector('https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.3.3.tar.xz', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.title).to.be.ok();
+			expect(meta.size).to.be.greaterThan(80000000);
 			expect(meta.type).to.be('archive');
 			expect(meta.ext).to.be('xz');
 			done();
