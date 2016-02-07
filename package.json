@@ -33,6 +33,7 @@
     "moment": "^2.11.1",
     "oembed-providers-unofficial": "^1.0.20160119",
     "parse5": "^2.1.5",
+    "streat": "^0.1.0",
     "strong-data-uri": "^1.0.3"
   },
   "devDependencies": {
