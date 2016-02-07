@@ -5,12 +5,15 @@ Get metadata about any URL.
 
 Limited memory and network usage.
 
+This is a node.js module.
+
 It returns and normalizes information found in http headers or in the resource
 itself using exiftool (which knows almost everything about files but html),
 or a sax parser to read oembed, opengraph, twitter cards, schema.org attributes
 or standard html tags.
 
-This is a node.js module.
+Both tools stop inspection when they gathered enough tags, or stop when they
+reached a maximum value that depends on media type.
 
 A [demo](http://inspector.eda.sarl) using this module is available,
 with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
@@ -111,10 +114,13 @@ Low resource usage
 network:
 
 - a maximum of several hundreds of bytes (depending on resource type) is downloaded
-- streaming html and jpg inspection stops as soon as enough metadata is gathered
+- inspection stops as soon as enough metadata is gathered
 
 memory:
 - html is inspected using a sax parser, without building a full DOM.
+
+exiftool:
+- run using `streat` module, which keeps exiftool always open for smaller delays
 
 
 License
@@ -127,3 +133,5 @@ See also
 --------
 
 https://github.com/kapouer/url-inspector-daemon
+https://github.com/kapouer/node-streat
+
