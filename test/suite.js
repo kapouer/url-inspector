@@ -40,6 +40,21 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	it("should return meta with thumbnail for a figaro article", function(done) {
+		this.timeout(5000);
+		inspector('http://www.lefigaro.fr/actualite-france/2016/02/07/01016-20160207ARTFIG00183-accident-de-bretigny-ce-que-la-sncf-aurait-prefere-cacher-a-la-justice.php', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('link');
+			expect(meta.thumbnail).to.be.ok();
+			expect(meta.title).to.be.ok();
+			expect(meta.embed).to.not.be.ok();
+			expect(meta.ext).to.be('html');
+			expect(meta.width).to.not.be.ok();
+			expect(meta.height).to.not.be.ok();
+			expect(meta.duration).to.not.be.ok();
+			done();
+		});
+	});
 	it("should just work with github.com", function(done) {
 		this.timeout(5000);
 		inspector('https://github.com/kapouer/url-inspector', function(err, meta) {
