@@ -90,6 +90,7 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	/* disabled because discovery is ON and in that case oembed is ignored
 	it("should inspect even when oembed endpoint fails", function(done) {
 		this.timeout(5000);
 		inspector('https://vimeo.com/75809732', function(err, meta) {
@@ -100,6 +101,7 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	*/
 	it("should change type if schema has embed", function(done) {
 		this.timeout(5000);
 		inspector('http://video.lefigaro.fr/figaro/video/une-voiture-engloutie-par-un-sinkhole-en-chine/3919138012001/', function(err, meta) {
