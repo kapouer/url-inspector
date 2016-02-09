@@ -42,7 +42,7 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 * size  
   *optional* Content-Length of the resource
 
-* favicon  
+* icon  
   *optional* link to the favicon of the site
 
 * width, height  
