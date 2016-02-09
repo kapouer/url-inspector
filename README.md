@@ -73,11 +73,10 @@ npm install url-inspector
 
 Add `-g` switch to install the executable.
 
-exiftool executable must be available.
-
-A package is available for debian/ubuntu: libimage-exiftool-perl
+exiftool executable must be available:
+- a package is available for debian/ubuntu: libimage-exiftool-perl
 and for fedora: perl-Image-ExifTool.
-Otherwise it is installable from
+- Otherwise it is installable from
 http://owl.phy.queensu.ca/~phil/exiftool/
 
 
@@ -113,14 +112,15 @@ Low resource usage
 
 network:
 
-- a maximum of several hundreds of bytes (depending on resource type) is downloaded
+- a maximum of several hundreds of kilobytes (depending on resource type) is downloaded
+  but it is usually much less, depending on connection speed.
 - inspection stops as soon as enough metadata is gathered
 
 memory:
 - html is inspected using a sax parser, without building a full DOM.
 
 exiftool:
-- run using `streat` module, which keeps exiftool always open for smaller delays
+- runs using `streat` module, which keeps exiftool always open for performance
 
 
 License
