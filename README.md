@@ -14,8 +14,8 @@ itself using exiftool (which knows almost everything about files but html),
 or a sax parser to read oembed, opengraph, twitter cards, schema.org attributes
 or standard html tags.
 
-Both tools stop inspection when they gathered enough tags, or stop when they
-reached a maximum value that depends on media type.
+Both tools stop inspection when they gathered enough tags, or stop when a max number
+of bytes (depending on media type) have been downloaded.
 
 A [demo](http://inspector.eda.sarl) using this module is available,
 with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
