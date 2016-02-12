@@ -1,3 +1,5 @@
+[![NPM](https://nodei.co/npm/url-inspector.png?downloads=true)](https://nodei.co/npm/url-inspector/)
+
 url-inspector
 =============
 
