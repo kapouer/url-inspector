@@ -10,4 +10,14 @@ describe("url-inspector", function sites() {
 			done();
 		});
 	});
+	it("should return embeddable content at https://myspace.com/unefemmemariee/music/songs", function(done) {
+		this.timeout(5000);
+		inspector('https://myspace.com/unefemmemariee/music/songs', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.ext).to.be("html");
+			expect(meta.embed).to.be.ok();
+			expect(meta.html.startsWith('<iframe')).to.be.ok();
+			done();
+		});
+	});
 });
