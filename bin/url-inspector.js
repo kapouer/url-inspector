@@ -39,7 +39,7 @@ inspector(url, opts, function(err, meta) {
 		console.error(err);
 		process.exit(1);
 	} else {
-		console.log(JSON.stringify(meta, null, "  "));
+		console.log(require('util').inspect(meta));
 		process.exit(0);
 	}
 });
