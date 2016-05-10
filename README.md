@@ -89,7 +89,19 @@ API
 var inspector = require('url-inspector');
 
 var opts = {
-	all: true // return all available non-normalized metadata
+	all: true, // return all available non-normalized metadata
+	providers: [{ // an array of custom OEmbed providers
+		provider_name: "Custom OEmbed provider",
+		endpoints: [{
+			schemes: ["http:\/\/video\.com\/*"],
+			builder: function(urlObj, obj) {
+				// can see current obj and override arbitrary props
+				obj.embed = "custom embed url";
+			}
+		}]
+	}]
+};
+	}]
 };
 
 inspector(url, opts, function(err, obj) {
