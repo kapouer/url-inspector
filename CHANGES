@@ -10,3 +10,8 @@ Version 1.2.0
 * add "ext" key
 * ensure duration is a duration
 
+
+Version 1.5.0
+-------------
+
+* add custom providers
