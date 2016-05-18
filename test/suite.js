@@ -34,6 +34,7 @@ describe("url-inspector", function suite() {
 			expect(meta.title).to.be.ok();
 			expect(meta.embed).to.be.ok();
 			expect(meta.ext).to.be('html');
+			expect(meta.size).to.not.be.ok();
 			expect(meta.width).to.be.ok();
 			expect(meta.height).to.be.ok();
 			expect(meta.duration).to.be.ok();
@@ -125,8 +126,9 @@ describe("url-inspector", function suite() {
 		inspector('https://twitter.com/kapouer/status/731420341927587840', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('embed');
-			expect(meta.title).to.be("Jérémy Lal on Twitter: “copycat”");
-			expect(meta.thumbnail).to.be('https://pbs.twimg.com/media/CiaG7IhWsAADQeE.jpg:large');
+			expect(meta.size).to.not.be.ok();
+			expect(meta.description).to.be.ok();
+			expect(meta.thumbnail).to.be.ok();
 			done();
 		});
 	});
