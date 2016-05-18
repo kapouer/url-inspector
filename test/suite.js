@@ -120,5 +120,15 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	it("should append description to title and get picture", function(done) {
+		this.timeout(5000);
+		inspector('https://twitter.com/kapouer/status/731420341927587840', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('embed');
+			expect(meta.title).to.be("Jérémy Lal on Twitter: “copycat”");
+			expect(meta.thumbnail).to.be('https://pbs.twimg.com/media/CiaG7IhWsAADQeE.jpg:large');
+			done();
+		});
+	});
 
 });
