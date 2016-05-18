@@ -31,7 +31,8 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   the name of the site, or the domain name
 
 * mime  
-  the inspected mime type of the resource - could differ from server Content-Type
+  RFC 7231 mime type of the resource (defaults to Content-Type)  
+  The inspected mime type could be more accurate than the http header.
 
 * ext  
   the extension matching the mime type
