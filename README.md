@@ -46,7 +46,7 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   depending on the type and mime, could be img, a, video, audio, iframe tag.
 
 * size  
-  *optional* Content-Length of the resource
+  *optional* Content-Length of a resource (but not of the embedding html)
 
 * icon  
   *optional* link to the favicon of the site
