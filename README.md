@@ -24,6 +24,9 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 * title  
   title of the resource, or filename, or last component of pathname with query
 
+* description  
+  *optional* longer description
+
 * site  
   the name of the site, or the domain name
 
