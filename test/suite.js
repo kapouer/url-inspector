@@ -132,5 +132,13 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	it("should convert from other charsets", function(done) {
+		this.timeout(5000);
+		inspector('http://www.canalplus.fr/c-emissions/le-petit-journal/pid6515-le-petit-journal.html?vid=1392689', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.title).to.contain('à');
+			done();
+		});
+	});
 
 });
