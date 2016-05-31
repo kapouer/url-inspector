@@ -94,6 +94,7 @@ var inspector = require('url-inspector');
 
 var opts = {
 	all: true, // return all available non-normalized metadata
+	ua: "Mozilla/5.0", // default user-agent, some oembed providers might not answer otherwise
 	providers: [{ // an array of custom OEmbed providers
 		provider_name: "Custom OEmbed provider",
 		endpoints: [{
