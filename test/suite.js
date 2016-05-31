@@ -140,5 +140,16 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	it("should get google map metadata", function(done) {
+		this.timeout(5000);
+		inspector('https://www.google.fr/maps/place/86000+Poitiers/@46.5846876,0.3363644,13z/data=!3m1!4b1!4m5!3m4!1s0x47fdbe72439eb3ab:0x97de2319c5e09093!8m2!3d46.580224!4d0.340375?hl=fr', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('link');
+			expect(meta.description).to.be('86000');
+			expect(meta.title).to.be('Poitiers');
+			expect(meta.thumbnail).to.be.ok();
+			done();
+		});
+	});
 
 });
