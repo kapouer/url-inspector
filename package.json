@@ -35,7 +35,8 @@
     "oembed-providers": "^1.0.20160209",
     "parse5": "^2.1.5",
     "streat": "^0.2.1",
-    "strong-data-uri": "^1.0.3"
+    "strong-data-uri": "^1.0.3",
+    "tough-cookie": "^2.2.2"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
