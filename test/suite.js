@@ -190,5 +190,15 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	it("should set correct html output for image type when image is found", function(done) {
+		this.timeout(5000);
+		inspector('https://www.instagram.com/p/BFYUGGNJ1TJ/', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('image');
+			expect(meta.html.startsWith('<img')).to.be.ok();
+			expect(meta.thumbnail).to.be.ok();
+			done();
+		});
+	});
 
 });
