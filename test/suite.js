@@ -151,5 +151,25 @@ describe("url-inspector", function suite() {
 			done();
 		});
 	});
+	it("should follow 303 redirect and send cookies back", function(done) {
+		this.timeout(5000);
+		inspector('http://www.nytimes.com/2016/05/31/us/politics/donald-trump-hong-kong-riverside-south.html?_r=0', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('embed');
+			expect(meta.html).to.be.ok();
+			expect(meta.thumbnail).to.be.ok();
+			done();
+		});
+	});
+	it("should give priority of oembed over twitter card", function(done) {
+		this.timeout(5000);
+		inspector('https://vine.co/v/Ml16lZVTTxe', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('video');
+			expect(meta.html).to.be.ok();
+			expect(meta.thumbnail).to.be.ok();
+			done();
+		});
+	});
 
 });
