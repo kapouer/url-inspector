@@ -21,6 +21,9 @@ A [demo](http://inspector.eda.sarl) using this module is available,
 with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 
 
+* url  
+  url of the inspected resource
+
 * title  
   title of the resource, or filename, or last component of pathname with query
 
@@ -46,7 +49,7 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   depending on the type and mime, could be img, a, video, audio, iframe tag.
 
 * size  
-  *optional* Content-Length of a resource (but not of the embedding html)
+  *optional* Content-Length; discarded when type is embed
 
 * icon  
   *optional* link to the favicon of the site
@@ -60,8 +63,10 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 * thumbnail  
   *optional* a URL to a thumbnail, could be a data-uri for embedded images
 
-* embed  
-  *optional* a URL that can be used in an iframe
+* source  
+  *optional* a URL that can go in a 'src' attribute; for example a resource can
+  be an html page representing an image type. The URL of the image itself would
+  be stored here; same thing for audio, video, embed types.
 
 * error  
   *optional* an http error code, or string
