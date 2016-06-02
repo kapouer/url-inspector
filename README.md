@@ -38,7 +38,7 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   The inspected mime type could be more accurate than the http header.
 
 * ext  
-  the extension matching the mime type
+  the extension matching the mime type (not the file extension)
 
 * type  
   what the resource represents  
@@ -98,8 +98,10 @@ API
 var inspector = require('url-inspector');
 
 var opts = {
-	all: true, // return all available non-normalized metadata
-	ua: "Mozilla/5.0", // default user-agent, some oembed providers might not answer otherwise
+	all: false, // return all available non-normalized metadata
+	ua: "Mozilla/5.0", // some oembed providers might not answer otherwise
+	nofavicon: false, // disable any favicon-related additional request
+	nosource: false, // disable any sub-source inspection for audio, video, image types
 	providers: [{ // an array of custom OEmbed providers
 		provider_name: "Custom OEmbed provider",
 		endpoints: [{
