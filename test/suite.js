@@ -51,7 +51,7 @@ describe("url-inspector", function suite() {
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
 			expect(meta.title).to.be.ok();
-			expect(meta.embed).to.be.ok();
+			expect(meta.source).to.be.ok();
 			expect(meta.ext).to.be('html');
 			expect(meta.size).to.not.be.ok();
 			expect(meta.width).to.be.ok();
@@ -67,7 +67,7 @@ describe("url-inspector", function suite() {
 			expect(meta.type).to.be('link');
 			expect(meta.thumbnail).to.be.ok();
 			expect(meta.title).to.be.ok();
-			expect(meta.embed).to.not.be.ok();
+			expect(meta.source).to.not.be.ok();
 			expect(meta.ext).to.be('html');
 			expect(meta.width).to.not.be.ok();
 			expect(meta.height).to.not.be.ok();
@@ -196,7 +196,7 @@ describe("url-inspector", function suite() {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('image');
 			expect(meta.html.startsWith('<img')).to.be.ok();
-			expect(meta.thumbnail).to.be.ok();
+			expect(meta.thumbnail).to.not.be.ok();
 			done();
 		});
 	});
