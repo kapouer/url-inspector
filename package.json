@@ -16,7 +16,9 @@
   "keywords": [
     "metadata",
     "inspect",
-    "url"
+    "url",
+    "schema.org",
+    "opengraph"
   ],
   "author": "Jérémy Lal <kapouer@melix.org>",
   "license": "MIT",
