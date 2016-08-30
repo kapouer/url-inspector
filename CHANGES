@@ -15,3 +15,13 @@ Version 1.5.0
 -------------
 
 * add custom providers
+
+
+Version 2.0.0
+-------------
+
+* embed is now called source
+* ext is the extension matching the mime type
+* url is kept in response
+* canonical url is inspected if any
+* new way to search for embeds and objects
