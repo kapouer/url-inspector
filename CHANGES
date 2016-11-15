@@ -25,3 +25,9 @@ Version 2.0.0
 * url is kept in response
 * canonical url is inspected if any
 * new way to search for embeds and objects
+
+Version 2.1.0
+-------------
+
+* providers option can be a path to a module
+

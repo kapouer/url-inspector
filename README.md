@@ -102,7 +102,7 @@ var opts = {
 	ua: "Mozilla/5.0", // some oembed providers might not answer otherwise
 	nofavicon: false, // disable any favicon-related additional request
 	nosource: false, // disable any sub-source inspection for audio, video, image types
-	providers: [{ // an array of custom OEmbed providers
+	providers: [{ // an array of custom OEmbed providers, or path to a module exporting such an array
 		provider_name: "Custom OEmbed provider",
 		endpoints: [{
 			schemes: ["http:\/\/video\.com\/*"],
