@@ -1,7 +1,7 @@
 var inspector = require('..');
 var expect = require('expect.js');
 
-describe("url-inspector", function suite() {
+describe("remote suite", function suite() {
 	it("should return embeddable content at https://myspace.com/unefemmemariee/music/songs", function(done) {
 		this.timeout(5000);
 		inspector('https://myspace.com/unefemmemariee/music/songs', function(err, meta) {
