@@ -2,14 +2,6 @@ var inspector = require('..');
 var expect = require('expect.js');
 
 describe("url-inspector", function suite() {
-	it("should get title from http://www.lavieenbois.com/", function(done) {
-		this.timeout(5000);
-		inspector('http://www.lavieenbois.com/', function(err, meta) {
-			expect(err).to.not.be.ok();
-			expect(meta.title).to.be.ok();
-			done();
-		});
-	});
 	it("should return embeddable content at https://myspace.com/unefemmemariee/music/songs", function(done) {
 		this.timeout(5000);
 		inspector('https://myspace.com/unefemmemariee/music/songs', function(err, meta) {
@@ -148,14 +140,6 @@ describe("url-inspector", function suite() {
 			expect(meta.size).to.not.be.ok();
 			expect(meta.description).to.be.ok();
 			expect(meta.thumbnail).to.be.ok();
-			done();
-		});
-	});
-	it("should convert from other charsets", function(done) {
-		this.timeout(5000);
-		inspector('http://www.canalplus.fr/c-emissions/le-petit-journal/pid6515-le-petit-journal.html?vid=1392689', function(err, meta) {
-			expect(err).to.not.be.ok();
-			expect(meta.title).to.contain('à');
 			done();
 		});
 	});
