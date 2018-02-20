@@ -32,7 +32,7 @@
     "debug": "^2.6.9",
     "iconv-lite": "^0.4.19",
     "media-typer": "^0.3.0",
-    "mime": "^1.6.0",
+    "mime": "^2.2.0",
     "moment": "^2.20.1",
     "oembed-providers": "^1.0.20170414",
     "parse5": "^3.0.3",
