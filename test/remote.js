@@ -60,7 +60,7 @@ describe("remote suite", function suite() {
 			expect(meta.type).to.be('link');
 			expect(meta.thumbnail).to.be.ok();
 			expect(meta.title).to.be.ok();
-			expect(meta.mime).to.be('text/html');
+			expect(meta.mime).to.be('text/html; charset=UTF-8');
 			expect(meta.source).to.not.be.ok();
 			expect(meta.ext).to.be('html');
 			expect(meta.width).to.not.be.ok();
