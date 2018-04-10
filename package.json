@@ -26,23 +26,23 @@
     "url": "https://github.com/kapouer/url-inspector/issues"
   },
   "dependencies": {
-    "bl": "^1.2.1",
+    "bl": "^1.2.2",
     "content-disposition": "^0.5.2",
     "dashdash": "^1.14.1",
     "debug": "^2.6.9",
-    "iconv-lite": "^0.4.19",
+    "iconv-lite": "^0.4.21",
     "media-typer": "^0.3.0",
-    "mime": "^2.2.0",
-    "moment": "^2.20.1",
+    "mime": "^2.2.2",
+    "moment": "^2.22.0",
     "oembed-providers": "^1.0.20170414",
     "parse5": "^4.0.0",
     "streat": "^0.2.2",
-    "strong-data-uri": "^1.0.4",
-    "tough-cookie": "^2.3.3"
+    "strong-data-uri": "^1.0.5",
+    "tough-cookie": "^2.3.4"
   },
   "devDependencies": {
     "expect.js": "^0.3.1",
-    "express": "^4.16.2",
+    "express": "^4.16.3",
     "mocha": "^2.5.3"
   }
 }
