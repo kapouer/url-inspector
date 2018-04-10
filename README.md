@@ -111,9 +111,9 @@ var opts = {
 				obj.embed = "custom embed url";
 			}
 		}]
-	}]
-};
-	}]
+	}],
+	// new in version 2.3.0
+	file: true
 };
 
 inspector(url, opts, function(err, obj) {
@@ -148,6 +148,8 @@ memory:
 exiftool:
 - runs using `streat` module, which keeps exiftool always open for performance
 
+Since version 2.3.0, file:// protocol is supported through cli by default,
+or setting "file" flag to true (false by default) through api.
 
 License
 -------

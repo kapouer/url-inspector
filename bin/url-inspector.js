@@ -34,6 +34,9 @@ if (opts.help || !url) {
 
 var inspector = require('..');
 
+opts.file = true;
+if (url.startsWith('./') || url.startsWith('/')) url = "file://" + url;
+
 inspector(url, opts, function(err, meta) {
 	if (err) {
 		console.error(err);
