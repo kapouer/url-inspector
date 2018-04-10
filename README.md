@@ -131,6 +131,7 @@ Command-line client
 
 ```
 inspector-url <url>
+inspector-url <filepath>
 ```
 
 Low resource usage
