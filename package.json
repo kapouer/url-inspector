@@ -36,7 +36,7 @@
     "moment": "^2.22.0",
     "oembed-providers": "^1.0.20170414",
     "parse5": "^4.0.0",
-    "streat": "^0.2.2",
+    "streat": "^0.3.0",
     "strong-data-uri": "^1.0.5",
     "tough-cookie": "^2.3.4"
   },
