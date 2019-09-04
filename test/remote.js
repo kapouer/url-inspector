@@ -43,7 +43,6 @@ describe("remote suite", function suite() {
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
 			expect(meta.title).to.be.ok();
-			expect(meta.source).to.be.ok();
 			expect(meta.mime).to.be('text/html');
 			expect(meta.ext).to.be('html');
 			expect(meta.size).to.not.be.ok();
@@ -188,7 +187,7 @@ describe("remote suite", function suite() {
 	});
 	it("should return meta with thumbnail for a youtube video embed url", function(done) {
 		this.timeout(5000);
-		inspector('https://www.youtube.com/embed/qPYOh6j90c4', function(err, meta) {
+		inspector('https://www.youtube.com/embed/W7OY8TeglnM', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
