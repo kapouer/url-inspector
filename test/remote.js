@@ -202,4 +202,13 @@ describe("remote suite", function suite() {
 		});
 	});
 
+	it("should not fail on redirection", function(done) {
+		this.timeout(5000);
+		inspector('http://atag-europe.com/', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('link');
+			done();
+		});
+	});
+
 });
