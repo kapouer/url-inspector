@@ -42,6 +42,12 @@ describe("local suite", function suite() {
 			done();
 		});
 	});
+	it("should not crash with svg", function(done) {
+		inspector(`${host}/test.svg`, function(err, meta) {
+			expect(err).to.not.be.ok();
+			done();
+		});
+	});
 
 
 });
