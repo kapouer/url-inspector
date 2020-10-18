@@ -9,7 +9,7 @@ describe("remote suite", function suite() {
 			expect(meta.type).to.be("audio");
 			expect(meta.ext).to.be("html");
 			expect(meta.html).to.be.ok();
-			expect(meta.html.startsWith('<audio')).to.be.ok();
+			expect(meta.html.startsWith('<iframe')).to.be.ok();
 			done();
 		});
 	});
@@ -48,7 +48,6 @@ describe("remote suite", function suite() {
 			expect(meta.size).to.not.be.ok();
 			expect(meta.width).to.be.ok();
 			expect(meta.height).to.be.ok();
-			expect(meta.duration).to.be.ok();
 			done();
 		});
 	});
