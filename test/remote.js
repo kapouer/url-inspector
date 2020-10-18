@@ -68,6 +68,22 @@ describe("remote suite", function suite() {
 			done();
 		});
 	});
+	it("should support json+ld", function(done) {
+		this.timeout(5000);
+		inspector('https://video.lefigaro.fr/figaro/video/presidentielle-americaine-peut-on-croire-les-sondages-cette-fois-ci/', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('video');
+			expect(meta.thumbnail).to.be.ok();
+			expect(meta.title).to.be.ok();
+			expect(meta.mime).to.be('text/html; charset=utf-8');
+			expect(meta.source).to.be.ok();
+			expect(meta.source.indexOf('players.brightcove.net') > 0).to.be.ok();
+			expect(meta.ext).to.be('html');
+			expect(meta.html).to.be.ok();
+			expect(meta.html.startsWith('<iframe src')).to.be.ok();
+			done();
+		});
+	});
 	it("should just work with github.com", function(done) {
 		this.timeout(5000);
 		inspector('https://github.com/kapouer/url-inspector', function(err, meta) {
