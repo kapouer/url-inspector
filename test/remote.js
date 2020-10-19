@@ -195,7 +195,7 @@ describe("remote suite", function suite() {
 		inspector('https://www.instagram.com/p/BFYUGGNJ1TJ/', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('image');
-			expect(meta.html.startsWith('<img')).to.be.ok();
+			expect(meta.html.startsWith('<iframe')).to.be.ok();
 			expect(meta.thumbnail).to.not.be.ok();
 			done();
 		});
@@ -212,16 +212,15 @@ describe("remote suite", function suite() {
 			expect(meta.size).to.not.be.ok();
 			expect(meta.width).to.be.ok();
 			expect(meta.height).to.be.ok();
-			expect(meta.duration).to.be.ok();
 			done();
 		});
 	});
 
 	it("should not fail on redirection", function(done) {
-		this.timeout(5000);
+		this.timeout(10000);
 		inspector('http://atag-europe.com/', function(err, meta) {
 			expect(err).to.not.be.ok();
-			expect(meta.type).to.be('link');
+			expect(meta.type).to.be('embed');
 			done();
 		});
 	});
