@@ -195,7 +195,7 @@ describe("remote suite", function suite() {
 		inspector('https://www.instagram.com/p/BFYUGGNJ1TJ/', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('image');
-			expect(meta.html.startsWith('<iframe')).to.be.ok();
+			expect(meta.html.startsWith('<img')).to.be.ok();
 			expect(meta.thumbnail).to.not.be.ok();
 			done();
 		});
