@@ -1,13 +1,13 @@
 {
   "name": "url-inspector",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "Get metadata about any url",
   "main": "lib/inspector.js",
   "scripts": {
     "test": "mocha"
   },
   "bin": {
-    "url-inspector": "./bin/url-inspector.js"
+    "url-inspector": "bin/url-inspector.js"
   },
   "repository": {
     "type": "git",
