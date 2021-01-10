@@ -7,22 +7,15 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Debug json+ld",
+			"name": "Mocha Tests",
+			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+			"args": [
+				"-g", "youtube",
+			],
+			"internalConsoleOptions": "openOnSessionStart",
 			"skipFiles": [
 				"<node_internals>/**"
-			],
-			"program": "${workspaceFolder}/bin/url-inspector.js",
-			"args": ["https://video.lefigaro.fr/figaro/video/presidentielle-americaine-peut-on-croire-les-sondages-cette-fois-ci/"]
-		},
-		{
-			"type": "node",
-			"request": "launch",
-			"name": "Debug instagram",
-			"skipFiles": [
-				"<node_internals>/**"
-			],
-			"program": "${workspaceFolder}/bin/url-inspector.js",
-			"args": ["https://www.instagram.com/p/BFYUGGNJ1TJ/"]
+			]
 		}
 	]
 }
