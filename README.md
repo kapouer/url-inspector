@@ -21,57 +21,57 @@ A [demo](http://inspector.eda.sarl) using this module is available,
 with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 
 
-* url  
+* url
   url of the inspected resource
 
-* title  
+* title
   title of the resource, or filename, or last component of pathname with query
 
-* description  
+* description
   *optional* longer description, without title in it
 
-* site  
+* site
   the name of the site, or the domain name
 
-* mime  
-  RFC 7231 mime type of the resource (defaults to Content-Type)  
+* mime
+  RFC 7231 mime type of the resource (defaults to Content-Type)
   The inspected mime type could be more accurate than the http header.
 
-* ext  
+* ext
   the extension matching the mime type (not the file extension)
 
-* type  
-  what the resource represents  
+* type
+  what the resource represents
   image, video, audio, link, file, embed, archive
 
-* html  
-  a canonical html representation of the full resource,  
+* html
+  a canonical html representation of the full resource,
   depending on the type and mime, could be img, a, video, audio, iframe tag.
 
-* size  
+* size
   *optional* Content-Length; discarded when type is embed
 
-* icon  
+* icon
   *optional* link to the favicon of the site
 
-* width, height  
+* width, height
   *optional* dimensions
 
-* duration  
+* duration
   *optional*
 
-* thumbnail  
+* thumbnail
   *optional* a URL to a thumbnail, could be a data-uri for embedded images
 
-* source  
+* source
   *optional* a URL that can go in a 'src' attribute; for example a resource can
   be an html page representing an image type. The URL of the image itself would
   be stored here; same thing for audio, video, embed types.
 
-* error  
+* error
   *optional* an http error code, or string
 
-* all  
+* all
   an object with all additional metadata that was found
 
 
@@ -106,10 +106,14 @@ var opts = {
 		provider_name: "Custom OEmbed provider",
 		endpoints: [{
 			schemes: ["http:\/\/video\.com\/*"],
-			builder: function(urlObj, obj) {
+			builder(urlObj, obj) {
 				// can see current obj and override arbitrary props
 				obj.embed = "custom embed url";
-			}
+			},
+      redirect(urlObj, ret) {
+        // can change inspected url
+        urlObj.path = "/another/path";
+      }
 		}]
 	}],
 	// new in version 2.3.0
