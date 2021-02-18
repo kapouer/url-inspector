@@ -33,9 +33,12 @@ describe("remote suite", function suite() {
 			expect(meta.title).to.be.ok();
 			expect(meta.width).to.be.ok();
 			expect(meta.height).to.be.ok();
+			expect(meta.date).to.be('2011-10-03T13:44:44Z');
 			done();
 		});
 	});
+
+
 	it("should return meta with thumbnail for a youtube video", function(done) {
 		this.timeout(5000);
 		inspector('https://www.youtube.com/watch?v=CtP8VABF5pk', function(err, meta) {
@@ -80,6 +83,22 @@ describe("remote suite", function suite() {
 			expect(meta.ext).to.be('html');
 			expect(meta.html).to.be.ok();
 			expect(meta.html.startsWith('<iframe src')).to.be.ok();
+			done();
+		});
+	});
+	it("should support json+ld test 2", function(done) {
+		this.timeout(5000);
+		inspector('https://www.lefigaro.fr/politique/presidentielle-2022-la-classe-politique-s-oppose-majoritairement-au-vote-par-anticipation-20210217', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('link');
+			expect(meta.thumbnail).to.be.ok();
+			expect(meta.title).to.be.ok();
+			expect(meta.mime).to.be('text/html; charset=utf-8');
+			expect(meta.author).to.be.ok('Dinah Cohen');
+			expect(Number.isNaN(Date.parse(meta.date))).to.not.be.ok();
+			expect(meta.ext).to.be('html');
+			expect(meta.html).to.be.ok();
+			expect(meta.html.startsWith('<a href')).to.be.ok();
 			done();
 		});
 	});

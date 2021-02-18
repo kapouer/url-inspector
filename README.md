@@ -48,6 +48,12 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   a canonical html representation of the full resource,
   depending on the type and mime, could be img, a, video, audio, iframe tag.
 
+* date
+  creation or modification date
+
+* author
+  credit, author...
+
 * size
   *optional* Content-Length; discarded when type is embed
 
