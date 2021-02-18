@@ -172,6 +172,8 @@ describe("remote suite", function suite() {
 		inspector('https://twitter.com/kapouer/status/731420341927587840', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('embed');
+			expect(meta.date).to.be.ok();
+			expect(meta.author).to.be.ok();
 			expect(meta.size).to.not.be.ok();
 			expect(meta.description).to.be.ok();
 			expect(meta.thumbnail).to.be.ok();
