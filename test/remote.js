@@ -33,7 +33,7 @@ describe("remote suite", function suite() {
 			expect(meta.title).to.be.ok();
 			expect(meta.width).to.be.ok();
 			expect(meta.height).to.be.ok();
-			expect(meta.date).to.be('2011-10-03T13:44:44Z');
+			expect(meta.date).to.be('2011-10-03');
 			done();
 		});
 	});

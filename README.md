@@ -49,7 +49,7 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   depending on the type and mime, could be img, a, video, audio, iframe tag.
 
 * date
-  creation or modification date
+  creation or modification date in YYYY-MM-DD format
 
 * author
   credit, author...
