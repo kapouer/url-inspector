@@ -1,5 +1,3 @@
-[![NPM](https://nodei.co/npm/url-inspector.png?downloads=true)](https://nodei.co/npm/url-inspector/)
-
 url-inspector
 =============
 
@@ -19,7 +17,6 @@ of bytes (depending on media type) have been downloaded.
 
 A [demo](http://inspector.eda.sarl) using this module is available,
 with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
-
 
 * url
   url of the inspected resource
@@ -80,50 +77,48 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 * all
   an object with all additional metadata that was found
 
-
 Installation
 ------------
 
-```
+```shell
 npm install url-inspector
 ```
 
 Add `-g` switch to install the executable.
 
 exiftool executable must be available:
-- a package is available for debian/ubuntu: libimage-exiftool-perl
-and for fedora: perl-Image-ExifTool.
-- Otherwise it is installable from
-http://owl.phy.queensu.ca/~phil/exiftool/
 
+* a package is available for debian/ubuntu: libimage-exiftool-perl
+and for fedora: perl-Image-ExifTool.
+* Otherwise it is installable from [exiftool](http://owl.phy.queensu.ca/~phil/exiftool/)
 
 API
 ---
 
-```
+```js
 var inspector = require('url-inspector');
 
 var opts = {
-	all: false, // return all available non-normalized metadata
-	ua: "Mozilla/5.0", // some oembed providers might not answer otherwise
-	nofavicon: false, // disable any favicon-related additional request
-	nosource: false, // disable any sub-source inspection for audio, video, image types
-	providers: [{ // an array of custom OEmbed providers, or path to a module exporting such an array
-		provider_name: "Custom OEmbed provider",
-		endpoints: [{
-			schemes: ["http:\/\/video\.com\/*"],
-			builder(urlObj, obj) {
-				// can see current obj and override arbitrary props
-				obj.embed = "custom embed url";
-			},
+ all: false, // return all available non-normalized metadata
+ ua: "Mozilla/5.0", // some oembed providers might not answer otherwise
+ nofavicon: false, // disable any favicon-related additional request
+ nosource: false, // disable any sub-source inspection for audio, video, image types
+ providers: [{ // an array of custom OEmbed providers, or path to a module exporting such an array
+  provider_name: "Custom OEmbed provider",
+  endpoints: [{
+   schemes: ["http:\/\/video\.com\/*"],
+   builder(urlObj, obj) {
+    // can see current obj and override arbitrary props
+    obj.embed = "custom embed url";
+   },
       redirect(urlObj, ret) {
         // can change inspected url
         urlObj.path = "/another/path";
       }
-		}]
-	}],
-	// new in version 2.3.0
-	file: true
+  }]
+ }],
+ // new in version 2.3.0
+ file: true
 };
 
 inspector(url, opts, function(err, obj) {
@@ -139,7 +134,7 @@ inspector(url, function(err, obj) {...});
 Command-line client
 -------------------
 
-```
+```shell
 inspector-url <url>
 inspector-url <filepath>
 ```
@@ -149,15 +144,13 @@ Low resource usage
 
 network:
 
-- a maximum of several hundreds of kilobytes (depending on resource type) is downloaded
+* a maximum of several hundreds of kilobytes (depending on resource type) is downloaded
   but it is usually much less, depending on connection speed.
-- inspection stops as soon as enough metadata is gathered
+* inspection stops as soon as enough metadata is gathered
 
-memory:
-- html is inspected using a sax parser, without building a full DOM.
+memory: html is inspected using a sax parser, without building a full DOM.
 
-exiftool:
-- runs using `streat` module, which keeps exiftool always open for performance
+exiftool: runs using `streat` module, which keeps exiftool always open for performance
 
 Since version 2.3.0, file:// protocol is supported through cli by default,
 or setting "file" flag to true (false by default) through api.
@@ -167,11 +160,9 @@ License
 
 See LICENSE.
 
-
 See also
 --------
 
-https://github.com/kapouer/url-inspector-daemon
+<https://github.com/kapouer/url-inspector-daemon>
 
-https://github.com/kapouer/node-streat
-
+<https://github.com/kapouer/node-streat>
