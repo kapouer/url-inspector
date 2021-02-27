@@ -14,7 +14,7 @@ describe("remote suite", function suite() {
 		});
 	});
 	it("should inspect large file without downloading it entirely", function(done) {
-		this.timeout(3000);
+		this.timeout(5000);
 		inspector('https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.3.3.tar.xz', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.title).to.be.ok();
