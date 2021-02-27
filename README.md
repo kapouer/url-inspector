@@ -25,7 +25,7 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   title of the resource, or filename, or last component of pathname with query
 
 * description
-  *optional* longer description, without title in it
+  *optional* longer description, without title in it, and only the first line.
 
 * site
   the name of the site, or the domain name
@@ -45,22 +45,22 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   a canonical html representation of the full resource,
   depending on the type and mime, could be img, a, video, audio, iframe tag.
 
-* date
-  creation or modification date in YYYY-MM-DD format
+* date (YYYY-MD-DD format)
+  creation or modification date
 
 * author
   credit, author...
 
-* size
+* size (number)
   *optional* Content-Length; discarded when type is embed
 
 * icon
   *optional* link to the favicon of the site
 
-* width, height
+* width, height (number)
   *optional* dimensions
 
-* duration
+* duration (hh:mm:ss string)
   *optional*
 
 * thumbnail
