@@ -19,7 +19,7 @@ describe("local suite", function suite() {
 				"width": 478,
 				"height": 204,
 				"duration": 238,
-				"description": "Description text",
+				"description": "Description text&eacute;",
 				"thumbnail_url": "https://i.vimeocdn.com/video/439826901_295x166.jpg",
 				"upload_date": "2012-12-07 04:24:19"
 			});
@@ -81,9 +81,9 @@ describe("local suite", function suite() {
 			assert.deepStrictEqual(meta, {
 				type: 'video',
 				mime: 'text/html',
-				description: "Description text",
+				description: "Description texté",
 				duration: '00:03:58',
-				size: 486,
+				size: 494,
 				title: 'Le Dauphin dauphin',
 				author: 'Thibaud Gayral',
 				html: '<iframe src="https://player.vimeo.com/video/55084640?app_id=122963" width="478" height="204" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Le Dauphin dauphin"></iframe>',

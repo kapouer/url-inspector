@@ -31,6 +31,7 @@
     "content-disposition": "^0.5.3",
     "dashdash": "^1.14.1",
     "debug": ">=2",
+    "entities": "^2.2.0",
     "iconv-lite": "^0.6.2",
     "luxon": "^1.25.0",
     "media-typer": "^0.3.0",
