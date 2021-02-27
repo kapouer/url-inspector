@@ -194,7 +194,7 @@ describe("remote suite", function suite() {
 		});
 	});
 	it("should follow 303 redirect and send cookies back", function(done) {
-		this.timeout(5000);
+		this.timeout(8000);
 		inspector('http://www.nytimes.com/2016/05/31/us/politics/donald-trump-hong-kong-riverside-south.html?_r=0', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('embed');

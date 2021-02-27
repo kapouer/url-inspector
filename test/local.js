@@ -81,12 +81,14 @@ describe("local suite", function suite() {
 			assert.deepStrictEqual(meta, {
 				type: 'video',
 				mime: 'text/html',
+				description: "Description text",
+				duration: '00:03:58',
 				size: 486,
 				title: 'Le Dauphin dauphin',
 				author: 'Thibaud Gayral',
 				html: '<iframe src="https://player.vimeo.com/video/55084640?app_id=122963" width="478" height="204" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Le Dauphin dauphin"></iframe>',
-				width: '478',
-				height: '204',
+				width: 478,
+				height: 204,
 				thumbnail: 'https://i.vimeocdn.com/video/439826901_295x166.jpg',
 				site: 'localhost',
 				ext: 'html'
