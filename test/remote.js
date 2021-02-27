@@ -77,6 +77,7 @@ describe("remote suite", function suite() {
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
 			expect(meta.title).to.be.ok();
+			expect(meta.duration).to.be('00:04:35');
 			expect(meta.mime).to.be('text/html; charset=utf-8');
 			expect(meta.source).to.be.ok();
 			expect(meta.source.indexOf('players.brightcove.net') > 0).to.be.ok();
