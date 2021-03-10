@@ -343,6 +343,8 @@ function normalize(obj) {
 	obj.width = normNum(obj.width);
 	obj.height = normNum(obj.height);
 
+	obj.keywords = normKeywords(obj);
+
 	// remove all empty keys
 	Object.keys(obj).forEach(function(key) {
 		const val = obj[key];
@@ -352,6 +354,17 @@ function normalize(obj) {
 	});
 
 	return obj;
+}
+
+function normKeywords({ title, keywords }) {
+	if (!keywords) return;
+	const list = [];
+	const titleList = (title || "").toLowerCase().split(/\s/g);
+	keywords.split(/[,\s]/g).forEach(str => {
+		str = str.toLowerCase().trim();
+		if (str.length && !list.includes(str) && !titleList.includes(str)) list.push(str);
+	});
+	return list;
 }
 
 function normDate(str) {

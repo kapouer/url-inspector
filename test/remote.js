@@ -230,6 +230,15 @@ describe("remote suite", function suite() {
 		});
 	});
 
+	it("should get keywords", function(done) {
+		this.timeout(5000);
+		inspector('https://i.f1g.fr/media/cms/616x347_crop/2021/03/10/975f688ae59c60ad216d30151defecbdb08730ec31f86e51c92bd51b87516648.jpg', function(err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.keywords.join(',')).to.be("parliament,politics,government,horizontal");
+			done();
+		});
+	});
+
 	it("should not fail on redirection", function(done) {
 		this.timeout(10000);
 		inspector('http://atag-europe.com/', function(err, meta) {

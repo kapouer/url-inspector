@@ -31,7 +31,8 @@ exports.media = function (obj, res, cb) {
 			datetimecreated: 'date',
 			datetimeoriginal: 'date',
 			referenceurl: 'reference',
-			'caption-abstract': 'description'
+			'caption-abstract': 'description',
+			keywords: 'keywords'
 		});
 
 		if (!obj.thumbnail && tags.Picture && tags.PictureMIMEType) {

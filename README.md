@@ -56,6 +56,9 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 * author
   *optional* credit, author (without the @ prefix and with _ replaced by spaces)
 
+* keywords
+  *optional* array of collected keywords (lowercased words that are not in title words).
+
 * size (number)
   *optional* Content-Length; discarded when type is embed
 

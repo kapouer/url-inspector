@@ -47,7 +47,8 @@ exports.html = function (obj, res, cb) {
 				'twitter:site': "site",
 				'twitter:type': "type",
 				'twitter:creator': "author",
-				'author': "author"
+				'author': "author",
+				'keywords': "keywords"
 			},
 			itemprop: {
 				name: "title",
