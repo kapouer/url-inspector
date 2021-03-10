@@ -1,9 +1,9 @@
 #!/usr/bin/node
 
-var dash = require('dashdash');
-var debug = require('debug')('url-inspector');
+const dash = require('dashdash');
+const debug = require('debug')('url-inspector');
 
-var parser = dash.createParser({options: [
+const parser = dash.createParser({options: [
 	{
 		names: ['help', 'h'],
 		type: 'bool',
@@ -16,7 +16,7 @@ var parser = dash.createParser({options: [
 	}
 ]});
 
-var opts;
+let opts;
 try {
 	opts = parser.parse(process.argv);
 } catch(e) {
@@ -24,15 +24,15 @@ try {
 	opts = {help: true};
 }
 
-var url = opts._args.pop();
+let url = opts._args.pop();
 
 if (opts.help || !url) {
-	var help = parser.help({includeEnv: true}).trimRight();
+	const help = parser.help({includeEnv: true}).trimRight();
 	console.log('usage: url-inspector [OPTIONS] <url>\n' + 'options:\n' + help);
 	process.exit(0);
 }
 
-var inspector = require('..');
+const inspector = require('..');
 
 opts.file = true;
 if (url.startsWith('./') || url.startsWith('/')) url = "file://" + url;

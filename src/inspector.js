@@ -22,11 +22,11 @@ function inspector(url, opts, cb) {
 	if (!opts) {
 		opts = {};
 	}
-	var obj = {
+	const obj = {
 		url: URL.format(URL.parse(url))
 	};
 
-	var urlObj = URL.parse(obj.url);
+	const urlObj = URL.parse(obj.url);
 	if (urlObj.protocol == "file:") {
 		if (!opts.file) {
 			// eslint-disable-next-line no-console
@@ -37,7 +37,7 @@ function inspector(url, opts, cb) {
 		urlObj.pathname = obj.url.substring(7);
 	}
 	urlObj.headers = {};
-	var oEmbedUrl = opts.noembed ? {} : supportsOEmbed(urlObj, opts.providers);
+	const oEmbedUrl = opts.noembed ? {} : supportsOEmbed(urlObj, opts.providers);
 
 	requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts, function (err, obj, tags) {
 		if (err) return cb(err);
@@ -50,7 +50,7 @@ function inspector(url, opts, cb) {
 
 		cb = sourceInspection(obj, opts, cb);
 
-		var urlFmt = URL.format(urlObj);
+		const urlFmt = URL.format(urlObj);
 		if (obj.thumbnail) {
 			obj.thumbnail = URL.resolve(urlFmt, obj.thumbnail);
 		}
@@ -65,7 +65,7 @@ function inspector(url, opts, cb) {
 		} else if (opts.nofavicon) {
 			cb(null, obj);
 		} else if (obj.ext == "html") {
-			var iconObj = {
+			const iconObj = {
 				hostname: urlObj.hostname,
 				port: urlObj.port,
 				protocol: urlObj.protocol,
@@ -77,7 +77,7 @@ function inspector(url, opts, cb) {
 				cb(null, obj);
 			});
 		} else {
-			var iobj = {
+			const iobj = {
 				onlyfavicon: true
 			};
 			if (obj.reference) {
@@ -86,7 +86,7 @@ function inspector(url, opts, cb) {
 				obj.site = urlObj.hostname;
 				delete obj.reference;
 			}
-			var urlObjRoot = {
+			const urlObjRoot = {
 				hostname: urlObj.hostname,
 				port: urlObj.port,
 				protocol: urlObj.protocol,
@@ -138,7 +138,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 
 function sourceInspection(obj, opts, cb) {
 	if (opts.nosource || !obj.source || obj.ext != "html" || obj.source == obj.url || /video|audio|image/.test(obj.type) == false) return cb;
-	var urlObj = URL.parse(obj.source);
+	const urlObj = URL.parse(obj.source);
 	if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return cb;
 	debug("source inspection", obj.mime, obj.type, obj.source);
 	return function(err, obj) {
@@ -162,12 +162,12 @@ function sourceInspection(obj, opts, cb) {
 }
 
 function findEndpoint(url, list) {
-	var endpoint;
+	let endpoint;
 	list.find(function(provider) {
 		provider.endpoints.find(function(point) {
 			if (!point.schemes) return;
 			if (point.schemes.find(function(scheme) {
-				var reg = scheme instanceof RegExp
+				const reg = scheme instanceof RegExp
 					? scheme
 					: new RegExp("^" + scheme.replace(/\*/g, ".*") + "$");
 				return reg.test(url);
@@ -181,8 +181,8 @@ function findEndpoint(url, list) {
 }
 
 function supportsOEmbed(urlObj, providers) {
-	var ret = {};
-	var url = urlObj.href;
+	const ret = {};
+	const url = urlObj.href;
 	if (typeof providers == "string") {
 		// try to require it
 		try {
@@ -192,7 +192,7 @@ function supportsOEmbed(urlObj, providers) {
 			console.error("url-inspector missing providers:", providers);
 		}
 	}
-	var endpoint = providers && findEndpoint(url, providers);
+	let endpoint = providers && findEndpoint(url, providers);
 	if (!endpoint) endpoint = findEndpoint(url, CustomOEmbedProviders);
 	if (!endpoint) endpoint = findEndpoint(url, OEmbedProviders);
 	if (!endpoint) {
@@ -201,20 +201,20 @@ function supportsOEmbed(urlObj, providers) {
 	if (endpoint.builder) ret.builder = endpoint.builder;
 	debug("Found oembed provider", endpoint);
 	if (typeof endpoint.redirect == "function") {
-		var redirection = endpoint.redirect(urlObj, ret);
+		const redirection = endpoint.redirect(urlObj, ret);
 		if (redirection) {
 			debug("provider makes a redirection");
 			return ret;
 		}
 	}
 	// request oembed endpoint
-	var formatted = false;
+	let formatted = false;
 	if (endpoint.url) {
-		var epUrl = endpoint.url.replace('{format}', function () {
+		const epUrl = endpoint.url.replace('{format}', function () {
 			formatted = true;
 			return 'json';
 		});
-		var epUrlObj = URL.parse(epUrl, true);
+		const epUrlObj = URL.parse(epUrl, true);
 		if (!formatted) epUrlObj.query.format = 'json';
 		epUrlObj.query.url = url;
 		delete epUrlObj.search;
@@ -245,9 +245,9 @@ function normalize(obj) {
 		}
 	}
 
-	var duree = obj.duration;
+	let duree = obj.duration;
 	if (obj.bitrate && !duree && obj.size) {
-		var rate = parseInt(obj.bitrate) * 1000 / 8;
+		const rate = parseInt(obj.bitrate) * 1000 / 8;
 		duree = Duration.fromObject({
 			seconds: parseInt(obj.size / rate)
 		});
@@ -278,7 +278,7 @@ function normalize(obj) {
 	if (obj.site) obj.site = normString(obj.site);
 	if (obj.author) obj.author = normString(obj.author);
 
-	var alt = encodeURI(obj.title);
+	const alt = encodeURI(obj.title);
 
 	if (!obj.source && obj.ext == "html") {
 		if (obj.type == "image") {
@@ -307,7 +307,7 @@ function normalize(obj) {
 	if (obj.embed) delete obj.embed;
 	if (obj.oembed) delete obj.oembed;
 	if (!obj.html) {
-		var src = obj.source || obj.url;
+		const src = obj.source || obj.url;
 		if (obj.type == "embed" || (obj.ext == "html" && ["audio", "video"].includes(obj.type))) {
 			obj.html = `<iframe src="${src}"></iframe>`;
 		} else if (obj.type == "image") {
@@ -345,8 +345,10 @@ function normalize(obj) {
 
 	// remove all empty keys
 	Object.keys(obj).forEach(function(key) {
-		var val = obj[key];
-		if (val == "" || val == null || (typeof val == 'number' && Number.isNaN(val))) delete obj[key];
+		const val = obj[key];
+		if (val == "" || val == null || (typeof val == 'number' && Number.isNaN(val))) {
+			delete obj[key];
+		}
 	});
 
 	return obj;
@@ -375,16 +377,6 @@ function normNum(str) {
 function normString(str) {
 	return decodeHTML(str.replace(/^@/, '').replace(/_/g, ' '));
 }
-
-
-
-
-
-
-
-
-
-
 
 function traverseTree(node, i, cb) {
 	if (cb === undefined && i !== null) {

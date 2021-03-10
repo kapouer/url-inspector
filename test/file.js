@@ -1,5 +1,5 @@
-var inspector = require('..');
-var expect = require('expect.js');
+const inspector = require('..');
+const expect = require('expect.js');
 
 describe("file suite", function suite() {
 	it("should inspect relative path", function(done) {

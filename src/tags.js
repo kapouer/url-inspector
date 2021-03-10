@@ -1,7 +1,7 @@
 module.exports = importTags;
 
 function importTags(tags, obj, map, priorities = {}, priority = 0) {
-	var val, tag, itag, key;
+	let val, tag, itag, key;
 	for (tag in tags) {
 		val = tags[tag];
 		if (!val) continue;

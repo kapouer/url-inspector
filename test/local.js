@@ -1,10 +1,10 @@
-var inspector = require('..');
-var expect = require('expect.js');
-var express = require('express');
-var assert = require('assert');
+const inspector = require('..');
+const expect = require('expect.js');
+const express = require('express');
+const assert = require('assert');
 
 describe("local suite", function suite() {
-	var app, server, host;
+	let app, server, host;
 	before(function () {
 		app = express();
 		server = app.listen();

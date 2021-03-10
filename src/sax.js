@@ -4,7 +4,7 @@ const importTags = require('./tags');
 
 exports.html = function (obj, res, cb) {
 	// collect tags
-	var selectors = {
+	const selectors = {
 		title: {
 			text: "title"
 		},
@@ -63,21 +63,21 @@ exports.html = function (obj, res, cb) {
 		}
 	};
 
-	var parser = new SAXParser();
-	var tags = {};
-	var priorities = {};
-	var curText, curKey, curPriority;
-	var curSchemaType, curSchemaLevel;
-	var firstSchemaType;
-	var curLevel = 0;
+	const parser = new SAXParser();
+	const tags = {};
+	const priorities = {};
+	let curText, curKey, curPriority;
+	let curSchemaType, curSchemaLevel;
+	let firstSchemaType;
+	let curLevel = 0;
 
 	parser.on('startTag', function ({ tagName, attrs, selfClosing }) {
-		var name = tagName.toLowerCase();
+		let name = tagName.toLowerCase();
 		if (name == "head") res.nolimit = true;
 		if (name == "meta" || name == "link") selfClosing = true;
 		if (!selfClosing) curLevel++;
-		var key, nkey, atts, val, curatt;
-		var selector = selectors[name];
+		let key, nkey, atts, val, curatt;
+		let selector = selectors[name];
 		if (selector && selector.text) {
 			key = selector.text;
 		} else {
@@ -116,7 +116,7 @@ exports.html = function (obj, res, cb) {
 			}
 		}
 		if (!key) return;
-		var mkey, priority = 1;
+		let mkey, priority = 1;
 		if (name == "meta") {
 			mkey = 'content';
 			priority = 3;
@@ -164,12 +164,12 @@ exports.html = function (obj, res, cb) {
 
 	res.once('end', finish);
 
-	var finished = false;
+	let finished = false;
 	function finish() {
 		if (finished) return;
 		finished = true;
 		parser.stop();
-		var type = mapType(tags.type);
+		const type = mapType(tags.type);
 		if (type) obj.type = type;
 		delete tags.type;
 		Object.assign(obj, tags);
@@ -180,15 +180,15 @@ exports.html = function (obj, res, cb) {
 };
 
 exports.svg = function (obj, res, cb) {
-	var parser = new SAXParser();
+	const parser = new SAXParser();
 	parser.on('startTag', function ({ tagName, attrs }) {
 		if (tagName.toLowerCase() != "svg") return;
 		obj.type = "image";
-		var box = attrs.find(function (att) {
+		const box = attrs.find(function (att) {
 			return att.name.toLowerCase() == "viewbox";
 		}).value;
 		if (!box) return cb();
-		var parts = box.split(/\s+/);
+		const parts = box.split(/\s+/);
 		if (parts.length == 4) {
 			obj.width = parseFloat(parts[2]);
 			obj.height = parseFloat(parts[3]);
@@ -199,7 +199,8 @@ exports.svg = function (obj, res, cb) {
 };
 
 function hashAttributes(list) {
-	var i, att, obj = {};
+	let i, att;
+	const obj = {};
 	for (i = 0; i < list.length; i++) {
 		att = list[i];
 		if (att.value) obj[att.name.toLowerCase()] = att.value;
@@ -210,12 +211,12 @@ function hashAttributes(list) {
 
 function importJsonLD(tags, text, priorities) {
 	try {
-		var obj = JSON.parse(text);
+		const obj = JSON.parse(text);
 		if (!Array.isArray(obj)) obj = [obj];
-		var ld = {};
+		let ld = {};
 		obj.forEach((item) => {
 			if (!item) return;
-			var type = mapType(item["@type"]);
+			const type = mapType(item["@type"]);
 			if (type) {
 				ld = item;
 				tags.type = type;

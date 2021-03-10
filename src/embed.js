@@ -4,7 +4,7 @@ const BufferList = require('bl');
 exports.embed = function (obj, res, cb) {
 	res.pipe(BufferList(function (err, data) {
 		if (err) return cb(err);
-		var tags;
+		let tags;
 		try {
 			tags = JSON.parse(data.toString());
 		} catch (ex) {

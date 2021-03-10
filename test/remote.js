@@ -1,5 +1,5 @@
-var inspector = require('..');
-var expect = require('expect.js');
+const inspector = require('..');
+const expect = require('expect.js');
 
 describe("remote suite", function suite() {
 	it("should return embeddable content at https://myspace.com/unefemmemariee/music/songs", function(done) {

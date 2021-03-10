@@ -3,9 +3,9 @@ const googlemaps = {
 	endpoints: [{
 		schemes: [/.*google\.[^/]+\/maps\/place\/.+/],
 		builder: function(urlObj, obj) {
-			var match = /.*google\.[^/]+\/maps\/place\/([\w+]*)\/.*/.exec(urlObj.href);
+			const match = /.*google\.[^/]+\/maps\/place\/([\w+]*)\/.*/.exec(urlObj.href);
 			if (!match || match.length != 2) return;
-			var place = encodeURIComponent(match[1]);
+			const place = encodeURIComponent(match[1]);
 			obj.type = "embed";
 			obj.html = `<iframe src="//maps.google.com/maps?t=m&q=${place}&output=embed"></iframe>`;
 		}
@@ -23,7 +23,7 @@ const youtube = {
 		url: 'https://www.youtube.com/oembed', // TODO ?maxwidth=1024&maxheight=1024
 		redirect: function(obj) {
 			if (obj.pathname == "/watch") return;
-			var videoId;
+			let videoId;
 			if (obj.pathname.startsWith("/embed/")) {
 				videoId = obj.pathname.split('/').pop();
 			} else if (obj.hostname == "youtu.be") {
