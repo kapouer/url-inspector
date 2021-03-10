@@ -54,7 +54,7 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   creation or modification date
 
 * author
-  credit, author (without the @ prefix and with _ replaced by spaces)
+  *optional* credit, author (without the @ prefix and with _ replaced by spaces)
 
 * size (number)
   *optional* Content-Length; discarded when type is embed
