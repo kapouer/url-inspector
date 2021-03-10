@@ -2,7 +2,7 @@
   "name": "url-inspector",
   "version": "2.10.2",
   "description": "Get metadata about any url",
-  "main": "lib/inspector.js",
+  "main": "src/inspector.js",
   "scripts": {
     "test": "mocha"
   },
