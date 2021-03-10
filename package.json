@@ -36,6 +36,7 @@
     "luxon": "^1.25.0",
     "media-typer": "^0.3.0",
     "mime": "^2.4.7",
+    "parse5": "^6.0.1",
     "parse5-sax-parser": "^6.0.1",
     "streat": "^0.3.0",
     "strong-data-uri": "^1.0.6",

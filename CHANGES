@@ -31,3 +31,7 @@ Version 2.1.0
 
 * providers option can be a path to a module
 
+Version 3.0.0
+-------------
+
+* _html_ does not contain `<script>`, instead a _script_ url is added

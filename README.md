@@ -45,6 +45,11 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   a canonical html representation of the full resource,
   depending on the type and mime, could be img, a, video, audio, iframe tag.
 
+* script
+  url of a script to install along with the html representation
+  Breaking change: used to be in the html representation, but that required
+  special handling of html to make it work.
+
 * date (YYYY-MD-DD format)
   creation or modification date
 
