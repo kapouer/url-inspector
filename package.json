@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@kapouer/oembed-providers": "^1.0.20200203",
-    "bl": "^4.0.3",
+    "bl": "^4.1.0",
     "content-disposition": "^0.5.3",
     "dashdash": "^1.14.1",
     "debug": ">=2",
@@ -35,7 +35,7 @@
     "iconv-lite": "^0.6.2",
     "luxon": "^1.25.0",
     "media-typer": "^0.3.0",
-    "mime": "^2.4.7",
+    "mime": "^2.5.2",
     "parse5": "^6.0.1",
     "parse5-sax-parser": "^6.0.1",
     "streat": "^0.3.0",
@@ -43,7 +43,7 @@
     "tough-cookie": "^4.0.0"
   },
   "devDependencies": {
-    "@kapouer/eslint-config": "^1.0.0",
+    "@kapouer/eslint-config": "^1.2.1",
     "expect.js": "^0.3.1",
     "express": "^4.16.3",
     "mocha": "^2.5.3"
