@@ -104,9 +104,9 @@ API
 ---
 
 ```js
-var inspector = require('url-inspector');
+const inspector = require('url-inspector');
 
-var opts = {
+const opts = {
  all: false, // return all available non-normalized metadata
  ua: "Mozilla/5.0", // some oembed providers might not answer otherwise
  nofavicon: false, // disable any favicon-related additional request
