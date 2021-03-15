@@ -213,9 +213,8 @@ function hashAttributes(list) {
 function importJsonLD(tags, text, priorities) {
 	try {
 		const obj = JSON.parse(text);
-		if (!Array.isArray(obj)) obj = [obj];
 		let ld = {};
-		obj.forEach((item) => {
+		(Array.isArray(obj) ? obj : [obj]).forEach((item) => {
 			if (!item) return;
 			const type = mapType(item["@type"]);
 			if (type) {
