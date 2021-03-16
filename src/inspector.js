@@ -80,16 +80,17 @@ function inspector(url, opts, cb) {
 			const iobj = {
 				onlyfavicon: true
 			};
+			let urlRef = urlObj;
 			if (obj.reference) {
 				// another url for the same object
-				urlObj = URL.parse(obj.reference);
-				obj.site = urlObj.hostname;
+				urlRef = URL.parse(obj.reference);
+				obj.site = urlRef.hostname;
 				delete obj.reference;
 			}
 			const urlObjRoot = {
-				hostname: urlObj.hostname,
-				port: urlObj.port,
-				protocol: urlObj.protocol,
+				hostname: urlRef.hostname,
+				port: urlRef.port,
+				protocol: urlRef.protocol,
 				headers: Object.assign({}, urlObj.headers)
 			};
 			debug("find favicon", urlObjRoot);
