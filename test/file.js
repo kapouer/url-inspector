@@ -8,7 +8,7 @@ describe("file suite", function suite() {
 			expect(meta.type).to.be("audio");
 			expect(meta.ext).to.be("html");
 			expect(meta.html).to.be.ok();
-			expect(meta.keywords.join(', ')).to.be('unefemmemariee, music, stream, songs, myspace, online, listen, free, streaming, new, song, release, latest');
+			expect(meta.keywords.join(', ')).to.be('unefemmemariee, music, streaming, songs, myspace, online, listen, free, release, latest');
 			expect(meta.size).to.be(108482);
 			expect(meta.html.startsWith('<iframe')).to.be.ok();
 			done();

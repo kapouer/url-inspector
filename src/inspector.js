@@ -363,9 +363,26 @@ function normKeywords({ title, keywords }) {
 	const titleList = (title || "").toLowerCase().split(/\s/g);
 	keywords.split(/[,\s]/g).forEach(str => {
 		str = str.toLowerCase().trim();
-		if (str.length && !list.includes(str) && !titleList.includes(str)) list.push(str);
+		const num = Number.parseInt(str);
+		if (!Number.isNaN(num) && num.toString() == str) return;
+		if (str.length >= 4 && !titleList.includes(str)) {
+			subPush(list, str);
+		}
 	});
 	return list;
+}
+
+function subPush(list, str) {
+	let found = false;
+	list.forEach((item, i) => {
+		if (item.includes(str)) {
+			found = true;
+		} else if (str.includes(item)) {
+			found = true;
+			list[i] = str;
+		}
+	});
+	if (!found) list.push(str);
 }
 
 function normDate(str) {
