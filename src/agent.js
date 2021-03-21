@@ -224,6 +224,8 @@ function mime2type(obj) {
 		type = obj.type;
 	} else if (['x-xz', 'x-gtar', 'x-gtar-compressed', 'x-tar', 'gzip', 'zip'].indexOf(obj.subtype) >= 0) {
 		type = 'archive';
+	} else if (obj.subtype == "json") {
+		type = 'embed';
 	}
 	return type;
 }
