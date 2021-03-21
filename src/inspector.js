@@ -131,7 +131,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 			}
 		}
 		if (typeof embedObj.builder == "function") {
-			embedObj.builder(urlObj, robj);
+			embedObj.builder(urlObj, robj, tags);
 		}
 		cb(null, robj, tags);
 	});
