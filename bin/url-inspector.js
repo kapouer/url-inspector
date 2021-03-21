@@ -13,6 +13,11 @@ const parser = dash.createParser({options: [
 		names: ['all'],
 		type: 'bool',
 		help: 'enable all metadata'
+	},
+	{
+		names: ['providers', 'p'],
+		type: 'string',
+		help: 'Path to js file exporting providers list'
 	}
 ]});
 
@@ -36,6 +41,10 @@ const inspector = require('..');
 
 opts.file = true;
 if (url.startsWith('./') || url.startsWith('/')) url = "file://" + url;
+
+if (opts.providers) {
+	opts.providers = require(opts.providers);
+}
 
 inspector(url, opts, function(err, meta) {
 	if (err) {
