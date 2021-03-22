@@ -359,9 +359,15 @@ function normalize(obj) {
 
 function normKeywords({ title, keywords }) {
 	if (!keywords) return;
+	if (typeof keywords == "string") {
+		keywords = keywords.split(/[,\s]/g);
+	} else if (!Array.isArray(keywords)) {
+		console.error("Expected keywords array", title, keywords);
+		return;
+	}
 	const list = [];
 	const titleList = (title || "").toLowerCase().split(/\s/g);
-	keywords.split(/[,\s]/g).forEach(str => {
+	keywords.forEach(str => {
 		str = str.toLowerCase().trim();
 		const num = Number.parseInt(str);
 		if (!Number.isNaN(num) && num.toString() == str) return;
