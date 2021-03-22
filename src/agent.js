@@ -139,7 +139,7 @@ exports.request = function (urlObj, obj, cb) {
 			const fetchEmbed = !obj.noembed && obj.oembed && (!obj.thumbnail || !obj.html);
 			delete obj.noembed;
 			let canon = obj.canonical;
-			if (canon) {
+			if (canon && urlObj.protocol != "file:") {
 				canon = URL.parse(canon);
 				canon.redirects = (urlObj.redirects || 0) + 1;
 			}
