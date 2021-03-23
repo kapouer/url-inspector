@@ -212,15 +212,24 @@ function hashAttributes(list) {
 
 function importJsonLD(tags, text, priorities) {
 	try {
-		const obj = JSON.parse(text);
+		const obj = typeof text == "string" ? JSON.parse(text) : text;
 		let ld = {};
 		(Array.isArray(obj) ? obj : [obj]).forEach((item) => {
 			if (!item) return;
-			const type = mapType(item["@type"]);
-			if (type) {
+			const type = item["@type"];
+			if (!type) return;
+			const knownType = mapType(type);
+			if (knownType) {
 				ld = item;
-				tags.type = type;
+				tags.type = knownType;
 				delete ld["@type"];
+			} else {
+				for (let key in item) {
+					const val = item[key];
+					if (typeof val == "object" && val["@type"]) {
+						importJsonLD(tags, val, priorities);
+					}
+				}
 			}
 		});
 		importTags(ld, tags, {
@@ -229,7 +238,9 @@ function importJsonLD(tags, text, priorities) {
 			embedurl: "source",
 			thumbnailurl: "thumbnail",
 			datepublished: "date",
+			uploaddate: "date",
 			author: { name: "author" },
+			publisher: { name: "author" },
 			duration: "duration"
 		}, priorities, 4);
 	} catch (ex) {
