@@ -27,7 +27,6 @@ describe("local suite", function suite() {
 			else if (req.path == "/video") {
 				return res.sendStatus(403);
 			}
-
 			next();
 		}, express.static(__dirname + '/fixtures'));
 	});
@@ -50,6 +49,25 @@ describe("local suite", function suite() {
 			done();
 		});
 	});
+	it("should not crash with svg", function (done) {
+		inspector(`${host}/test.svg`, function (err, meta) {
+			expect(err).to.not.be.ok();
+			done();
+		});
+	});
+
+	it("should correctly parse json-ld to get embedUrl", function (done) {
+		this.timeout(10000);
+		inspector(`${host}/jsonld.html`, function (err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.type).to.be('video');
+			expect(meta.date).to.be.ok();
+			expect(meta.duration).to.be.ok();
+			expect(meta.author).to.be.ok();
+			done();
+		});
+	});
+
 	it("should return embeddable content", function (done) {
 		inspector(`${host}/songs.html`, function (err, meta) {
 			expect(err).to.not.be.ok();
@@ -60,13 +78,6 @@ describe("local suite", function suite() {
 			done();
 		});
 	});
-	it("should not crash with svg", function (done) {
-		inspector(`${host}/test.svg`, function (err, meta) {
-			expect(err).to.not.be.ok();
-			done();
-		});
-	});
-
 	it("should not crash when oembed discovery fails", function (done) {
 		inspector(`${host}/video`, {
 			providers: [{
