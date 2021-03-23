@@ -139,11 +139,12 @@ exports.request = function (urlObj, obj, cb) {
 			const fetchEmbed = !obj.noembed && obj.oembed && (!obj.thumbnail || !obj.html);
 			delete obj.noembed;
 			let canon = obj.canonical;
-			if (canon && urlObj.protocol != "file:") {
+			if (canon && urlObj.protocol != "file:" && canon != obj.source && obj.nocanonical !== true) {
 				canon = URL.parse(canon);
 				canon.redirects = (urlObj.redirects || 0) + 1;
 			}
 			delete obj.canonical;
+			delete obj.nocanonical;
 			if (fetchEmbed) {
 				obj.type = "embed";
 				// prevent loops

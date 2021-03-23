@@ -117,6 +117,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 		obj.mime = "text/html";
 	}
 	if (opts.noembed) obj.noembed = true;
+	if (opts.nocanonical) obj.nocanonical = true;
 	if (opts.error) obj.error = opts.error;
 	urlObj.headers = Object.assign({
 		"User-Agent": opts.ua || "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
@@ -153,6 +154,7 @@ function sourceInspection(obj, opts, cb) {
 		opts = Object.assign({}, opts);
 		if (obj.icon) opts.nofavicon = true;
 		opts.nosource = true;
+		opts.nocanonical = true;
 		inspector(obj.source, opts, function(err, sourceObj) {
 			if (err) {
 				debug("Error fetching subsource", err);
