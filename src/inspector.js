@@ -53,6 +53,7 @@ function inspector(url, opts, cb) {
 		const urlFmt = URL.format(urlObj);
 		if (obj.thumbnail) {
 			obj.thumbnail = URL.resolve(urlFmt, obj.thumbnail);
+			cb = lastResortDimensionsFromThumbnail(obj, cb);
 		}
 
 		normalize(obj);
@@ -165,6 +166,31 @@ function sourceInspection(obj, opts, cb) {
 			['mime', 'ext', 'type', 'size', 'width', 'height', 'duration'].forEach(function(key) {
 				if (sourceObj[key]) obj[key] = sourceObj[key];
 			});
+			cb(null, obj);
+		});
+	};
+}
+
+function lastResortDimensionsFromThumbnail(obj, cb) {
+	return function (err, obj) {
+		if (err) return cb(err);
+		if (!obj.thumbnail || obj.width && obj.height || obj.type != "video") {
+			return cb(null, obj);
+		}
+		inspector(obj.thumbnail, {
+			nofavicon: true,
+			nocanonical: true,
+			nosource: true
+		}, function (err, sourceObj) {
+			if (err) {
+				debug("Error fetching thumbnail", obj.thumbnail, err);
+				delete obj.thumbnail;
+				return cb(null, obj);
+			}
+			if (sourceObj.width && sourceObj.height) {
+				obj.width = sourceObj.width;
+				obj.height = sourceObj.height;
+			}
 			cb(null, obj);
 		});
 	};

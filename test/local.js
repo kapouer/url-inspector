@@ -56,12 +56,14 @@ describe("local suite", function suite() {
 		});
 	});
 
-	it("should correctly parse json-ld to get embedUrl", function (done) {
+	it("should correctly parse json-ld to get embedUrl and inspect thumbnail to get dimensions of video", function (done) {
 		this.timeout(10000);
 		inspector(`${host}/jsonld.html`, function (err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('video');
 			expect(meta.date).to.be.ok();
+			expect(meta.width).to.be.ok();
+			expect(meta.height).to.be.ok();
 			expect(meta.duration).to.be.ok();
 			expect(meta.author).to.be.ok();
 			done();
