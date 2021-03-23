@@ -62,45 +62,51 @@ function inspector(url, opts, cb) {
 		if (obj.icon) {
 			obj.icon = URL.resolve(urlFmt, obj.icon);
 			cb(null, obj);
-		} else if (opts.nofavicon) {
+		}	else if (opts.nofavicon) {
 			cb(null, obj);
-		} else if (obj.ext == "html") {
-			const iconObj = {
-				hostname: urlObj.hostname,
-				port: urlObj.port,
-				protocol: urlObj.protocol,
-				pathname: '/favicon.ico',
-				headers: Object.assign({}, urlObj.headers)
-			};
-			agent.exists(iconObj, function(yes) {
-				if (yes) obj.icon = URL.format(iconObj);
-				cb(null, obj);
-			});
 		} else {
-			const iobj = {
-				onlyfavicon: true
-			};
-			let urlRef = urlObj;
-			if (obj.reference) {
-				// another url for the same object
-				urlRef = URL.parse(obj.reference);
-				obj.site = urlRef.hostname;
-				delete obj.reference;
-			}
-			const urlObjRoot = {
-				hostname: urlRef.hostname,
-				port: urlRef.port,
-				protocol: urlRef.protocol,
-				headers: Object.assign({}, urlObj.headers)
-			};
-			debug("find favicon", urlObjRoot);
-			agent.request(urlObjRoot, iobj, function(err) {
-				if (err) debug("favicon not found", err);
-				if (iobj.icon) obj.icon = URL.resolve(URL.format(urlObjRoot), iobj.icon);
-				cb(null, obj);
-			});
+			guessIcon(urlObj, obj, cb);
 		}
 	});
+}
+
+function guessIcon(urlObj, obj, cb) {
+	if (obj.ext == "html") {
+		const iconObj = {
+			hostname: urlObj.hostname,
+			port: urlObj.port,
+			protocol: urlObj.protocol,
+			pathname: '/favicon.ico',
+			headers: Object.assign({}, urlObj.headers)
+		};
+		agent.exists(iconObj, function(yes) {
+			if (yes) obj.icon = URL.format(iconObj);
+			cb(null, obj);
+		});
+	} else {
+		const iobj = {
+			onlyfavicon: true
+		};
+		let urlRef = urlObj;
+		if (obj.reference) {
+			// another url for the same object
+			urlRef = URL.parse(obj.reference);
+			obj.site = urlRef.hostname;
+			delete obj.reference;
+		}
+		const urlObjRoot = {
+			hostname: urlRef.hostname,
+			port: urlRef.port,
+			protocol: urlRef.protocol,
+			headers: Object.assign({}, urlObj.headers)
+		};
+		debug("find favicon", urlObjRoot);
+		agent.request(urlObjRoot, iobj, function(err) {
+			if (err) debug("favicon not found", err);
+			if (iobj.icon) obj.icon = URL.resolve(URL.format(urlObjRoot), iobj.icon);
+			cb(null, obj);
+		});
+	}
 }
 
 function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
