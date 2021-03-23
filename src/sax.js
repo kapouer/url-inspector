@@ -162,10 +162,12 @@ exports.html = function (obj, res, cb) {
 		curKey = null;
 	});
 
-
-	res.once('end', finish);
+	res.once('close', finish);
+	res.once('aborted', finish);
+	res.once('finish', finish);
 
 	let finished = false;
+
 	function finish() {
 		if (finished) return;
 		finished = true;
