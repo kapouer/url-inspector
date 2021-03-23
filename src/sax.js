@@ -89,7 +89,7 @@ exports.html = function (obj, res, cb) {
 					debug("ignoring lower level schema", curSchemaType, curSchemaLevel, curLevel);
 					return;
 				}
-				if (/\/.*(Action|Event|Page|Site|Type|Status|Audience)$/.test(val)) return;
+				if (/\/.*(Action|Event|Page|Site|Type|Status|Audience|List|ListItem)$/.test(val)) return;
 				debug("schema type", val);
 				// the page can declares several itemtype
 				// the order in which they appear is important
