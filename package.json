@@ -33,7 +33,7 @@
     "debug": ">=2",
     "entities": "^2.2.0",
     "iconv-lite": "^0.6.2",
-    "luxon": "^1.25.0",
+    "luxon": "^1.26.0",
     "media-typer": "^0.3.0",
     "mime": "^2.5.2",
     "parse5": "^6.0.1",
