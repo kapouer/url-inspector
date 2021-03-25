@@ -52,6 +52,7 @@ function inspector(url, opts, cb) {
 
 		const urlFmt = URL.format(urlObj);
 		if (obj.thumbnail) {
+			if (Array.isArray(obj.thumbnail)) obj.thumbnail = obj.thumbnail[0];
 			obj.thumbnail = URL.resolve(urlFmt, obj.thumbnail);
 			cb = lastResortDimensionsFromThumbnail(obj, cb);
 		}

@@ -80,6 +80,19 @@ describe("local suite", function suite() {
 			done();
 		});
 	});
+
+	it("should fetch thumbnailUrl from nytimes jsonld", function (done) {
+		inspector(`${host}/nytimes.html`, function (err, meta) {
+			expect(err).to.not.be.ok();
+			expect(meta.thumbnail).to.be.ok();
+			expect(meta.type).to.be("video");
+			expect(meta.ext).to.be("html");
+			expect(meta.html).to.be.ok();
+			expect(meta.html.startsWith('<iframe')).to.be.ok();
+			done();
+		});
+	});
+
 	it("should not crash when oembed discovery fails", function (done) {
 		inspector(`${host}/video`, {
 			providers: [{

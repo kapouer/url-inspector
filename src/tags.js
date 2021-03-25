@@ -21,7 +21,7 @@ function importTags(tags, obj, map, priorities = {}, priority = 0) {
 		if (list.length) {
 			if (!priorities[key] || priorities[key] < priority) {
 				priorities[key] = priority;
-				obj[key] = list.join(', ');
+				obj[key] = list.length == 1 ? list[0] : list;
 			}
 		}
 	}
