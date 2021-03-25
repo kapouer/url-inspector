@@ -63,7 +63,7 @@ function inspector(url, opts, cb) {
 		if (obj.icon) {
 			obj.icon = URL.resolve(urlFmt, obj.icon);
 			cb(null, obj);
-		}	else if (opts.nofavicon) {
+		} else if (opts.nofavicon) {
 			cb(null, obj);
 		} else {
 			guessIcon(urlObj, obj, cb);
@@ -80,7 +80,7 @@ function guessIcon(urlObj, obj, cb) {
 			pathname: '/favicon.ico',
 			headers: Object.assign({}, urlObj.headers)
 		};
-		agent.exists(iconObj, function(yes) {
+		agent.exists(iconObj, function (yes) {
 			if (yes) obj.icon = URL.format(iconObj);
 			cb(null, obj);
 		});
@@ -102,7 +102,7 @@ function guessIcon(urlObj, obj, cb) {
 			headers: Object.assign({}, urlObj.headers)
 		};
 		debug("find favicon", urlObjRoot);
-		agent.request(urlObjRoot, iobj, function(err) {
+		agent.request(urlObjRoot, iobj, function (err) {
 			if (err) debug("favicon not found", err);
 			if (iobj.icon) obj.icon = URL.resolve(URL.format(urlObjRoot), iobj.icon);
 			cb(null, obj);
@@ -150,20 +150,20 @@ function sourceInspection(obj, opts, cb) {
 	const urlObj = URL.parse(obj.source);
 	if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return cb;
 	debug("source inspection", obj.mime, obj.type, obj.source);
-	return function(err, obj) {
+	return function (err, obj) {
 		if (err) return cb(err, obj);
 		opts = Object.assign({}, opts);
 		if (obj.icon) opts.nofavicon = true;
 		opts.nosource = true;
 		opts.nocanonical = true;
-		inspector(obj.source, opts, function(err, sourceObj) {
+		inspector(obj.source, opts, function (err, sourceObj) {
 			if (err) {
 				debug("Error fetching subsource", err);
 				return cb(null, obj);
 			}
 			if (sourceObj.type != obj.type) return cb(null, obj);
 			obj.source = sourceObj.url;
-			['mime', 'ext', 'type', 'size', 'width', 'height', 'duration'].forEach(function(key) {
+			['mime', 'ext', 'type', 'size', 'width', 'height', 'duration'].forEach(function (key) {
 				if (sourceObj[key]) obj[key] = sourceObj[key];
 			});
 			cb(null, obj);
@@ -198,10 +198,10 @@ function lastResortDimensionsFromThumbnail(obj, cb) {
 
 function findEndpoint(url, list) {
 	let endpoint;
-	list.find(function(provider) {
-		provider.endpoints.find(function(point) {
+	list.find(function (provider) {
+		provider.endpoints.find(function (point) {
 			if (!point.schemes) return;
-			if (point.schemes.find(function(scheme) {
+			if (point.schemes.find(function (scheme) {
 				const reg = scheme instanceof RegExp
 					? scheme
 					: new RegExp("^" + scheme.replace(/\*/g, ".*") + "$");
@@ -222,7 +222,7 @@ function supportsOEmbed(urlObj, providers) {
 		// try to require it
 		try {
 			providers = require(providers);
-		} catch(ex) {
+		} catch (ex) {
 			// eslint-disable-next-line no-console
 			console.error("url-inspector missing providers:", providers);
 		}
@@ -271,12 +271,12 @@ function normalize(obj) {
 	if (obj.ext) {
 		obj.ext = obj.ext.toLowerCase();
 		switch (obj.ext) {
-		case "jpeg":
-			obj.ext = "jpg";
-			break;
-		case "mpga":
-			obj.ext = "mp3";
-			break;
+			case "jpeg":
+				obj.ext = "jpg";
+				break;
+			case "mpga":
+				obj.ext = "mp3";
+				break;
 		}
 	}
 
@@ -381,7 +381,7 @@ function normalize(obj) {
 	obj.keywords = normKeywords(obj);
 
 	// remove all empty keys
-	Object.keys(obj).forEach(function(key) {
+	Object.keys(obj).forEach(function (key) {
 		const val = obj[key];
 		if (val == "" || val == null || (typeof val == 'number' && Number.isNaN(val))) {
 			delete obj[key];
