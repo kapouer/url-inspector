@@ -71,7 +71,7 @@ describe("remote suite", function suite() {
 		});
 	});
 	it("should support json+ld", function(done) {
-		this.timeout(5000);
+		this.timeout(10000);
 		inspector('https://video.lefigaro.fr/figaro/video/presidentielle-americaine-peut-on-croire-les-sondages-cette-fois-ci/', function(err, meta) {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('video');
