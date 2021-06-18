@@ -34,7 +34,7 @@ try {
 	opts = {help: true};
 }
 
-let url = opts._args.pop();
+let url = opts._args && opts._args.pop();
 
 if (opts.help || !url) {
 	const help = parser.help({includeEnv: true}).trimRight();
