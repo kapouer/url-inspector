@@ -18,6 +18,11 @@ const parser = dash.createParser({options: [
 		names: ['providers', 'p'],
 		type: 'string',
 		help: 'Path to js file exporting providers list'
+	},
+	{
+		names: ['ua'],
+		type: 'string',
+		help: 'Custom User-Agent'
 	}
 ]});
 
