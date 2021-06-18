@@ -2,7 +2,7 @@ const googlemaps = {
 	provider_name: "maps.google.com",
 	endpoints: [{
 		schemes: [/.*google\.[^/]+\/maps\/place\/.+/],
-		builder: function(urlObj, obj) {
+		builder: function (urlObj, obj) {
 			const match = /.*google\.[^/]+\/maps\/place\/([\w+]*)\/.*/.exec(urlObj.href);
 			if (!match || match.length != 2) return;
 			const place = encodeURIComponent(match[1]);
@@ -21,7 +21,7 @@ const youtube = {
 			'https://youtu.be/*'
 		],
 		url: 'https://www.youtube.com/oembed', // TODO ?maxwidth=1024&maxheight=1024
-		redirect: function(obj) {
+		redirect: function (obj) {
 			if (obj.pathname == "/watch") return;
 			let videoId;
 			if (obj.pathname.startsWith("/embed/")) {
@@ -54,7 +54,7 @@ const twitter = {
 				if (!Number.isNaN(date.getTime())) obj.date = date.toISOString();
 			}
 		},
-		redirect: function(obj) {
+		redirect: function (obj) {
 			return true;
 		}
 	}]
