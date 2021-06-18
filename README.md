@@ -43,7 +43,7 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 
 * html
   a canonical html representation of the full resource,
-  depending on the type and mime, could be img, a, video, audio, iframe tag.
+  depending on the type and mime, could be an image, anchor, video, audio, or iframe.
 
 * script
   url of a script to install along with the html representation
@@ -106,6 +106,7 @@ API
 ```js
 const inspector = require('url-inspector');
 
+// options and their defaults
 const opts = {
  all: false, // return all available non-normalized metadata
  ua: "Mozilla/5.0", // some oembed providers might not answer otherwise
@@ -119,10 +120,10 @@ const opts = {
     // can see current obj and override arbitrary props
     obj.embed = "custom embed url";
    },
-      redirect(urlObj, ret) {
-        // can change inspected url
-        urlObj.path = "/another/path";
-      }
+   redirect(urlObj, ret) {
+    // can change inspected url
+    urlObj.path = "/another/path";
+   }
   }]
  }],
  // new in version 2.3.0
