@@ -147,6 +147,8 @@ inspector-url <url>
 inspector-url <filepath>
 ```
 
+Some options are available through cli, like `--ua` to test user agents.
+
 Low resource usage
 ------------------
 
