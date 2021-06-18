@@ -122,7 +122,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	if (opts.nocanonical) obj.nocanonical = true;
 	if (opts.error) obj.error = opts.error;
 	urlObj.headers = Object.assign({
-		"User-Agent": opts.ua || "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+		"User-Agent": urlObj.ua || opts.ua || "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
 		"Accept-Encoding": "identity",
 		"Accept": "*/*"
 	}, urlObj.headers);

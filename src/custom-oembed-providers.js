@@ -36,6 +36,7 @@ const youtube = {
 			delete obj.query;
 			obj.path = "/watch?v=" + encodeURIComponent(videoId);
 			obj.hostname = "www.youtube.com";
+			obj.ua = "AdsBot-Google";
 			return true;
 		}
 	}]
