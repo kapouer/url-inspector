@@ -20,6 +20,7 @@ const youtube = {
 			'https://*.youtube.com/embed/*',
 			'https://youtu.be/*'
 		],
+		ua: "AdsBot-Google",
 		url: 'https://www.youtube.com/oembed', // TODO ?maxwidth=1024&maxheight=1024
 		redirect: function (obj) {
 			if (obj.pathname == "/watch") return;
@@ -36,7 +37,6 @@ const youtube = {
 			delete obj.query;
 			obj.path = "/watch?v=" + encodeURIComponent(videoId);
 			obj.hostname = "www.youtube.com";
-			obj.ua = "AdsBot-Google";
 			return true;
 		}
 	}]

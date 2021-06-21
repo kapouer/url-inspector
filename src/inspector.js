@@ -122,7 +122,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	if (opts.nocanonical) obj.nocanonical = true;
 	if (opts.error) obj.error = opts.error;
 	urlObj.headers = Object.assign({
-		"User-Agent": urlObj.ua || opts.ua || "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
+		"User-Agent": embedObj.ua || opts.ua || "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)",
 		"Accept-Encoding": "identity",
 		"Accept": "*/*"
 	}, urlObj.headers);
@@ -236,6 +236,7 @@ function supportsOEmbed(urlObj, providers) {
 	}
 	if (endpoint.builder) ret.builder = endpoint.builder;
 	debug("Found oembed provider", endpoint);
+	if (endpoint.ua) ret.ua = endpoint.ua;
 	if (typeof endpoint.redirect == "function") {
 		const redirection = endpoint.redirect(urlObj, ret);
 		if (redirection) {
