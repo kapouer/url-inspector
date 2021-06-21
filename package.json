@@ -48,6 +48,7 @@
     "express": "^4.16.3",
     "mocha": "^2.5.3"
   },
+  "files": ["bin/*", "src/*"],
   "eslintConfig": {
     "extends": "@kapouer/eslint-config",
     "overrides": [
