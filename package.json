@@ -1,6 +1,6 @@
 {
   "name": "url-inspector",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "description": "Get metadata about any url",
   "main": "src/inspector.js",
   "scripts": {
@@ -48,7 +48,10 @@
     "express": "^4.16.3",
     "mocha": "^2.5.3"
   },
-  "files": ["bin/*", "src/*"],
+  "files": [
+    "bin/*",
+    "src/*"
+  ],
   "eslintConfig": {
     "extends": "@kapouer/eslint-config",
     "overrides": [
