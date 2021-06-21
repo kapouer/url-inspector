@@ -16,6 +16,11 @@ const youtube = {
 	provider_name: "youtube.com",
 	endpoints: [{
 		schemes: [
+			'https://*.youtube.com/watch\\?*'
+		],
+		ua: "AdsBot-Google"
+	}, {
+		schemes: [
 			'https://*.youtube.com/v/*',
 			'https://*.youtube.com/embed/*',
 			'https://youtu.be/*'
