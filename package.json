@@ -26,8 +26,8 @@
     "url": "https://github.com/kapouer/url-inspector/issues"
   },
   "dependencies": {
-    "@kapouer/oembed-providers": "^1.0.20200203",
     "bl": "^4.1.0",
+    "@kapouer/oembed-providers": "^1.0.20210622",
     "content-disposition": "^0.5.3",
     "dashdash": "^1.14.1",
     "debug": ">=2",
