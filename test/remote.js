@@ -1,10 +1,10 @@
 const inspector = require('..');
 const expect = require('expect.js');
 
-describe("remote suite", function suite() {
+describe("remote suite", () => {
 	it("should return embeddable content at https://myspace.com/unefemmemariee/music/songs", function(done) {
 		this.timeout(5000);
-		inspector('https://myspace.com/unefemmemariee/music/songs', function(err, meta) {
+		inspector('https://myspace.com/unefemmemariee/music/songs', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be("audio");
 			expect(meta.ext).to.be("html");
@@ -15,7 +15,7 @@ describe("remote suite", function suite() {
 	});
 	it("should inspect large file without downloading it entirely", function(done) {
 		this.timeout(5000);
-		inspector('https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.3.3.tar.xz', function(err, meta) {
+		inspector('https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.3.3.tar.xz', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.title).to.be.ok();
 			expect(meta.size).to.be.greaterThan(80000000);
@@ -26,7 +26,7 @@ describe("remote suite", function suite() {
 	});
 	it("should return meta with width and height", function(done) {
 		this.timeout(5000);
-		inspector('https://upload.wikimedia.org/wikipedia/commons/b/bd/1110_desktop_visual.jpg', function(err, meta) {
+		inspector('https://upload.wikimedia.org/wikipedia/commons/b/bd/1110_desktop_visual.jpg', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('image');
 			expect(meta.ext).to.be('jpg');
@@ -41,7 +41,7 @@ describe("remote suite", function suite() {
 
 	it("should return meta with thumbnail for a youtube video", function(done) {
 		this.timeout(5000);
-		inspector('https://www.youtube.com/watch?v=CtP8VABF5pk', function(err, meta) {
+		inspector('https://www.youtube.com/watch?v=CtP8VABF5pk', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
@@ -56,7 +56,7 @@ describe("remote suite", function suite() {
 	});
 	it("should return meta with thumbnail for a figaro article", function(done) {
 		this.timeout(5000);
-		inspector('http://www.lefigaro.fr/actualite-france/2016/02/07/01016-20160207ARTFIG00183-accident-de-bretigny-ce-que-la-sncf-aurait-prefere-cacher-a-la-justice.php', function(err, meta) {
+		inspector('http://www.lefigaro.fr/actualite-france/2016/02/07/01016-20160207ARTFIG00183-accident-de-bretigny-ce-que-la-sncf-aurait-prefere-cacher-a-la-justice.php', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('link');
 			expect(meta.thumbnail).to.be.ok();
@@ -72,7 +72,7 @@ describe("remote suite", function suite() {
 	});
 	it("should support json+ld", function(done) {
 		this.timeout(10000);
-		inspector('https://video.lefigaro.fr/figaro/video/presidentielle-americaine-peut-on-croire-les-sondages-cette-fois-ci/', function(err, meta) {
+		inspector('https://video.lefigaro.fr/figaro/video/presidentielle-americaine-peut-on-croire-les-sondages-cette-fois-ci/', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
@@ -90,7 +90,7 @@ describe("remote suite", function suite() {
 	});
 	it("should support json+ld test 2", function(done) {
 		this.timeout(5000);
-		inspector('https://www.lefigaro.fr/politique/presidentielle-2022-la-classe-politique-s-oppose-majoritairement-au-vote-par-anticipation-20210217', function(err, meta) {
+		inspector('https://www.lefigaro.fr/politique/presidentielle-2022-la-classe-politique-s-oppose-majoritairement-au-vote-par-anticipation-20210217', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('link');
 			expect(meta.thumbnail).to.be.ok();
@@ -106,7 +106,7 @@ describe("remote suite", function suite() {
 	});
 	it("should just work with github.com", function(done) {
 		this.timeout(5000);
-		inspector('https://github.com/kapouer/url-inspector', function(err, meta) {
+		inspector('https://github.com/kapouer/url-inspector', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('link');
 			expect(meta.title).to.be.ok();
@@ -116,7 +116,7 @@ describe("remote suite", function suite() {
 	});
 	it("should error out with a message", function(done) {
 		this.timeout(5000);
-		inspector('https://ubnhiryuklu.tar/ctalo', function(err, meta) {
+		inspector('https://ubnhiryuklu.tar/ctalo', (err, meta) => {
 			expect(err).to.be.ok();
 			expect(meta).to.not.be.ok();
 			done();
@@ -124,7 +124,7 @@ describe("remote suite", function suite() {
 	});
 	it("should error out with a 404", function(done) {
 		this.timeout(5000);
-		inspector('https://google.com/ctalo', function(err, meta) {
+		inspector('https://google.com/ctalo', (err, meta) => {
 			expect(err).to.be(404);
 			expect(meta).to.not.be.ok();
 			done();
@@ -132,7 +132,7 @@ describe("remote suite", function suite() {
 	});
 	it("should redirect properly", function(done) {
 		this.timeout(5000);
-		inspector('https://github.com/Stuk/jszip/archive/master.zip', function(err, meta) {
+		inspector('https://github.com/Stuk/jszip/archive/master.zip', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('archive');
 			expect(meta.title).to.be.ok();
@@ -153,7 +153,7 @@ describe("remote suite", function suite() {
 	*/
 	it("should change type if schema has embed", function(done) {
 		this.timeout(5000);
-		inspector('http://video.lefigaro.fr/figaro/video/une-voiture-engloutie-par-un-sinkhole-en-chine/3919138012001/', function(err, meta) {
+		inspector('http://video.lefigaro.fr/figaro/video/une-voiture-engloutie-par-un-sinkhole-en-chine/3919138012001/', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
@@ -162,7 +162,7 @@ describe("remote suite", function suite() {
 	});
 	it("should not change type if schema has no embed", function(done) {
 		this.timeout(5000);
-		inspector('http://www.lefigaro.fr/actualite-france/2016/01/07/01016-20160107LIVWWW00158-en-direct-un-homme-abattu-devant-un-commissariat-de-police-a-paris.php', function(err, meta) {
+		inspector('http://www.lefigaro.fr/actualite-france/2016/01/07/01016-20160107LIVWWW00158-en-direct-un-homme-abattu-devant-un-commissariat-de-police-a-paris.php', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('link');
 			expect(meta.thumbnail).to.be.ok();
@@ -171,7 +171,7 @@ describe("remote suite", function suite() {
 	});
 	it("should append description to title and get picture", function(done) {
 		this.timeout(5000);
-		inspector('https://twitter.com/kapouer/status/731420341927587840', function(err, meta) {
+		inspector('https://twitter.com/kapouer/status/731420341927587840', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('embed');
 			expect(meta.date).to.be.ok();
@@ -184,7 +184,7 @@ describe("remote suite", function suite() {
 	});
 	it("should get google map metadata", function(done) {
 		this.timeout(5000);
-		inspector('https://www.google.fr/maps/place/86000+Poitiers/@46.5846876,0.3363644,13z/data=!3m1!4b1!4m5!3m4!1s0x47fdbe72439eb3ab:0x97de2319c5e09093!8m2!3d46.580224!4d0.340375?hl=fr', function(err, meta) {
+		inspector('https://www.google.fr/maps/place/86000+Poitiers/@46.5846876,0.3363644,13z/data=!3m1!4b1!4m5!3m4!1s0x47fdbe72439eb3ab:0x97de2319c5e09093!8m2!3d46.580224!4d0.340375?hl=fr', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('embed');
 			expect(meta.description.substring(0,5)).to.be('86000');
@@ -195,7 +195,7 @@ describe("remote suite", function suite() {
 	});
 	it("should follow 303 redirect and send cookies back", function(done) {
 		this.timeout(8000);
-		inspector('http://www.nytimes.com/2016/05/31/us/politics/donald-trump-hong-kong-riverside-south.html?_r=0', function(err, meta) {
+		inspector('http://www.nytimes.com/2016/05/31/us/politics/donald-trump-hong-kong-riverside-south.html?_r=0', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('embed');
 			expect(meta.html).to.be.ok();
@@ -206,7 +206,7 @@ describe("remote suite", function suite() {
 
 	it("should set correct html output for image type when image is found", function(done) {
 		this.timeout(5000);
-		inspector('https://www.instagram.com/p/BFYUGGNJ1TJ/', function(err, meta) {
+		inspector('https://www.instagram.com/p/BFYUGGNJ1TJ/', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('image');
 			expect(meta.html.startsWith('<img')).to.be.ok();
@@ -216,7 +216,7 @@ describe("remote suite", function suite() {
 	});
 	it("should return meta with thumbnail for a youtube video embed url", function(done) {
 		this.timeout(5000);
-		inspector('https://www.youtube.com/embed/W7OY8TeglnM', function(err, meta) {
+		inspector('https://www.youtube.com/embed/W7OY8TeglnM', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('video');
 			expect(meta.thumbnail).to.be.ok();
@@ -232,7 +232,7 @@ describe("remote suite", function suite() {
 
 	it("should get keywords", function(done) {
 		this.timeout(5000);
-		inspector('https://i.f1g.fr/media/cms/616x347_crop/2021/03/10/975f688ae59c60ad216d30151defecbdb08730ec31f86e51c92bd51b87516648.jpg', function(err, meta) {
+		inspector('https://i.f1g.fr/media/cms/616x347_crop/2021/03/10/975f688ae59c60ad216d30151defecbdb08730ec31f86e51c92bd51b87516648.jpg', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.keywords.join(',')).to.be("parliament,politics,government,horizontal");
 			done();
@@ -241,7 +241,7 @@ describe("remote suite", function suite() {
 
 	it("should not fail on redirection", function(done) {
 		this.timeout(10000);
-		inspector('http://atag-europe.com/', function(err, meta) {
+		inspector('http://atag-europe.com/', (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('embed');
 			done();

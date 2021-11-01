@@ -73,7 +73,7 @@ exports.html = function (obj, res, cb) {
 	let firstSchemaType;
 	let curLevel = 0;
 
-	parser.on('startTag', function ({ tagName, attrs, selfClosing }) {
+	parser.on('startTag', ({ tagName, attrs, selfClosing }) => {
 		let name = tagName.toLowerCase();
 		if (name == "head") res.nolimit = true;
 		if (name == "meta" || name == "link") selfClosing = true;
@@ -141,10 +141,10 @@ exports.html = function (obj, res, cb) {
 			}
 		}
 	});
-	parser.on('text', function ({ text }) {
+	parser.on('text', ({ text }) => {
 		if (curText != null) curText += text;
 	});
-	parser.on('endTag', function ({ tagName }) {
+	parser.on('endTag', ({ tagName }) => {
 		if (tagName == "head") delete res.nolimit;
 		if (curSchemaLevel == curLevel) {
 			// we finished parsing the content of an embedded Object, abort parsing
@@ -185,10 +185,10 @@ exports.html = function (obj, res, cb) {
 
 exports.svg = function (obj, res, cb) {
 	const parser = new SAXParser();
-	parser.on('startTag', function ({ tagName, attrs }) {
+	parser.on('startTag', ({ tagName, attrs }) => {
 		if (tagName.toLowerCase() != "svg") return;
 		obj.type = "image";
-		const box = attrs.find(function (att) {
+		const box = attrs.find((att) => {
 			return att.name.toLowerCase() == "viewbox";
 		}).value;
 		if (!box) return cb();
@@ -227,7 +227,7 @@ function importJsonLD(tags, text, priorities) {
 				tags.type = knownType;
 				delete ld["@type"];
 			} else {
-				for (let key in item) {
+				for (const key in item) {
 					const val = item[key];
 					if (typeof val == "object" && val["@type"]) {
 						importJsonLD(tags, val, priorities);

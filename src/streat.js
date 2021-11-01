@@ -8,7 +8,7 @@ streat.start();
 exports.media = function (obj, res, cb) {
 	streat.run(res, {
 		step: res.local ? Infinity : 0
-	}, function (err, tags) {
+	}, (err, tags) => {
 		if (err) return cb(err);
 		importTags(tags, obj, {
 			imagewidth: 'width',
@@ -41,7 +41,7 @@ exports.media = function (obj, res, cb) {
 				tags.PictureMIMEType
 			);
 		}
-		if (obj.title && obj.artist && (obj.title + '').indexOf(obj.artist) < 0) {
+		if (obj.title && obj.artist && (String(obj.title)).indexOf(obj.artist) < 0) {
 			obj.title = obj.title + ' - ' + obj.artist;
 			delete obj.artist;
 		}
@@ -56,7 +56,7 @@ exports.media = function (obj, res, cb) {
 };
 
 exports.file = function (obj, res, cb) {
-	streat.run(res, function (err, tags) {
+	streat.run(res, (err, tags) => {
 		if (err) return cb(err);
 		importTags(tags, obj, {
 			mimetype: 'mime',
@@ -70,7 +70,7 @@ exports.file = function (obj, res, cb) {
 };
 
 function parseExifDate(str) {
-	let [date, time] = str.split(" ");
+	const [date, time] = str.split(" ");
 	if (date) str = date.replace(/:/g, '-') + 'T' + time;
 
 	const dt = DateTime.fromISO(str, {

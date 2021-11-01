@@ -2,7 +2,7 @@ const importTags = require('./tags');
 const BufferList = require('bl');
 
 exports.embed = function (obj, res, cb) {
-	res.pipe(BufferList(function (err, data) {
+	res.pipe(BufferList((err, data) => {
 		if (err) return cb(err);
 		let tags;
 		try {

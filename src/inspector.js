@@ -39,7 +39,7 @@ function inspector(url, opts, cb) {
 	urlObj.headers = {};
 	const oEmbedUrl = opts.noembed ? {} : supportsOEmbed(urlObj, opts.providers);
 
-	requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts, function (err, obj, tags) {
+	requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts, (err, obj, tags) => {
 		if (err) return cb(err);
 		if (!obj) return cb(400);
 
@@ -81,7 +81,7 @@ function guessIcon(urlObj, obj, cb) {
 			pathname: '/favicon.ico',
 			headers: Object.assign({}, urlObj.headers)
 		};
-		agent.exists(iconObj, function (yes) {
+		agent.exists(iconObj, (yes) => {
 			if (yes) obj.icon = URL.format(iconObj);
 			cb(null, obj);
 		});
@@ -103,7 +103,7 @@ function guessIcon(urlObj, obj, cb) {
 			headers: Object.assign({}, urlObj.headers)
 		};
 		debug("find favicon", urlObjRoot);
-		agent.request(urlObjRoot, iobj, function (err) {
+		agent.request(urlObjRoot, iobj, (err) => {
 			if (err) debug("favicon not found", err);
 			if (iobj.icon) obj.icon = URL.resolve(URL.format(urlObjRoot), iobj.icon);
 			cb(null, obj);
@@ -128,7 +128,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	}, urlObj.headers);
 	if (embedObj.obj) embedObj.obj.headers = Object.assign({}, urlObj.headers);
 	const actualObj = embedObj.obj || urlObj;
-	agent.request(actualObj, obj, function (err, robj, tags) {
+	agent.request(actualObj, obj, (err, robj, tags) => {
 		if (err) {
 			if (embedObj.obj) {
 				return inspector(urlObj.href, Object.assign({ noembed: true, error: err }, opts), cb);
@@ -157,14 +157,14 @@ function sourceInspection(obj, opts, cb) {
 		if (obj.icon) opts.nofavicon = true;
 		opts.nosource = true;
 		opts.nocanonical = true;
-		inspector(obj.source, opts, function (err, sourceObj) {
+		inspector(obj.source, opts, (err, sourceObj) => {
 			if (err) {
 				debug("Error fetching subsource", err);
 				return cb(null, obj);
 			}
 			if (sourceObj.type != obj.type) return cb(null, obj);
 			obj.source = sourceObj.url;
-			['mime', 'ext', 'type', 'size', 'width', 'height', 'duration'].forEach(function (key) {
+			['mime', 'ext', 'type', 'size', 'width', 'height', 'duration'].forEach((key) => {
 				if (sourceObj[key]) obj[key] = sourceObj[key];
 			});
 			cb(null, obj);
@@ -182,7 +182,7 @@ function lastResortDimensionsFromThumbnail(obj, cb) {
 			nofavicon: true,
 			nocanonical: true,
 			nosource: true
-		}, function (err, sourceObj) {
+		}, (err, sourceObj) => {
 			if (err) {
 				debug("Error fetching thumbnail", obj.thumbnail, err);
 				delete obj.thumbnail;
@@ -199,10 +199,10 @@ function lastResortDimensionsFromThumbnail(obj, cb) {
 
 function findEndpoint(url, list) {
 	let endpoint;
-	list.find(function (provider) {
-		provider.endpoints.find(function (point) {
+	list.find((provider) => {
+		provider.endpoints.find((point) => {
 			if (!point.schemes) return;
-			if (point.schemes.find(function (scheme) {
+			if (point.schemes.find((scheme) => {
 				const reg = scheme instanceof RegExp
 					? scheme
 					: new RegExp("^" + scheme.replace(/\*/g, ".*") + "$");
@@ -247,7 +247,7 @@ function supportsOEmbed(urlObj, providers) {
 	// request oembed endpoint
 	let formatted = false;
 	if (endpoint.url) {
-		const epUrl = endpoint.url.replace('{format}', function () {
+		const epUrl = endpoint.url.replace('{format}', () => {
 			formatted = true;
 			return 'json';
 		});
@@ -257,7 +257,7 @@ function supportsOEmbed(urlObj, providers) {
 		delete epUrlObj.search;
 		ret.url = URL.format(epUrlObj);
 	}
-	ret.discovery = !!endpoint.discovery;
+	ret.discovery = Boolean(endpoint.discovery);
 	debug("OEmbed config", ret);
 	return ret;
 }
@@ -383,7 +383,7 @@ function normalize(obj) {
 	obj.keywords = normKeywords(obj);
 
 	// remove all empty keys
-	Object.keys(obj).forEach(function (key) {
+	Object.keys(obj).forEach((key) => {
 		const val = obj[key];
 		if (val == "" || val == null || (typeof val == 'number' && Number.isNaN(val))) {
 			delete obj[key];

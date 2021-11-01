@@ -3,13 +3,13 @@ const expect = require('expect.js');
 const express = require('express');
 const assert = require('assert');
 
-describe("local suite", function suite() {
+describe("local suite", () => {
 	let app, server, host;
-	before(function () {
+	before(() => {
 		app = express();
 		server = app.listen();
 		host = "http://localhost:" + server.address().port;
-		app.use(function (req, res, next) {
+		app.use((req, res, next) => {
 			if (req.path == "/latin.html") res.type("text/html; charset=iso-8859-1");
 			else if (req.path == "/oembed.json") return res.json({
 				"type": "video",
@@ -30,27 +30,27 @@ describe("local suite", function suite() {
 			next();
 		}, express.static(__dirname + '/fixtures'));
 	});
-	after(function () {
+	after(() => {
 		if (server) server.close();
 	});
 
-	it("should convert from other charsets", function (done) {
-		inspector(`${host}/latin.html`, function (err, meta) {
+	it("should convert from other charsets", (done) => {
+		inspector(`${host}/latin.html`, (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.title).to.be('Accentué à');
 			done();
 		});
 	});
 
-	it("should get title", function (done) {
-		inspector(`${host}/lavieenbois.html`, function (err, meta) {
+	it("should get title", (done) => {
+		inspector(`${host}/lavieenbois.html`, (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.title).to.be.ok();
 			done();
 		});
 	});
-	it("should not crash with svg", function (done) {
-		inspector(`${host}/test.svg`, function (err, meta) {
+	it("should not crash with svg", (done) => {
+		inspector(`${host}/test.svg`, (err, meta) => {
 			expect(err).to.not.be.ok();
 			done();
 		});
@@ -58,7 +58,7 @@ describe("local suite", function suite() {
 
 	it("should correctly parse json-ld to get embedUrl and inspect thumbnail to get dimensions of video", function (done) {
 		this.timeout(10000);
-		inspector(`${host}/jsonld.html`, function (err, meta) {
+		inspector(`${host}/jsonld.html`, (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be('video');
 			expect(meta.date).to.be.ok();
@@ -70,8 +70,8 @@ describe("local suite", function suite() {
 		});
 	});
 
-	it("should return embeddable content", function (done) {
-		inspector(`${host}/songs.html`, function (err, meta) {
+	it("should return embeddable content", (done) => {
+		inspector(`${host}/songs.html`, (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.type).to.be("audio");
 			expect(meta.ext).to.be("html");
@@ -81,8 +81,8 @@ describe("local suite", function suite() {
 		});
 	});
 
-	it("should fetch thumbnailUrl from nytimes jsonld", function (done) {
-		inspector(`${host}/nytimes.html`, function (err, meta) {
+	it("should fetch thumbnailUrl from nytimes jsonld", (done) => {
+		inspector(`${host}/nytimes.html`, (err, meta) => {
 			expect(err).to.not.be.ok();
 			expect(meta.thumbnail).to.be.ok();
 			expect(meta.type).to.be("video");
@@ -93,7 +93,7 @@ describe("local suite", function suite() {
 		});
 	});
 
-	it("should not crash when oembed discovery fails", function (done) {
+	it("should not crash when oembed discovery fails", (done) => {
 		inspector(`${host}/video`, {
 			providers: [{
 				name: "local",
@@ -103,7 +103,7 @@ describe("local suite", function suite() {
 					discovery: true
 				}]
 			}]
-		}, function (err, meta) {
+		}, (err, meta) => {
 			delete meta.url;
 			assert.deepStrictEqual(meta, {
 				type: 'video',

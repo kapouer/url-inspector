@@ -37,7 +37,7 @@ exports.exists = function (urlObj, cb) {
 	opts.method = 'HEAD';
 	const secure = /^https:?$/.test(urlObj.protocol);
 	if (opts.pathname && !opts.path) opts.path = opts.pathname;
-	const req = (secure ? https : http).request(opts, function (res) {
+	const req = (secure ? https : http).request(opts, (res) => {
 		const status = res.statusCode;
 		debug("remote", URL.format(urlObj), "returns", status);
 		req.abort();
@@ -52,7 +52,7 @@ exports.request = function (urlObj, obj, cb) {
 	if (!urlObj.href) urlObj.href = URL.format(urlObj);
 	debug("request url", urlObj.href);
 
-	doRequest(urlObj, function (err, req, res) {
+	doRequest(urlObj, (err, req, res) => {
 		if (err) return cb(err);
 		const status = res.statusCode;
 		res.pause();
@@ -126,7 +126,7 @@ exports.request = function (urlObj, obj, cb) {
 		}
 		const fun = inspectors[obj.type];
 		if (urlObj.protocol != "file:") pipeLimit(req, res, fun[1], fun[2]);
-		fun[0](obj, res, function (err, tags) {
+		fun[0](obj, res, (err, tags) => {
 			if (err) {
 				// eslint-disable-next-line no-console
 				console.error(err);
@@ -157,7 +157,7 @@ exports.request = function (urlObj, obj, cb) {
 			} else if (canon && canon.redirects < 5 && canon.pathname != urlObj.pathname && canon.pathname + '/' != urlObj.pathname && canon.pathname != urlObj.pathname + '/') {
 				debug("fetch canonical url", canon.href);
 				canon.headers = Object.assign({}, urlObj.headers);
-				exports.request(canon, obj, function (err, cobj, ctags) {
+				exports.request(canon, obj, (err, cobj, ctags) => {
 					if (err) return cb(null, obj, tags);
 					else return cb(null, cobj, ctags);
 				});
@@ -171,7 +171,7 @@ exports.request = function (urlObj, obj, cb) {
 function doRequest(urlObj, cb) {
 	let req;
 	if (urlObj.protocol == "file:") {
-		fs.stat(urlObj.pathname, function(err, stat) {
+		fs.stat(urlObj.pathname, (err, stat) => {
 			if (err) return cb(err);
 			try {
 				req = fs.createReadStream(urlObj.pathname).on('error', cb);
@@ -193,9 +193,9 @@ function doRequest(urlObj, cb) {
 		if (opts.pathname && !opts.path) opts.path = opts.pathname;
 
 		try {
-			req = (secure ? https : http).request(opts, function(res) {
+			req = (secure ? https : http).request(opts, (res) => {
 				cb(null, req, res);
-			}).on('error', function(err) {
+			}).on('error', (err) => {
 				if (err.code == "ECONNRESET" && opts.headers['User-Agent'].includes("Googlebot")) {
 					// suspicion of User-Agent sniffing
 					debug("ECONNRESET, trying bot-less ua");
@@ -240,7 +240,7 @@ function pipeLimit(req, res, length, percent) {
 		}
 	}
 	let curLength = 0;
-	res.on('data', function(buf) {
+	res.on('data', (buf) => {
 		if (res.nolimit) return;
 		curLength += buf.length;
 		if (curLength >= length) {
@@ -255,10 +255,10 @@ function replyCookies(setCookies, prev) {
 	let cookies;
 	if (Array.isArray(setCookies)) cookies = setCookies.map(Cookie.parse);
 	else cookies = [Cookie.parse(setCookies)];
-	cookies = cookies.map(function(cookie) {
+	cookies = cookies.map((cookie) => {
 		return cookie.cookieString();
 	});
-	if (prev) prev.split('; ').forEach(function(str) {
+	if (prev) prev.split('; ').forEach((str) => {
 		if (cookies.indexOf(str) < 0) cookies.unshift(str);
 	});
 	return cookies.join('; ');
@@ -272,7 +272,7 @@ function lexize(str) {
 		if (ext.length <= 4) str = parts.join(' ');
 	}
 
-	str.replace(/[_-]/g, ' ').replace(/\s+/g, ' ').split(' ').forEach(function(word) {
+	str.replace(/[_-]/g, ' ').replace(/\s+/g, ' ').split(' ').forEach((word) => {
 		// throw only digits
 		if (/^\d+$/.test(word)) return;
 		// allow words with some digits and some letters
