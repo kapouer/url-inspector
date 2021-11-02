@@ -130,13 +130,14 @@ const opts = {
  file: true
 };
 
+// opts are optional
+
+const obj = await inspector(url, opts);
+
+// or callback-style method (won't be available forever...)
 inspector(url, opts, function(err, obj) {
 
 });
-
-// or simply
-
-inspector(url, function(err, obj) {...});
 
 ```
 

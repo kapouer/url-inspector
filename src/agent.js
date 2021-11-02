@@ -6,12 +6,12 @@ const httpsAgent = new https.Agent({
 });
 const Path = require('path');
 const ContentDisposition = require('content-disposition');
+const ContentType = require('content-type');
 const MediaTyper = require('media-typer');
 const iconv = require('iconv-lite');
 const Cookie = require('tough-cookie').Cookie;
 const mime = require('mime');
 const fs = require('fs');
-const URL = require('url');
 const debug = require('debug')('url-inspector');
 
 const inspectSax = require('./sax');
@@ -33,14 +33,13 @@ const inspectors = {
 };
 
 exports.exists = function (urlObj, cb) {
-	const opts = Object.assign({}, urlObj);
+	const opts = { headers: urlObj.headers };
 	opts.method = 'HEAD';
 	const secure = /^https:?$/.test(urlObj.protocol);
-	if (opts.pathname && !opts.path) opts.path = opts.pathname;
-	const req = (secure ? https : http).request(opts, (res) => {
+	const req = (secure ? https : http).request(urlObj, opts, (res) => {
 		const status = res.statusCode;
-		debug("remote", URL.format(urlObj), "returns", status);
-		req.abort();
+		debug("remote", urlObj, "returns", status);
+		req.destroy();
 		if (status == 204 || res.headers['Content-Length'] == 0) return cb(false);
 		else if (status >= 200 && status < 400) return cb(true);
 		else return cb(false);
@@ -49,7 +48,6 @@ exports.exists = function (urlObj, cb) {
 };
 
 exports.request = function (urlObj, obj, cb) {
-	if (!urlObj.href) urlObj.href = URL.format(urlObj);
 	debug("request url", urlObj.href);
 
 	doRequest(urlObj, (err, req, res) => {
@@ -64,9 +62,8 @@ exports.request = function (urlObj, obj, cb) {
 		}
 		if (status >= 300 && status < 400 && res.headers.location) {
 			req.abort();
-			const location = URL.resolve(urlObj.href, res.headers.location);
-			debug("to location", location);
-			const redirObj = URL.parse(location);
+			const redirObj = new URL(res.headers.location, urlObj.href);
+			debug("to location", redirObj);
 			redirObj.headers = Object.assign({}, urlObj.headers);
 			const cookies = replyCookies(res.headers['set-cookie'], redirObj.headers.Cookie);
 			if (cookies) {
@@ -81,12 +78,11 @@ exports.request = function (urlObj, obj, cb) {
 		let contentType = res.headers['content-type'];
 
 		if (!contentType) contentType = mime.getType(Path.basename(urlObj.pathname));
-		const mimeObj = MediaTyper.parse(contentType);
+		const mimeObj = parseType(contentType);
 		if (obj.type == "embed") {
 			obj.mime = "text/html";
 		} else {
 			obj.mime = MediaTyper.format(mimeObj);
-			if (obj.mime) obj.mime = obj.mime.toLowerCase();
 			obj.type = mime2type(mimeObj);
 		}
 		obj.ext = mime.getExtension(obj.mime);
@@ -105,11 +101,11 @@ exports.request = function (urlObj, obj, cb) {
 				debug("Unknown Content-Disposition format", ex);
 			}
 			if (disposition && disposition.parameters.filename) {
-				urlObj = URL.parse(disposition.parameters.filename);
+				urlObj = new URL(disposition.parameters.filename, urlObj);
 			}
 		}
-		if (obj.title == null && urlObj.path) {
-			obj.title = lexize(Path.basename(urlObj.path));
+		if (obj.title == null && urlObj.pathname) {
+			obj.title = lexize(Path.basename(urlObj.pathname));
 		}
 
 		debug("(mime, type, length) is (%s, %s, %d)", obj.mime, obj.type, obj.size);
@@ -140,7 +136,7 @@ exports.request = function (urlObj, obj, cb) {
 			delete obj.noembed;
 			let canon = obj.canonical;
 			if (canon && urlObj.protocol != "file:" && canon != obj.source && obj.nocanonical !== true) {
-				canon = URL.parse(canon);
+				canon = new URL(canon);
 				canon.redirects = (urlObj.redirects || 0) + 1;
 			}
 			delete obj.canonical;
@@ -150,7 +146,7 @@ exports.request = function (urlObj, obj, cb) {
 				// prevent loops
 				obj.noembed = true;
 				debug("fetch embed", obj.oembed);
-				const urlObjEmbed = URL.parse(obj.oembed);
+				const urlObjEmbed = new URL(obj.oembed);
 				urlObjEmbed.headers = Object.assign({}, urlObj.headers);
 				if (urlObj.protocol) urlObjEmbed.protocol = urlObj.protocol;
 				exports.request(urlObjEmbed, obj, cb);
@@ -187,21 +183,18 @@ function doRequest(urlObj, cb) {
 			cb(null, req, req);
 		});
 	} else {
-		const opts = Object.assign({}, urlObj);
+		const opts = { headers: urlObj.headers };
 		const secure = /^https:?$/.test(urlObj.protocol);
 		opts.agent = secure ? httpsAgent : httpAgent;
-		if (opts.pathname && !opts.path) opts.path = opts.pathname;
 
 		try {
-			req = (secure ? https : http).request(opts, (res) => {
+			req = (secure ? https : http).request(urlObj, opts, (res) => {
 				cb(null, req, res);
 			}).on('error', (err) => {
 				if (err.code == "ECONNRESET" && opts.headers['User-Agent'].includes("Googlebot")) {
 					// suspicion of User-Agent sniffing
 					debug("ECONNRESET, trying bot-less ua");
-					opts.headers = Object.assign(opts.headers, {
-						"User-Agent": "Mozilla/5.0 (compatible)"
-					});
+					urlObj.headers["User-Agent"] = "Mozilla/5.0 (compatible)";
 					doRequest(opts, cb);
 				} else {
 					cb(err);
@@ -295,4 +288,11 @@ function lexize(str) {
 	} else {
 		return str;
 	}
+}
+
+
+function parseType(str) {
+	const ct = ContentType.parse(str);
+	const mt = MediaTyper.parse(ct.type);
+	return Object.assign(ct, mt);
 }

@@ -1,4 +1,3 @@
-const URL = require('url');
 const Path = require('path');
 const { Duration } = require('luxon');
 
@@ -22,90 +21,89 @@ function inspector(url, opts, cb) {
 	if (!opts) {
 		opts = {};
 	}
-	const obj = {
-		url: URL.format(URL.parse(url))
-	};
+	return new Promise((pass, fail) => {
+		if (!cb) cb = function (err, obj) {
+			if (err) fail(err);
+			else pass(obj);
+		};
+		const urlObj = ((url) => {
+			if (typeof url == "string" && url.startsWith('file:')) {
+				return new URL(url.replace(/^file:\/\//, ''), `file://${process.cwd()}/`);
+			} else {
+				return new URL(url);
+			}
+		})(url);
 
-	const urlObj = URL.parse(obj.url);
-	if (urlObj.protocol == "file:") {
-		if (!opts.file) {
-			// eslint-disable-next-line no-console
-			console.warn("file: protocol is disabled");
-			return cb(400);
+		if (urlObj.protocol == "file:") {
+			if (!opts.file) {
+				// eslint-disable-next-line no-console
+				console.warn("file: protocol is disabled");
+				return cb(400);
+			}
+			opts.nofavicon = true;
 		}
-		opts.nofavicon = true;
-		urlObj.pathname = obj.url.substring(7);
-	}
-	urlObj.headers = {};
-	const oEmbedUrl = opts.noembed ? {} : supportsOEmbed(urlObj, opts.providers);
+		urlObj.headers = {};
+		const oEmbedUrl = opts.noembed ? {} : supportsOEmbed(urlObj, opts.providers);
+		const obj = { url };
 
-	requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts, (err, obj, tags) => {
-		if (err) return cb(err);
-		if (!obj) return cb(400);
+		requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts, (err, obj, tags) => {
+			if (err) return cb(err);
+			if (!obj) return cb(400);
 
-		if (!obj.site) {
-			obj.site = urlObj.hostname;
-		}
-		obj.pathname = urlObj.pathname;
+			if (!obj.site) {
+				obj.site = urlObj.hostname;
+			}
+			obj.pathname = urlObj.pathname;
 
-		cb = sourceInspection(obj, opts, cb);
+			cb = sourceInspection(obj, opts, cb);
 
-		const urlFmt = URL.format(urlObj);
-		if (obj.thumbnail) {
-			if (Array.isArray(obj.thumbnail)) obj.thumbnail = obj.thumbnail[0];
-			obj.thumbnail = URL.resolve(urlFmt, obj.thumbnail);
-			cb = lastResortDimensionsFromThumbnail(obj, cb);
-		}
+			if (obj.thumbnail) {
+				if (Array.isArray(obj.thumbnail)) obj.thumbnail = obj.thumbnail[0];
+				const thumbnailObj = new URL(obj.thumbnail, urlObj);
+				cb = lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb);
+			}
 
-		normalize(obj);
+			normalize(obj);
 
-		if (opts.all && tags) obj.all = tags;
+			if (opts.all && tags) obj.all = tags;
 
-		if (obj.icon) {
-			obj.icon = URL.resolve(urlFmt, obj.icon);
-			cb(null, obj);
-		} else if (opts.nofavicon) {
-			cb(null, obj);
-		} else {
-			guessIcon(urlObj, obj, cb);
-		}
+			if (obj.icon) {
+				obj.icon = new URL(obj.icon, urlObj);
+				cb(null, obj);
+			} else if (opts.nofavicon) {
+				cb(null, obj);
+			} else {
+				guessIcon(urlObj, obj, cb);
+			}
+		});
 	});
 }
 
 function guessIcon(urlObj, obj, cb) {
 	if (obj.ext == "html") {
-		const iconObj = {
-			hostname: urlObj.hostname,
-			port: urlObj.port,
-			protocol: urlObj.protocol,
-			pathname: '/favicon.ico',
-			headers: Object.assign({}, urlObj.headers)
-		};
+		const iconObj = new URL("/favicon.ico", urlObj);
+		iconObj.headers = Object.assign({}, urlObj.headers);
+
 		agent.exists(iconObj, (yes) => {
-			if (yes) obj.icon = URL.format(iconObj);
+			if (yes) obj.icon = iconObj.href;
 			cb(null, obj);
 		});
 	} else {
 		const iobj = {
 			onlyfavicon: true
 		};
-		let urlRef = urlObj;
+		let urlObjRoot = new URL("/", urlObj);
 		if (obj.reference) {
 			// another url for the same object
-			urlRef = URL.parse(obj.reference);
-			obj.site = urlRef.hostname;
+			urlObjRoot = new URL(obj.reference);
+			obj.site = urlObjRoot.hostname;
 			delete obj.reference;
 		}
-		const urlObjRoot = {
-			hostname: urlRef.hostname,
-			port: urlRef.port,
-			protocol: urlRef.protocol,
-			headers: Object.assign({}, urlObj.headers)
-		};
+		urlObjRoot.headers = Object.assign({}, urlObj.headers);
 		debug("find favicon", urlObjRoot);
 		agent.request(urlObjRoot, iobj, (err) => {
 			if (err) debug("favicon not found", err);
-			if (iobj.icon) obj.icon = URL.resolve(URL.format(urlObjRoot), iobj.icon);
+			if (iobj.icon) obj.icon = (new URL(iobj.icon, urlObjRoot)).href;
 			cb(null, obj);
 		});
 	}
@@ -114,7 +112,7 @@ function guessIcon(urlObj, obj, cb) {
 function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	if (!embedObj.discovery && embedObj.url) {
 		debug("oembed candidate");
-		embedObj.obj = URL.parse(embedObj.url);
+		embedObj.obj = new URL(embedObj.url);
 		obj.type = "embed";
 		obj.mime = "text/html";
 	}
@@ -148,7 +146,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 
 function sourceInspection(obj, opts, cb) {
 	if (opts.nosource || !obj.source || obj.ext != "html" || obj.source == obj.url || /video|audio|image/.test(obj.type) == false) return cb;
-	const urlObj = URL.parse(obj.source);
+	const urlObj = new URL(obj.source);
 	if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return cb;
 	debug("source inspection", obj.mime, obj.type, obj.source);
 	return function (err, obj) {
@@ -172,22 +170,23 @@ function sourceInspection(obj, opts, cb) {
 	};
 }
 
-function lastResortDimensionsFromThumbnail(obj, cb) {
+function lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb) {
 	return function (err, obj) {
 		if (err) return cb(err);
-		if (!obj.thumbnail || obj.width && obj.height || obj.type != "video") {
+		if (obj.width && obj.height || obj.type != "video") {
 			return cb(null, obj);
 		}
-		inspector(obj.thumbnail, {
+		inspector(thumbnailObj, {
 			nofavicon: true,
 			nocanonical: true,
 			nosource: true
 		}, (err, sourceObj) => {
 			if (err) {
-				debug("Error fetching thumbnail", obj.thumbnail, err);
 				delete obj.thumbnail;
+				debug("Error fetching thumbnail", thumbnailObj.href, err);
 				return cb(null, obj);
 			}
+			obj.thumbnail = thumbnailObj.href;
 			if (sourceObj.width && sourceObj.height) {
 				obj.width = sourceObj.width;
 				obj.height = sourceObj.height;
@@ -251,11 +250,10 @@ function supportsOEmbed(urlObj, providers) {
 			formatted = true;
 			return 'json';
 		});
-		const epUrlObj = URL.parse(epUrl, true);
-		if (!formatted) epUrlObj.query.format = 'json';
-		epUrlObj.query.url = url;
-		delete epUrlObj.search;
-		ret.url = URL.format(epUrlObj);
+		const epUrlObj = new URL(epUrl);
+		if (!formatted) epUrlObj.searchParams.set('format', 'json');
+		epUrlObj.searchParams.set('url', url);
+		ret.url = epUrlObj.href;
 	}
 	ret.discovery = Boolean(endpoint.discovery);
 	debug("OEmbed config", ret);
