@@ -38,7 +38,7 @@ let url = opts._args && opts._args.pop();
 
 if (opts.help || !url) {
 	const help = parser.help({includeEnv: true}).trimRight();
-	console.log('usage: url-inspector [OPTIONS] <url>\n' + 'options:\n' + help);
+	console.info('usage: url-inspector [OPTIONS] <url>\n' + 'options:\n' + help);
 	process.exit(0);
 }
 
@@ -56,7 +56,7 @@ inspector(url, opts, function(err, meta) {
 		console.error(err);
 		process.exit(1);
 	} else {
-		console.log(require('util').inspect(meta));
+		console.info(require('util').inspect(meta));
 		process.exit(0);
 	}
 });

@@ -98,7 +98,7 @@ describe("remote suite", () => {
 
 	it("should error out with a 404", async () => {
 		try {
-			const meta = await inspector('https://google.com/ctalo');
+			await inspector('https://google.com/ctalo');
 		} catch (err) {
 			expect(err).to.be(404);
 		}
