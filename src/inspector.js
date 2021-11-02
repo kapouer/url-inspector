@@ -113,15 +113,9 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	if (!embedObj.discovery && embedObj.url) {
 		debug("oembed candidate");
 		const embedUrl = new URL(embedObj.url);
-		if (embedUrl.hostname == "graph.facebook.com") {
-			// this host requires an account
-			debug("skipping", embedUrl.hostname);
-			delete embedObj.url;
-		} else {
-			obj.type = "embed";
-			obj.mime = "text/html";
-			embedObj.obj = embedUrl;
-		}
+		obj.type = "embed";
+		obj.mime = "text/html";
+		embedObj.obj = embedUrl;
 	}
 	if (opts.noembed) obj.noembed = true;
 	if (opts.nocanonical) obj.nocanonical = true;
