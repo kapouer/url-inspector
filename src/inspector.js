@@ -84,8 +84,8 @@ function guessIcon(urlObj, obj, cb) {
 		const iconObj = new URL("/favicon.ico", urlObj);
 		iconObj.headers = Object.assign({}, urlObj.headers);
 
-		agent.exists(iconObj, (yes) => {
-			if (yes) obj.icon = iconObj.href;
+		agent.exists(iconObj, (mime) => {
+			if (mime && mime.type == "image") obj.icon = iconObj.href;
 			cb(null, obj);
 		});
 	} else {
