@@ -6,6 +6,9 @@
   "scripts": {
     "test": "mocha"
   },
+  "mocha": {
+    "exit": true
+  },
   "bin": {
     "url-inspector": "bin/url-inspector.js"
   },
