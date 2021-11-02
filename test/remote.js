@@ -157,10 +157,9 @@ describe("remote suite", () => {
 	}).timeout(10000);
 
 	it("should set correct html output for image type when image is found", async () => {
-		const meta = await inspector('https://www.instagram.com/p/BFYUGGNJ1TJ/');
+		const meta = await inspector('https://www.flickr.com/photos/duxbury_rambler/36308366073/in/photolist-XjrSgB-7B89Cj-9xqk6P-a5hq2M-bWzztg-hzYee3-eiZKn3-BBtFpo-xjerPJ-8qM1kU-6h42EF-cdWYfo-bWzAbx-AGgbPN-wDQgHQ-bWzDbH-BDMMMz-NGeF5k-BBtF1h-xqYdC6-GXcyDu-DJJAXZ-H1gS5m-v58BWL-NY1dBW-QeSeoW-NDkyKV-cdWXSW-u3wS1d-B6gT9H-VdLyyW-eiU48H-6oPpqH-Ggjd7G-PUzWio-xoDKcy-uZ8iP6-dQbfRo-AECzjD-z5Vfoo-Tpnv84-cdWXay-fhRuWA-yVMe7E-6KRyqV-KtNc7D-Yx5Cgt-KTEjN5-ebo2vv-Fokmkv');
 		expect(meta.type).to.be('image');
-		expect(meta.html.startsWith('<img')).to.be.ok();
-		expect(meta.thumbnail).to.not.be.ok();
+		expect(meta.html.includes('<img ')).to.be.ok();
 	}).timeout(10000);
 
 	it("should return meta with thumbnail for a youtube video embed url", async () => {
