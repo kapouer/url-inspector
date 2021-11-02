@@ -184,6 +184,10 @@ function doRequest(urlObj, cb) {
 		});
 	} else {
 		const opts = { headers: urlObj.headers };
+		const origin = new URL(urlObj);
+		origin.pathname = "";
+		origin.search = "";
+		opts.headers.Origin = origin.href;
 		const secure = /^https:?$/.test(urlObj.protocol);
 		opts.agent = secure ? httpsAgent : httpAgent;
 
