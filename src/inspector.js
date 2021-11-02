@@ -68,7 +68,7 @@ function inspector(url, opts, cb) {
 			if (opts.all && tags) obj.all = tags;
 
 			if (obj.icon) {
-				obj.icon = new URL(obj.icon, urlObj);
+				obj.icon = new URL(obj.icon, urlObj).href;
 				cb(null, obj);
 			} else if (opts.nofavicon) {
 				cb(null, obj);
