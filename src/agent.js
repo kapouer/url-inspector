@@ -40,9 +40,13 @@ exports.exists = function (urlObj, cb) {
 		const status = res.statusCode;
 		debug("remote", urlObj, "returns", status);
 		req.destroy();
-		if (status == 204 || res.headers['Content-Length'] == 0) return cb(false);
-		else if (status >= 200 && status < 400) return cb(true);
-		else return cb(false);
+		if (status == 204 || res.headers['Content-Length'] == 0) {
+			return cb(false);
+		} else if (status >= 200 && status < 400) {
+			return cb(parseType(res.headers['Content-Type']));
+		} else {
+			return cb(false);
+		}
 	});
 	req.end();
 };
