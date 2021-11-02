@@ -296,7 +296,12 @@ function lexize(str) {
 
 
 function parseType(str) {
-	const ct = ContentType.parse(str);
-	const mt = MediaTyper.parse(ct.type);
-	return Object.assign(ct, mt);
+	if (!str) return str;
+	try {
+		const ct = ContentType.parse(str);
+		const mt = MediaTyper.parse(ct.type);
+		return Object.assign(ct, mt);
+	} catch (e) {
+		return {};
+	}
 }
