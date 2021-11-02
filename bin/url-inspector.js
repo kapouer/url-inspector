@@ -51,13 +51,10 @@ if (opts.providers) {
 	opts.providers = require(opts.providers);
 }
 
-inspector(url, opts, function(err, meta) {
-	if (err) {
-		console.error(err);
-		process.exit(1);
-	} else {
-		console.info(require('util').inspect(meta));
-		process.exit(0);
-	}
+inspector(url, opts).then((meta) => {
+	console.info(require('util').inspect(meta));
+	process.exit(0);
+}).catch((err) => {
+	console.error(err);
+	process.exit(1);
 });
-
