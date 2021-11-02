@@ -1,7 +1,6 @@
 #!/usr/bin/node
 
 const dash = require('dashdash');
-const debug = require('debug')('url-inspector');
 
 const parser = dash.createParser({options: [
 	{
