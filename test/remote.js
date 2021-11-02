@@ -11,7 +11,7 @@ describe("remote suite", () => {
 	});
 
 	it("should inspect large file without downloading it entirely", async () => {
-		const meta = inspector('https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.3.3.tar.xz');
+		const meta = await inspector('https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.3.3.tar.xz');
 		expect(meta.title).to.be.ok();
 		expect(meta.size).to.be.greaterThan(80000000);
 		expect(meta.type).to.be('archive');
