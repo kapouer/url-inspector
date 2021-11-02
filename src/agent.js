@@ -33,6 +33,7 @@ const inspectors = {
 };
 
 exports.exists = function (urlObj, cb) {
+	setOrigin(urlObj);
 	const opts = { headers: urlObj.headers };
 	opts.method = 'HEAD';
 	const secure = /^https:?$/.test(urlObj.protocol);
@@ -187,11 +188,8 @@ function doRequest(urlObj, cb) {
 			cb(null, req, req);
 		});
 	} else {
+		setOrigin(urlObj);
 		const opts = { headers: urlObj.headers };
-		const origin = new URL(urlObj);
-		origin.pathname = "";
-		origin.search = "";
-		opts.headers.Origin = origin.href;
 		const secure = /^https:?$/.test(urlObj.protocol);
 		opts.agent = secure ? httpsAgent : httpAgent;
 
@@ -214,6 +212,13 @@ function doRequest(urlObj, cb) {
 			return;
 		}
 	}
+}
+
+function setOrigin(urlObj) {
+	const origin = new URL(urlObj);
+	origin.pathname = "";
+	origin.search = "";
+	urlObj.headers.Origin = origin.href;
 }
 
 function mime2type(obj) {
