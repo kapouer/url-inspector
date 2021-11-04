@@ -154,7 +154,10 @@ exports.request = function (urlObj, obj, cb) {
 				const urlObjEmbed = new URL(obj.oembed);
 				urlObjEmbed.headers = Object.assign({}, urlObj.headers);
 				if (urlObj.protocol) urlObjEmbed.protocol = urlObj.protocol;
-				exports.request(urlObjEmbed, obj, cb);
+				exports.request(urlObjEmbed, obj, (err, cobj, ctags) => {
+					if (err) return cb(null, obj, tags);
+					else return cb(null, cobj, ctags);
+				});
 			} else if (canon && canon.redirects < 5 && canon.pathname != urlObj.pathname && canon.pathname + '/' != urlObj.pathname && canon.pathname != urlObj.pathname + '/') {
 				debug("fetch canonical url", canon.href);
 				canon.headers = Object.assign({}, urlObj.headers);
