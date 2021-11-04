@@ -39,7 +39,7 @@
     "entities": "^3.0.1",
     "iconv-lite": "^0.6.3",
     "luxon": "^2.0.2",
-    "mime": "^2.5.2",
+    "mime": "^3.0.0",
     "parse5": "^6.0.1",
     "parse5-sax-parser": "^6.0.1",
     "streat": "^0.3.0",
