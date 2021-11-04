@@ -403,9 +403,9 @@ function normKeywords({ title, keywords }) {
 	const list = [];
 	const titleList = (title || "").toLowerCase().split(/\s/g);
 	keywords.forEach(str => {
-		str = str.toLowerCase().trim();
 		const num = Number.parseInt(str);
 		if (!Number.isNaN(num) && num.toString() == str) return;
+		str = String(str).toLowerCase().trim();
 		if (str.length >= 4 && !titleList.includes(str)) {
 			subPush(list, str);
 		}
