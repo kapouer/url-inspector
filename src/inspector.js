@@ -44,6 +44,9 @@ function inspector(url, opts, cb) {
 		}
 		urlObj.headers = {};
 		const oEmbedUrl = opts.noembed ? {} : supportsOEmbed(urlObj, opts.providers);
+		if (oEmbedUrl.redirect) {
+			url = urlObj.href;
+		}
 		const obj = { url };
 
 		requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts, (err, obj, tags) => {
@@ -241,6 +244,14 @@ function supportsOEmbed(urlObj, providers) {
 		const redirection = endpoint.redirect(urlObj, ret);
 		if (redirection) {
 			debug("provider makes a redirection");
+			ret.redirect = true;
+			return ret;
+		}
+	}
+	if (typeof endpoint.rewrite == "function") {
+		const rewrite = endpoint.rewrite(urlObj, ret);
+		if (rewrite) {
+			debug("provider makes a rewrite");
 			return ret;
 		}
 	}

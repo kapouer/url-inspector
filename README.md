@@ -121,8 +121,9 @@ const opts = {
     obj.embed = "custom embed url";
    },
    redirect(urlObj, ret) {
-    // can change inspected url
+    // can change inspected url - use rewrite to make internal changes
     urlObj.path = "/another/path";
+    return true;
    }
   }]
  }],
