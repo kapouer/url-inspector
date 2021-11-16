@@ -27,7 +27,7 @@ const youtube = {
 		],
 		ua: "AdsBot-Google",
 		url: 'https://www.youtube.com/oembed', // TODO ?maxwidth=1024&maxheight=1024
-		redirect: function (obj) {
+		rewrite: function (obj) {
 			if (obj.pathname == "/watch") return;
 			let videoId;
 			if (obj.pathname.startsWith("/embed/")) {

@@ -164,6 +164,7 @@ describe("remote suite", () => {
 
 	it("should return meta with thumbnail for a youtube video embed url", async () => {
 		const meta = await inspector('https://www.youtube.com/embed/W7OY8TeglnM');
+		expect(meta.url).to.be('https://www.youtube.com/watch?v=W7OY8TeglnM');
 		expect(meta.type).to.be('video');
 		expect(meta.thumbnail).to.be.ok();
 		expect(meta.title).to.be.ok();
