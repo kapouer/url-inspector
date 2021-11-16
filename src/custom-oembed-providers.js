@@ -59,9 +59,6 @@ const twitter = {
 				const date = new Date(reg.groups.date);
 				if (!Number.isNaN(date.getTime())) obj.date = date.toISOString();
 			}
-		},
-		redirect: function (obj) {
-			return true;
 		}
 	}]
 };
@@ -72,10 +69,7 @@ const instagram = {
 		schemes: [
 			'https://www.instagram.com/*/*/'
 		],
-		redirect: function (obj) {
-			obj.headers["User-Agent"] = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15";
-			return true;
-		}
+		ua: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15"
 	}]
 };
 
