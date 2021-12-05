@@ -139,6 +139,7 @@ describe("remote suite", () => {
 		expect(meta.size).to.not.be.ok();
 		expect(meta.description).to.be.ok();
 		expect(meta.thumbnail).to.be.ok();
+		expect(meta.html.includes('<script')).to.not.be.ok();
 	}).timeout(10000);
 
 	it("should get google map metadata", async () => {
