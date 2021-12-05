@@ -235,8 +235,9 @@ function lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb) {
 	};
 }
 
-function findEndpoint(url, list) {
-	let endpoint;
+function findEndpoint(url, list, endpoint = {}) {
+	endpoint.last = false;
+	if (!list) return endpoint;
 	list.find((provider) => {
 		provider.endpoints.find((point) => {
 			if (!point.schemes) return;
@@ -246,7 +247,8 @@ function findEndpoint(url, list) {
 					: new RegExp("^" + scheme.replace(/\*/g, ".*") + "$");
 				return reg.test(url);
 			})) {
-				endpoint = point;
+				if (point.last === undefined) point.last = true;
+				Object.assign(endpoint, point);
 				return true;
 			}
 		});
@@ -266,10 +268,14 @@ function supportsOEmbed(urlObj, providers) {
 			console.error("url-inspector missing providers:", providers);
 		}
 	}
-	let endpoint = providers && findEndpoint(url, providers);
-	if (!endpoint) endpoint = findEndpoint(url, CustomOEmbedProviders);
-	if (!endpoint) endpoint = findEndpoint(url, OEmbedProviders);
-	if (!endpoint) {
+	const endpoint = findEndpoint(url, providers);
+	if (!endpoint.last) {
+		findEndpoint(url, CustomOEmbedProviders, endpoint);
+	}
+	if (!endpoint.last) {
+		findEndpoint(url, OEmbedProviders, endpoint);
+	}
+	if (!endpoint.schemes) {
 		return ret;
 	}
 	if (endpoint.builder) ret.builder = endpoint.builder;
