@@ -37,6 +37,7 @@
     "dashdash": "^2.0.0",
     "debug": ">=4.3.2",
     "entities": "^3.0.1",
+    "htmlparser2": "^7.2.0",
     "iconv-lite": "^0.6.3",
     "luxon": "^2.1.1",
     "mime": "^3.0.0",
