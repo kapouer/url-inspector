@@ -53,11 +53,14 @@ const twitter = {
 		schemes: [
 			'https://twitter.com/*/status/*'
 		],
+		last: false,
 		builder: function (urlObj, obj) {
-			const reg = />(?<date>[\w,\s]+)<\/a><\/blockquote>/.exec(obj.html);
-			if (reg) {
-				const date = new Date(reg.groups.date);
-				if (!Number.isNaN(date.getTime())) obj.date = date.toISOString();
+			const {
+				groups: { date }
+			} = />(?<date>[\w,\s]+)<\/a><\/blockquote>/.exec(obj.html) || { groups: {} };
+
+			if (date) {
+				obj.date = new Date(date);
 			}
 		}
 	}]
