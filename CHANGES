@@ -35,3 +35,11 @@ Version 3.0.0
 -------------
 
 * _html_ does not contain `<script>`, instead a _script_ url is added
+
+Version 3.6.0
+-------------
+
+* providers endpoints can have a "last" property (default true),
+  telling more endpoints can be found.
+  This allows one to add a builder to an endpoint.
+* use twitter oembed endpoint and get missing info from snippet.
