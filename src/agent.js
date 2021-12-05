@@ -109,9 +109,6 @@ exports.request = function (urlObj, obj, cb) {
 				urlObj = new URL(disposition.parameters.filename, urlObj);
 			}
 		}
-		if (obj.title == null && urlObj.pathname) {
-			obj.title = lexize(Path.basename(urlObj.pathname));
-		}
 
 		debug("(mime, type, length) is (%s, %s, %d)", obj.mime, obj.type, obj.size);
 		let charset = mimeObj.parameters && mimeObj.parameters.charset;
@@ -272,40 +269,6 @@ function replyCookies(setCookies, prev) {
 	});
 	return cookies.join('; ');
 }
-
-function lexize(str) {
-	const list = [];
-	const parts = str.split('.');
-	if (parts.length > 1) {
-		const ext = parts.pop();
-		if (ext.length <= 4) str = parts.join(' ');
-	}
-
-	str.replace(/[_-]/g, ' ').replace(/\s+/g, ' ').split(' ').forEach((word) => {
-		// throw only digits
-		if (/^\d+$/.test(word)) return;
-		// allow words with some digits and some letters
-		if (/^\d{1,6}[a-zA-Z]{1,4}$/.test(word)) {
-			// pass
-		} else if (/[a-zA-Z]+\d+/.test(word)) {
-			// throw words with digits in the middle or the end
-			return;
-		}
-
-		// throw words of length <= 2
-		if (word.length <= 1) return;
-		list.push(word);
-	});
-	// but consider it a failure if result has small length or is empty
-	if (list.length) {
-		const newstr = list.join(' ');
-		if (newstr.length <= 1) return str;
-		return newstr;
-	} else {
-		return str;
-	}
-}
-
 
 function parseType(str) {
 	if (!str) return str;
