@@ -65,7 +65,9 @@ function inspector(url, opts, cb) {
 				const thumbnailObj = new URL(obj.thumbnail, urlObj);
 				cb = lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb);
 			}
-
+			if (obj.title == null && urlObj.pathname) {
+				obj.title = lexize(Path.basename(urlObj.pathname));
+			}
 			normalize(obj);
 
 			if (opts.all && tags) obj.all = tags;
@@ -80,6 +82,39 @@ function inspector(url, opts, cb) {
 			}
 		});
 	});
+}
+
+function lexize(str) {
+	const list = [];
+	const parts = str.split('.');
+	if (parts.length > 1) {
+		const ext = parts.pop();
+		if (ext.length <= 4) str = parts.join(' ');
+	}
+
+	str.replace(/[_-]/g, ' ').replace(/\s+/g, ' ').split(' ').forEach((word) => {
+		// throw only digits
+		if (/^\d+$/.test(word)) return;
+		// allow words with some digits and some letters
+		if (/^\d{1,6}[a-zA-Z]{1,4}$/.test(word)) {
+			// pass
+		} else if (/[a-zA-Z]+\d+/.test(word)) {
+			// throw words with digits in the middle or the end
+			return;
+		}
+
+		// throw words of length <= 2
+		if (word.length <= 1) return;
+		list.push(word);
+	});
+	// but consider it a failure if result has small length or is empty
+	if (list.length) {
+		const newstr = list.join(' ');
+		if (newstr.length <= 1) return str;
+		return newstr;
+	} else {
+		return str;
+	}
 }
 
 function guessIcon(urlObj, obj, cb) {
