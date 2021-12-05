@@ -1,7 +1,9 @@
 const Path = require('path');
 const { Duration } = require('luxon');
 
-const parse5 = require('parse5');
+const { Parser } = require("htmlparser2");
+const { DomHandler } = require("domhandler");
+const { default: DomRender } = require("dom-serializer");
 const debug = require('debug')('url-inspector');
 const OEmbedProviders = require('@kapouer/oembed-providers');
 const CustomOEmbedProviders = require('./custom-oembed-providers');
@@ -417,20 +419,22 @@ function normalize(obj) {
 			obj.html = `<a href="${src}" target="_blank">${obj.title}</a>`;
 		}
 	} else {
-		const frag = parse5.parseFragment(obj.html);
-		let changed = false;
-		traverseTree(frag, (node, i) => {
-			if (node.nodeName == "script") {
-				changed = true;
-				const src = node.attrs.find(attrs => attrs.name == "src");
-				if (src && src.value) obj.script = src.value;
-				node.parentNode.childNodes[i] = {
-					nodeName: '#text',
-					value: ''
-				};
-			}
+		const handler = new DomHandler((error, dom) => {
+			let changed = false;
+			traverseTree(dom, (node) => {
+				if (node.name == "script") {
+					changed = true;
+					const src = node.attribs.src;
+					if (src) obj.script = src;
+					node.type = "text";
+					node.data = "";
+				}
+			});
+			if (changed) obj.html = DomRender(dom).trim();
 		});
-		if (changed) obj.html = parse5.serialize(frag);
+		const parser = new Parser(handler);
+		parser.write(obj.html);
+		parser.end();
 	}
 	if (obj.date) obj.date = normDate(obj.date);
 	if (!obj.date) delete obj.date;
@@ -514,19 +518,23 @@ function traverseTree(node, i, cb) {
 		cb = i;
 		i = null;
 	}
+	if (Array.isArray(node)) {
+		node.forEach((child, i) => traverseTree(child, i, cb));
+		return;
+	}
 	if (cb(node, i) === false) {
 		return false;
 	} else {
 		let i, childNode;
-		if (node.childNodes !== undefined) {
+		if (node.children !== undefined) {
 			i = 0;
-			childNode = node.childNodes[i];
+			childNode = node.children[i];
 		}
 		while (childNode !== undefined) {
 			if (traverseTree(childNode, i, cb) === false) {
 				return false;
 			} else {
-				childNode = node.childNodes[++i];
+				childNode = node.children[++i];
 			}
 		}
 	}

@@ -74,7 +74,6 @@ exports.html = function (obj, res, cb) {
 
 	const parserStream = new WritableStream({
 		onopentag(tagName, attrs) {
-			console.log(tagName);
 			let name = tagName.toLowerCase();
 			if (name == "head") res.nolimit = true;
 			const selfClosing = name == "meta" || name == "link";
@@ -131,7 +130,6 @@ exports.html = function (obj, res, cb) {
 				mkey = 'href';
 				priority = 2;
 			} else {
-				console.log(name);
 				curKey = key;
 				curText = "";
 				return;
