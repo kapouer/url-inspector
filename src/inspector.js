@@ -179,6 +179,13 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 		if (typeof embedObj.builder == "function") {
 			embedObj.builder(urlObj, robj, tags);
 		}
+		if (embedObj.obj && !robj.title) {
+			// inspect page too
+			return inspector(urlObj.href, Object.assign({ noembed: true, error: err }, opts), (err, sobj) => {
+				cb(err, Object.assign(sobj, robj), tags);
+			});
+		}
+
 		cb(null, robj, tags);
 	});
 }
