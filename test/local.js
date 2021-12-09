@@ -98,6 +98,7 @@ describe("local suite", () => {
 			size: 574,
 			title: 'Le Dauphin dauphin',
 			author: 'Thibaud Gayral',
+			date: "2012-12-07",
 			html: '<iframe src="https://player.vimeo.com/video/55084640?app_id=122963" width="478" height="204" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Le Dauphin dauphin"></iframe>',
 			script: "https://some.com/file.js",
 			width: 478,
