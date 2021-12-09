@@ -22,10 +22,10 @@ const inspectStreat = require('./streat');
 const inspectors = {
 	embed: [inspectEmbed.embed, 10000],
 	svg: [inspectSax.svg, 30000],
-	image: [inspectStreat.media, 30000, 0.1],
+	image: [inspectStreat.media, 128000, 0.1],
 	audio: [inspectStreat.media, 200000, 0.1],
-	video: [inspectStreat.media, 100000, 0.1],
-	link: [inspectSax.html, 150000],
+	video: [inspectStreat.media, 512000, 0.1],
+	link: [inspectSax.html, 512000],
 	file: [inspectStreat.file, 32000],
 	archive: [(obj, res, cb) => {
 		cb(null, obj);
