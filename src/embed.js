@@ -17,7 +17,7 @@ exports.embed = function (obj, res, cb) {
 			width: 'width',
 			height: 'height',
 			html: 'html',
-			url: 'url',
+			url: 'source',
 			provider_name: 'site',
 			author_name: 'author',
 			description: 'description',
