@@ -132,7 +132,9 @@ describe("remote suite", () => {
 	}).timeout(10000);
 
 	it("should append description to title and get picture", async () => {
-		const meta = await inspector('https://twitter.com/kapouer/status/731420341927587840');
+		const url = 'https://twitter.com/kapouer/status/731420341927587840?ref_src=twsrc%5Etfw';
+		const meta = await inspector(url);
+		expect(meta.url).to.be(url);
 		expect(meta.type).to.be('embed');
 		expect(meta.date).to.be.ok();
 		expect(meta.author).to.be.ok();
