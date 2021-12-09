@@ -184,7 +184,8 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 		if (embedObj.obj && !robj.title) {
 			// inspect page too
 			return inspector(urlObj.href, Object.assign({ noembed: true, error: err }, opts), (err, sobj) => {
-				cb(err, Object.assign(sobj, robj), tags);
+				if (err) cb(err);
+				else cb(null, Object.assign(sobj, robj), tags);
 			});
 		}
 
