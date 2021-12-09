@@ -22,7 +22,7 @@ exports.embed = function (obj, res, cb) {
 			author_name: 'author',
 			description: 'description',
 			duration: 'duration',
-			date: 'upload_date'
+			upload_date: 'date'
 		});
 		if (obj.type == "photo") obj.type = "image";
 		else if (obj.type == "rich" || !obj.type) obj.type = "embed";
