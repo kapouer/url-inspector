@@ -143,7 +143,7 @@ function guessIcon(urlObj, obj, cb) {
 		debug("find favicon", urlObjRoot);
 		agent.request(urlObjRoot, iobj, (err) => {
 			if (err) debug("favicon not found", err);
-			if (iobj.icon) obj.icon = (new URL(iobj.icon, urlObjRoot)).href;
+			if (iobj.icon) obj.icon = (new URL(iobj.icon, iobj.location || urlObjRoot)).href;
 			cb(null, obj);
 		});
 	}

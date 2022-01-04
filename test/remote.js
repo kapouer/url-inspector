@@ -88,6 +88,12 @@ describe("remote suite", () => {
 		expect(meta.size).to.not.be.ok();
 	}).timeout(10000);
 
+	it("should resolve icon href relative to current origin", async () => {
+		const meta = await inspector('https://upload.wikimedia.org/wikipedia/fr/thumb/3/34/Toronto_FC_%28logo%29.svg/1200px-Toronto_FC_%28logo%29.svg.png');
+		expect(meta.type).to.be('image');
+		expect(meta.icon).to.be("https://commons.wikimedia.org/static/favicon/commons.ico");
+	}).timeout(10000);
+
 	it("should error out with a message", async () => {
 		try {
 			await inspector('https://ubnhiryuklu.tar/ctalo');

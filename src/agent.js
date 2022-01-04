@@ -77,6 +77,7 @@ exports.request = function (urlObj, obj, cb) {
 			}
 			redirObj.redirects = (urlObj.redirects || 0) + 1;
 			if (redirObj.redirects >= 5) return cb("Too many http redirects");
+			obj.location = redirObj;
 			return exports.request(redirObj, obj, cb);
 		}
 
@@ -159,8 +160,12 @@ exports.request = function (urlObj, obj, cb) {
 				debug("fetch canonical url", canon.href);
 				canon.headers = Object.assign({}, urlObj.headers);
 				exports.request(canon, obj, (err, cobj, ctags) => {
-					if (err) return cb(null, obj, tags);
-					else return cb(null, cobj, ctags);
+					if (err) {
+						return cb(null, obj, tags);
+					} else {
+						cobj.location = canon;
+						return cb(null, cobj, ctags);
+					}
 				});
 			} else {
 				cb(null, obj, tags);
