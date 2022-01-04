@@ -1,9 +1,7 @@
+const ProxyAgent = require('proxy-agent');
 const http = require('http');
-const httpAgent = new http.Agent({});
 const https = require('https');
-const httpsAgent = new https.Agent({
-	rejectUnauthorized: false
-});
+
 const Path = require('path');
 const ContentDisposition = require('content-disposition');
 const ContentType = require('content-type');
@@ -194,9 +192,12 @@ function doRequest(urlObj, cb) {
 		});
 	} else {
 		setOrigin(urlObj);
-		const opts = { headers: urlObj.headers };
+		const opts = {
+			headers: urlObj.headers,
+			agent: new ProxyAgent()
+		};
 		const secure = /^https:?$/.test(urlObj.protocol);
-		opts.agent = secure ? httpsAgent : httpAgent;
+		if (secure) opts.rejectUnauthorized = false;
 
 		try {
 			req = (secure ? https : http).request(urlObj, opts, (res) => {
