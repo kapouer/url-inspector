@@ -8,7 +8,7 @@ describe("remote suite", () => {
 		expect(meta.ext).to.be("html");
 		expect(meta.html).to.be.ok();
 		expect(meta.html.startsWith('<iframe')).to.be.ok();
-	});
+	}).timeout(10000);
 
 	it("should inspect large file without downloading it entirely", async () => {
 		const meta = await inspector('https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.3.3.tar.xz');
@@ -16,7 +16,7 @@ describe("remote suite", () => {
 		expect(meta.size).to.be.greaterThan(80000000);
 		expect(meta.type).to.be('archive');
 		expect(meta.ext).to.be('xz');
-	});
+	}).timeout(10000);
 
 	it("should return meta with width and height", async () => {
 		const meta = await inspector('https://upload.wikimedia.org/wikipedia/commons/b/bd/1110_desktop_visual.jpg');
