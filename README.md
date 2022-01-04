@@ -152,6 +152,16 @@ inspector-url <filepath>
 
 Some options are available through cli, like `--ua` to test user agents.
 
+Proxy Agent
+-----------
+
+url-inspector does honor env variables as "proxy-from-env" package:
+
+* http_proxy, https_proxy, no_proxy
+* all_proxy
+
+and more.
+
 Low resource usage
 ------------------
 
