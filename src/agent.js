@@ -30,9 +30,14 @@ const inspectors = {
 	}, 0]
 };
 
+const proxy = new ProxyAgent();
+
 exports.exists = function (urlObj, cb) {
 	setOrigin(urlObj);
-	const opts = { headers: urlObj.headers };
+	const opts = {
+		headers: urlObj.headers,
+		agent: proxy
+	};
 	opts.method = 'HEAD';
 	const secure = /^https:?$/.test(urlObj.protocol);
 	const req = (secure ? https : http).request(urlObj, opts, (res) => {
@@ -194,7 +199,7 @@ function doRequest(urlObj, cb) {
 		setOrigin(urlObj);
 		const opts = {
 			headers: urlObj.headers,
-			agent: new ProxyAgent()
+			agent: proxy
 		};
 		const secure = /^https:?$/.test(urlObj.protocol);
 		if (secure) opts.rejectUnauthorized = false;
