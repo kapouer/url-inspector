@@ -62,7 +62,13 @@ const twitter = {
 			if (date) {
 				obj.date = new Date(date);
 			}
-			obj.icon = "https://twitter.com/favicon.ico";
+			obj.icon = "https://abs.twimg.com/favicons/twitter.2.ico";
+			Object.assign(obj, (/\((?<title>@\w+)\)/.exec(obj.html) || {}).groups);
+
+			const { text } = (/<p[^>]*>(?<text>.*?)(<a\s|<\/p>)/.exec(obj.html) || {}).groups || {};
+			if (text) {
+				obj.description = text.replace(/<br>/g, ' ').replace(/\s+/g, ' ');
+			}
 			Object.assign(obj, (/\((?<title>@\w+)\)/.exec(obj.html) || {}).groups);
 		}
 	}]
