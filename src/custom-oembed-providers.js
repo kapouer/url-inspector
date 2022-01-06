@@ -62,6 +62,8 @@ const twitter = {
 			if (date) {
 				obj.date = new Date(date);
 			}
+			obj.icon = "https://twitter.com/favicon.ico";
+			Object.assign(obj, (/\((?<title>@\w+)\)/.exec(obj.html) || {}).groups);
 		}
 	}]
 };
