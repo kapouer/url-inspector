@@ -162,8 +162,12 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	if (opts.error) obj.error = opts.error;
 	urlObj.headers = Object.assign({
 		"User-Agent": embedObj.ua || opts.ua || "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15",
-		"Accept-Encoding": "identity",
-		"Accept": "*/*"
+		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+		"Accept-Encoding": "gzip, deflate",
+		"Accept-Language": "en-US;q=0.8,en;q=0.7",
+		"Pragma": "no-cache",
+		"Cache-Control": "no-cache",
+		"DNT": "1"
 	}, urlObj.headers);
 	if (embedObj.obj) embedObj.obj.headers = Object.assign({}, urlObj.headers);
 	const actualObj = embedObj.obj || urlObj;

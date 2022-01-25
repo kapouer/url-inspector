@@ -1,6 +1,7 @@
 const ProxyAgent = require('proxy-agent');
 const http = require('http');
 const https = require('https');
+const zlib = require('zlib');
 
 const Path = require('path');
 const ContentDisposition = require('content-disposition');
@@ -62,18 +63,19 @@ exports.request = function (urlObj, obj, cb) {
 		if (err) return cb(err);
 		const status = res.statusCode;
 		res.pause();
+		const headers = res.headers;
 		debug("got response status %d", status);
 
 		if (status < 200 || (status >= 400 && status < 600)) {
 			// definitely an error - status above 600 could be an anti-bot system
 			return cb(status);
 		}
-		if (status >= 300 && status < 400 && res.headers.location) {
+		if (status >= 300 && status < 400 && headers.location) {
 			req.abort();
-			const redirObj = new URL(res.headers.location, urlObj.href);
+			const redirObj = new URL(headers.location, urlObj.href);
 			debug("to location", redirObj);
 			redirObj.headers = Object.assign({}, urlObj.headers);
-			const cookies = replyCookies(res.headers['set-cookie'], redirObj.headers.Cookie);
+			const cookies = replyCookies(headers['set-cookie'], redirObj.headers.Cookie);
 			if (cookies) {
 				debug("replying with cookie", cookies);
 				redirObj.headers.Cookie = cookies;
@@ -84,7 +86,7 @@ exports.request = function (urlObj, obj, cb) {
 			return exports.request(redirObj, obj, cb);
 		}
 
-		let contentType = res.headers['content-type'];
+		let contentType = headers['content-type'];
 
 		if (!contentType) contentType = mime.getType(Path.basename(urlObj.pathname));
 		const mimeObj = parseType(contentType);
@@ -96,11 +98,11 @@ exports.request = function (urlObj, obj, cb) {
 		}
 		obj.ext = mime.getExtension(obj.mime);
 
-		const contentLength = res.headers['content-length'];
+		const contentLength = headers['content-length'];
 		if (contentLength != null) {
 			obj.size = parseInt(contentLength);
 		}
-		let disposition = res.headers['content-disposition'];
+		let disposition = headers['content-disposition'];
 		if (disposition != null) {
 			debug("got content disposition", disposition);
 			if (disposition.startsWith('filename=')) disposition = 'attachment; ' + disposition;
@@ -112,6 +114,17 @@ exports.request = function (urlObj, obj, cb) {
 			if (disposition && disposition.parameters.filename) {
 				urlObj = new URL(disposition.parameters.filename, urlObj);
 			}
+		}
+
+		const fun = inspectors[obj.type];
+		if (urlObj.protocol != "file:") pipeLimit(req, res, fun[1], fun[2]);
+
+		if (["gzip", "deflate"].includes(headers['content-encoding'])) {
+			const gzip = zlib.createGunzip();
+			gzip.on('error', err => {
+				// ignore
+			});
+			res = res.pipe(gzip);
 		}
 
 		debug("(mime, type, length) is (%s, %s, %d)", obj.mime, obj.type, obj.size);
@@ -126,8 +139,7 @@ exports.request = function (urlObj, obj, cb) {
 		} else if (mimeObj.type == "text" || mimeObj.subtype == "svg" || mimeObj.suffix == "xml") {
 			res.setEncoding("utf-8");
 		}
-		const fun = inspectors[obj.type];
-		if (urlObj.protocol != "file:") pipeLimit(req, res, fun[1], fun[2]);
+
 		fun[0](obj, res, (err, tags) => {
 			if (err) {
 				// eslint-disable-next-line no-console
