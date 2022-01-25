@@ -229,7 +229,7 @@ exports.svg = function (obj, res, cb) {
 
 function importJsonLD(tags, text, priorities) {
 	try {
-		const obj = typeof text == "string" ? JSON.parse(text) : text;
+		const obj = typeof text == "string" ? JSON.parse(text.replace(/\n/g, '')) : text;
 		let ld = {};
 		(Array.isArray(obj) ? obj : [obj]).forEach((item) => {
 			if (!item) return;
