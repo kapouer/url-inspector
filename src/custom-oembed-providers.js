@@ -74,15 +74,5 @@ const twitter = {
 	}]
 };
 
-const instagram = {
-	provider_name: "instagram.com",
-	endpoints: [{
-		schemes: [
-			'https://www.instagram.com/*/*/'
-		],
-		ua: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15"
-	}]
-};
-
-module.exports = [googlemaps, youtube, twitter, instagram];
+module.exports = [googlemaps, youtube, twitter];
 

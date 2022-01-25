@@ -161,7 +161,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	if (opts.nocanonical) obj.nocanonical = true;
 	if (opts.error) obj.error = opts.error;
 	urlObj.headers = Object.assign({
-		"User-Agent": embedObj.ua || opts.ua || "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60 Safari/537",
+		"User-Agent": embedObj.ua || opts.ua || "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15",
 		"Accept-Encoding": "identity",
 		"Accept": "*/*"
 	}, urlObj.headers);
