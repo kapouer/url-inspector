@@ -56,6 +56,7 @@ exports.request = function (urlObj, obj, cb) {
 			// definitely an error - status above 600 could be an anti-bot system
 			return cb(statusCode);
 		}
+		if (headers.location) obj.location = new URL(headers.location, urlObj.href);
 		let contentType = headers['content-type'];
 		if (!contentType) contentType = mime.getType(Path.basename(urlObj.pathname));
 		const mimeObj = parseType(contentType);
@@ -269,6 +270,8 @@ function curlRequest(urlObj) {
 				res.headers = {};
 				const headers = hlist.pop();
 				delete headers.result;
+				const last = hlist.pop();
+				if (last && last.location) headers.location = last.location;
 				res.headers = headers;
 				res.statusCode = statusCode;
 				data.on('error', () => {
