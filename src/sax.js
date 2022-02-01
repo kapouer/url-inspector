@@ -149,6 +149,7 @@ exports.html = function (obj, res, cb) {
 			if (curText != null) curText += text;
 		},
 		onclosetag(tagName) {
+			if (tagName == "meta") return;
 			if (tagName == "head") delete res.nolimit;
 			if (curSchemaLevel == curLevel) {
 				// we finished parsing the content of an embedded Object, abort parsing
