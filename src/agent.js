@@ -8,6 +8,7 @@ const fs = require('fs');
 const { PassThrough } = require('stream');
 const debug = require('debug')('url-inspector');
 const { curly } = require('node-libcurl');
+const { getProxyForUrl } = require('proxy-from-env');
 
 const inspectSax = require('./sax');
 const inspectEmbed = require('./embed');
@@ -252,7 +253,7 @@ function curlRequest(urlObj) {
 	const res = new PassThrough();
 	return new Promise((resolve) => {
 		setImmediate(() => {
-			const ret = curly[method](urlObj.href, {
+			const opts = {
 				maxRedirs: 10,
 				followLocation: true,
 				acceptEncoding: "gzip, deflate, br",
@@ -260,7 +261,22 @@ function curlRequest(urlObj) {
 				curlyStreamResponse: method == "get",
 				curlyResponseBodyParsers: false,
 				httpHeader: headersList
-			}).then(({ headers: hlist, data, statusCode }) => {
+			};
+			const proxyUrl = getProxyForUrl(urlObj);
+			if (proxyUrl) {
+				if (proxyUrl.startsWith('https://')) {
+					debug("https proxy", proxyUrl);
+					opts.httpProxyTunnel = proxyUrl;
+				} else {
+					debug("http proxy", proxyUrl);
+					opts.proxy = proxyUrl;
+				}
+			}
+			const ret = curly[method](urlObj.href, opts).then(({
+				headers: hlist,
+				data,
+				statusCode
+			}) => {
 				const req = {
 					res,
 					abort() {

@@ -44,6 +44,7 @@
     "media-typer": "^1.1.0",
     "mime": "^3.0.0",
     "node-libcurl": "^2.3.4",
+    "proxy-from-env": "^1.1.0",
     "streat": "^0.3.0",
     "strong-data-uri": "^1.0.6"
   },
