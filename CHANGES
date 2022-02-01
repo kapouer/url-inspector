@@ -10,12 +10,10 @@ Version 1.2.0
 * add "ext" key
 * ensure duration is a duration
 
-
 Version 1.5.0
 -------------
 
 * add custom providers
-
 
 Version 2.0.0
 -------------
@@ -43,3 +41,8 @@ Version 3.6.0
   telling more endpoints can be found.
   This allows one to add a builder to an endpoint.
 * use twitter oembed endpoint and get missing info from snippet.
+
+Version 4.0.0
+-------------
+
+* use libcurl to work around many issues with nodejs http(s,2) client.
