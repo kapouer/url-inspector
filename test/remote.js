@@ -116,14 +116,13 @@ describe("remote suite", () => {
 		expect(meta.title).to.be.ok();
 	}).timeout(10000);
 
-	/* disabled because discovery is ON and in that case oembed is ignored
-	it("should inspect even when oembed endpoint fails", async () => {
+
+	it("should work with vimeo...", async () => {
 		const meta = await inspector('https://vimeo.com/75809732');
-		expect(meta.error).to.be(403);
 		expect(meta.type).to.be('video');
 		expect(meta.thumbnail).to.be.ok();
 	});
-	*/
+
 
 	it("should change type if schema has embed", async () => {
 		const meta = await inspector('http://video.lefigaro.fr/figaro/video/une-voiture-engloutie-par-un-sinkhole-en-chine/3919138012001/');
