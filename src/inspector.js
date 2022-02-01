@@ -139,7 +139,7 @@ function guessIcon(urlObj, obj, cb) {
 			delete obj.reference;
 		}
 		urlObjRoot.headers = Object.assign({}, urlObj.headers, {
-			'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+			'Accept': 'image/svg+xml,image/*,*/*;q=0.8'
 		});
 		debug("find favicon", urlObjRoot);
 		agent.request(urlObjRoot, iobj, (err) => {
@@ -163,7 +163,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	if (opts.error) obj.error = opts.error;
 
 	urlObj.headers = Object.assign({
-		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 		"Accept-Encoding": "gzip, deflate, br",
 		"Cache-Control": "no-cache",
 		"DNT": "1",
@@ -232,7 +232,7 @@ function lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb) {
 			return cb(null, obj);
 		}
 		thumbnailObj.headers = {
-			'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+			'Accept': 'image/svg+xml,image/*,*/*;q=0.8'
 		};
 		inspector(thumbnailObj, {
 			nofavicon: true,
