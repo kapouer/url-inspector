@@ -462,6 +462,8 @@ function normalize(obj) {
 		}
 	});
 
+	delete obj.location;
+
 	return obj;
 }
 
