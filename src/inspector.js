@@ -11,8 +11,6 @@ const agent = require('./agent');
 
 const { decodeHTML } = require('entities');
 
-
-
 module.exports = inspector;
 
 function inspector(url, opts, cb) {
@@ -164,14 +162,15 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	if (opts.noembed) obj.noembed = true;
 	if (opts.nocanonical) obj.nocanonical = true;
 	if (opts.error) obj.error = opts.error;
+
 	urlObj.headers = Object.assign({
-		"User-Agent": embedObj.ua || opts.ua || "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0 Safari/605.1.15",
-		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-		"Accept-Encoding": "gzip, deflate",
-		"Accept-Language": "en-US;q=0.8,en;q=0.7",
-		"Pragma": "no-cache",
+		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+		"Accept-Encoding": "gzip, deflate, br",
 		"Cache-Control": "no-cache",
-		"DNT": "1"
+		"DNT": "1",
+		"Pragma": "no-cache",
+		"Upgrade-Insecure-Requests": "1",
+		"User-Agent": embedObj.ua || opts.ua || "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36",
 	}, urlObj.headers);
 	if (embedObj.obj) embedObj.obj.headers = Object.assign({}, urlObj.headers);
 	const actualObj = embedObj.obj || urlObj;
