@@ -1,13 +1,19 @@
 const googlemaps = {
 	provider_name: "maps.google.com",
 	endpoints: [{
-		schemes: [/.*google\.[^/]+\/maps\/place\/.+/],
+		schemes: [
+			/.*google\.[^/]+\/maps\/place\/.+/,
+			/goo\.gl\/maps\/.+/
+		],
 		builder: function (urlObj, obj) {
-			const match = /.*google\.[^/]+\/maps\/place\/([\w+]*)\/.*/.exec(urlObj.href);
-			if (!match || match.length != 2) return;
-			const place = encodeURIComponent(match[1]);
 			obj.type = "embed";
-			obj.html = `<iframe src="//maps.google.com/maps?t=m&q=${place}&output=embed"></iframe>`;
+			obj.html = `<iframe src="//maps.google.com/maps?t=m&q=${encodeURIComponent(obj.title)}&output=embed"></iframe>`;
+			obj.site = 'Google Maps';
+			const parts = (obj.title || '').split('·');
+			if (parts.length >= 2) {
+				obj.title = parts.shift().trim();
+				obj.description = parts.join('·');
+			}
 		}
 	}]
 };
