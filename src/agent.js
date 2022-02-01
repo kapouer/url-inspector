@@ -29,7 +29,6 @@ const inspectors = {
 };
 
 exports.exists = function (urlObj, cb) {
-	setOrigin(urlObj);
 	urlObj.method = 'HEAD';
 	curlRequest(urlObj).then(res => {
 		const status = res.statusCode;
@@ -191,13 +190,6 @@ function doRequest(urlObj, cb) {
 			}
 		});
 	}
-}
-
-function setOrigin(urlObj) {
-	const origin = new URL(urlObj);
-	origin.pathname = "";
-	origin.search = "";
-	urlObj.headers.Origin = origin.href;
 }
 
 function mime2type(obj) {

@@ -11,6 +11,11 @@ const agent = require('./agent');
 
 const { decodeHTML } = require('entities');
 
+const accepts = {
+	image: "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
+	document: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+};
+
 module.exports = inspector;
 
 function inspector(url, opts, cb) {
@@ -116,11 +121,19 @@ function lexize(str) {
 	}
 }
 
+function getOrigin(urlObj) {
+	const origin = new URL(urlObj);
+	origin.pathname = "";
+	origin.search = "";
+	return origin.href;
+}
+
 function guessIcon(urlObj, obj, cb) {
 	if (obj.ext == "html") {
 		const iconObj = new URL("/favicon.ico", urlObj);
 		iconObj.headers = Object.assign({}, urlObj.headers, {
-			'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+			'Accept': accepts.image,
+			'Origin': getOrigin(urlObj)
 		});
 
 		agent.exists(iconObj, (mime) => {
@@ -139,7 +152,8 @@ function guessIcon(urlObj, obj, cb) {
 			delete obj.reference;
 		}
 		urlObjRoot.headers = Object.assign({}, urlObj.headers, {
-			'Accept': 'image/svg+xml,image/*,*/*;q=0.8'
+			Accept: accepts.image,
+			Origin: getOrigin(urlObjRoot)
 		});
 		debug("find favicon", urlObjRoot);
 		agent.request(urlObjRoot, iobj, (err) => {
@@ -163,7 +177,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	if (opts.error) obj.error = opts.error;
 
 	urlObj.headers = Object.assign({
-		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+		"Accept": accepts.document,
 		"Accept-Encoding": "gzip, deflate, br",
 		"Cache-Control": "no-cache",
 		"DNT": "1",
@@ -232,7 +246,8 @@ function lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb) {
 			return cb(null, obj);
 		}
 		thumbnailObj.headers = {
-			'Accept': 'image/svg+xml,image/*,*/*;q=0.8'
+			Accept: accepts.image,
+			Origin: getOrigin(thumbnailObj)
 		};
 		inspector(thumbnailObj, {
 			nofavicon: true,
