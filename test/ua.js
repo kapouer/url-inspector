@@ -21,4 +21,9 @@ describe("user-agent suite", () => {
 		const meta = await inspector('https://www.teamviewer.com/en-us/download/windows/');
 		expect(meta.type).to.be("link");
 	}).timeout(10000);
+
+	it("no 403 on sport.sky", async () => {
+		const meta = await inspector('https://sport.sky.de/fussball/artikel/wolfsburg-transfer-news-weghorst-kurz-vor-wechsel-in-die-premier-league-sky-info/12528713/34942');
+		expect(meta.type).to.be("link");
+	}).timeout(10000);
 });
