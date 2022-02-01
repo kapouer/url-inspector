@@ -76,7 +76,7 @@ describe("local suite", () => {
 		expect(meta.ext).to.be("html");
 		expect(meta.html).to.be.ok();
 		expect(meta.html.startsWith('<iframe')).to.be.ok();
-	}).timeout(10000);
+	}).timeout(3000);
 
 	it("should not crash when oembed discovery fails", async () => {
 		const meta = await inspector(`${host}/video`, {
