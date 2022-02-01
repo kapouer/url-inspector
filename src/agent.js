@@ -47,7 +47,6 @@ exports.exists = function (urlObj, cb) {
 
 exports.request = function (urlObj, obj, cb) {
 	debug("request url", urlObj.href);
-
 	doRequest(urlObj, (err, req, res) => {
 		if (err) return cb(err);
 		const { statusCode, headers } = res;
@@ -121,6 +120,7 @@ exports.request = function (urlObj, obj, cb) {
 			}
 			delete obj.canonical;
 			delete obj.nocanonical;
+
 			if (fetchEmbed) {
 				obj.type = "embed";
 				// prevent loops
@@ -249,33 +249,35 @@ function curlRequest(urlObj) {
 	});
 	const method = (urlObj.method || "get").toLowerCase();
 	const res = new PassThrough();
-	return curly[method](urlObj.href, {
-		maxRedirs: 10,
-		followLocation: true,
-		acceptEncoding: "gzip, deflate, br",
-		curlyLowerCaseHeaders: true,
-		curlyStreamResponse: method == "get",
-		curlyResponseBodyParsers: false,
-		httpHeader: headersList
-	}).then(({ headers: hlist, data, statusCode }) => {
-		const req = {
-			res,
-			abort() {
-				data.destroy();
-			}
-		};
-		res.headers = {};
-		const headers = hlist.pop();
-		delete headers.result;
-		res.headers = headers;
-		res.statusCode = statusCode;
-		data.on('error', () => {
-			res.end();
+	return new Promise((resolve) => {
+		setImmediate(() => {
+			const ret = curly[method](urlObj.href, {
+				maxRedirs: 10,
+				followLocation: true,
+				acceptEncoding: "gzip, deflate, br",
+				curlyLowerCaseHeaders: true,
+				curlyStreamResponse: method == "get",
+				curlyResponseBodyParsers: false,
+				httpHeader: headersList
+			}).then(({ headers: hlist, data, statusCode }) => {
+				const req = {
+					res,
+					abort() {
+						data.destroy();
+					}
+				};
+				res.headers = {};
+				const headers = hlist.pop();
+				delete headers.result;
+				res.headers = headers;
+				res.statusCode = statusCode;
+				data.on('error', () => {
+					res.end();
+				});
+				data.pipe(res);
+				return req;
+			});
+			resolve(ret);
 		});
-		data.pipe(res);
-		return req;
-	}).catch(err => {
-		console.error("curl error", err);
-		throw err;
 	});
 }

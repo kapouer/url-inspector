@@ -48,7 +48,6 @@ function inspector(url, opts, cb) {
 			url = urlObj.href;
 		}
 		const obj = { url };
-
 		requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts, (err, obj, tags) => {
 			if (err) return cb(err);
 			if (!obj) return cb(400);
