@@ -45,7 +45,7 @@ describe("local suite", () => {
 
 	it("should get title", async () => {
 		const meta = await inspector(`${host}/lavieenbois.html`);
-		expect(meta.title).to.be.ok();
+		expect(meta.title).to.be("Pascal Oudet - Sculpture - Wood art");
 	});
 	it("should not crash with svg", async () => {
 		const meta = await inspector(`${host}/test.svg`);
