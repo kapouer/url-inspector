@@ -43,10 +43,9 @@
     "luxon": "^2.1.1",
     "media-typer": "^1.1.0",
     "mime": "^3.0.0",
-    "proxy-agent": "^5.0.0",
+    "node-libcurl": "^2.3.4",
     "streat": "^0.3.0",
-    "strong-data-uri": "^1.0.6",
-    "tough-cookie": "^4.0.0"
+    "strong-data-uri": "^1.0.6"
   },
   "devDependencies": {
     "@kapouer/eslint-config": "^1.6.2",

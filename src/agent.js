@@ -1,17 +1,13 @@
-const ProxyAgent = require('proxy-agent');
-const http = require('http');
-const https = require('https');
-const zlib = require('zlib');
-
 const Path = require('path');
 const ContentDisposition = require('content-disposition');
 const ContentType = require('content-type');
 const MediaTyper = require('media-typer');
 const iconv = require('iconv-lite');
-const Cookie = require('tough-cookie').Cookie;
 const mime = require('mime');
 const fs = require('fs');
+const { PassThrough } = require('stream');
 const debug = require('debug')('url-inspector');
+const { curly } = require('node-libcurl');
 
 const inspectSax = require('./sax');
 const inspectEmbed = require('./embed');
@@ -31,29 +27,22 @@ const inspectors = {
 	}, 0]
 };
 
-const proxy = new ProxyAgent();
-
 exports.exists = function (urlObj, cb) {
 	setOrigin(urlObj);
-	const opts = {
-		headers: urlObj.headers,
-		agent: proxy
-	};
-	opts.method = 'HEAD';
-	const secure = /^https:?$/.test(urlObj.protocol);
-	const req = (secure ? https : http).request(urlObj, opts, (res) => {
+	urlObj.method = 'HEAD';
+	curlRequest(urlObj).then(res => {
 		const status = res.statusCode;
 		debug("remote", urlObj, "returns", status);
-		req.destroy();
-		if (status == 204 || res.headers['Content-Length'] == 0) {
+		if (status == 204 || res.headers['content-length'] == 0) {
 			return cb(false);
 		} else if (status >= 200 && status < 400) {
-			return cb(parseType(res.headers['Content-Type']));
+			return cb(parseType(res.headers['content-type']));
 		} else {
 			return cb(false);
 		}
+	}).catch(err => {
+		cb(false);
 	});
-	req.end();
 };
 
 exports.request = function (urlObj, obj, cb) {
@@ -61,33 +50,14 @@ exports.request = function (urlObj, obj, cb) {
 
 	doRequest(urlObj, (err, req, res) => {
 		if (err) return cb(err);
-		const status = res.statusCode;
-		res.pause();
-		const headers = res.headers;
-		debug("got response status %d", status);
+		const { statusCode, headers } = res;
+		debug("got response status %d", statusCode);
 
-		if (status < 200 || (status >= 400 && status < 600)) {
+		if (statusCode < 200 || (statusCode >= 400 && statusCode < 600)) {
 			// definitely an error - status above 600 could be an anti-bot system
-			return cb(status);
+			return cb(statusCode);
 		}
-		if (status >= 300 && status < 400 && headers.location) {
-			req.abort();
-			const redirObj = new URL(headers.location, urlObj.href);
-			debug("to location", redirObj);
-			redirObj.headers = Object.assign({}, urlObj.headers);
-			const cookies = replyCookies(headers['set-cookie'], redirObj.headers.Cookie);
-			if (cookies) {
-				debug("replying with cookie", cookies);
-				redirObj.headers.Cookie = cookies;
-			}
-			redirObj.redirects = (urlObj.redirects || 0) + 1;
-			if (redirObj.redirects >= 5) return cb("Too many http redirects");
-			obj.location = redirObj;
-			return exports.request(redirObj, obj, cb);
-		}
-
 		let contentType = headers['content-type'];
-
 		if (!contentType) contentType = mime.getType(Path.basename(urlObj.pathname));
 		const mimeObj = parseType(contentType);
 		if (obj.type == "embed") {
@@ -118,14 +88,6 @@ exports.request = function (urlObj, obj, cb) {
 
 		const fun = inspectors[obj.type];
 		if (urlObj.protocol != "file:") pipeLimit(req, res, fun[1], fun[2]);
-
-		if (["gzip", "deflate"].includes(headers['content-encoding'])) {
-			const gzip = zlib.createGunzip();
-			gzip.on('error', err => {
-				// ignore
-			});
-			res = res.pipe(gzip);
-		}
 
 		debug("(mime, type, length) is (%s, %s, %d)", obj.mime, obj.type, obj.size);
 		let charset = mimeObj.parameters && mimeObj.parameters.charset;
@@ -196,7 +158,7 @@ function doRequest(urlObj, cb) {
 			if (err) return cb(err);
 			try {
 				req = fs.createReadStream(urlObj.pathname).on('error', cb);
-			} catch(err) {
+			} catch (err) {
 				cb(err);
 				return;
 			}
@@ -208,32 +170,23 @@ function doRequest(urlObj, cb) {
 			cb(null, req, req);
 		});
 	} else {
-		setOrigin(urlObj);
-		const opts = {
-			headers: urlObj.headers,
-			agent: proxy
-		};
-		const secure = /^https:?$/.test(urlObj.protocol);
-		if (secure) opts.rejectUnauthorized = false;
-
-		try {
-			req = (secure ? https : http).request(urlObj, opts, (res) => {
+		curlRequest(urlObj).then(req => {
+			const res = req.res;
+			if (res.statusCode == 403) {
+				req.abort();
+				throw new Error(403);
+			} else {
 				cb(null, req, res);
-			}).on('error', (err) => {
-				if (err.code == "ECONNRESET" && opts.headers['User-Agent'].includes("Googlebot")) {
-					// suspicion of User-Agent sniffing
-					debug("ECONNRESET, trying bot-less ua");
-					urlObj.headers["User-Agent"] = "Mozilla/5.0 (compatible)";
-					doRequest(opts, cb);
-				} else {
-					cb(err);
-				}
-			});
-			req.end();
-		} catch(err) {
-			cb(err);
-			return;
-		}
+			}
+		}).catch((err) => {
+			if (urlObj.headers['User-Agent']) {
+				debug("retrying with default curl ua");
+				delete urlObj.headers["User-Agent"];
+				doRequest(urlObj, cb);
+			} else {
+				cb(err);
+			}
+		});
 	}
 }
 
@@ -279,20 +232,6 @@ function pipeLimit(req, res, length, percent) {
 	});
 }
 
-function replyCookies(setCookies, prev) {
-	if (!setCookies) return prev;
-	let cookies;
-	if (Array.isArray(setCookies)) cookies = setCookies.map(Cookie.parse);
-	else cookies = [Cookie.parse(setCookies)];
-	cookies = cookies.map((cookie) => {
-		return cookie.cookieString();
-	});
-	if (prev) prev.split('; ').forEach((str) => {
-		if (cookies.indexOf(str) < 0) cookies.unshift(str);
-	});
-	return cookies.join('; ');
-}
-
 function parseType(str) {
 	if (!str) return str;
 	try {
@@ -302,4 +241,41 @@ function parseType(str) {
 	} catch (e) {
 		return {};
 	}
+}
+
+function curlRequest(urlObj) {
+	const headersList = Object.entries(urlObj.headers).map(([key, val]) => {
+		return `${key}: ${val}`;
+	});
+	const method = (urlObj.method || "get").toLowerCase();
+	const res = new PassThrough();
+	return curly[method](urlObj.href, {
+		maxRedirs: 10,
+		followLocation: true,
+		acceptEncoding: "gzip, deflate, br",
+		curlyLowerCaseHeaders: true,
+		curlyStreamResponse: method == "get",
+		curlyResponseBodyParsers: false,
+		httpHeader: headersList
+	}).then(({ headers: hlist, data, statusCode }) => {
+		const req = {
+			res,
+			abort() {
+				data.destroy();
+			}
+		};
+		res.headers = {};
+		const headers = hlist.pop();
+		delete headers.result;
+		res.headers = headers;
+		res.statusCode = statusCode;
+		data.on('error', () => {
+			res.end();
+		});
+		data.pipe(res);
+		return req;
+	}).catch(err => {
+		console.error("curl error", err);
+		throw err;
+	});
 }
