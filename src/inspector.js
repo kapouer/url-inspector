@@ -463,6 +463,7 @@ function normalize(obj) {
 	});
 
 	delete obj.location;
+	if (obj.size == null && 'size' in obj) delete obj.size;
 
 	return obj;
 }

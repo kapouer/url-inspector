@@ -34,6 +34,7 @@ describe("local suite", () => {
 			next();
 		}, express.static(__dirname + '/fixtures'));
 	});
+
 	after(() => {
 		if (server) server.close();
 	});

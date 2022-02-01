@@ -35,9 +35,9 @@ describe("remote suite", () => {
 		expect(meta.title).to.be.ok();
 		expect(meta.mime).to.be('text/html');
 		expect(meta.ext).to.be('html');
-		expect(meta.size).to.not.be.ok();
 		expect(meta.width).to.be.ok();
 		expect(meta.height).to.be.ok();
+		expect(meta).to.not.have.property("size");
 	});
 
 	it("should return meta with thumbnail for a figaro article", async () => {
@@ -180,7 +180,7 @@ describe("remote suite", () => {
 		expect(meta.title).to.be.ok();
 		expect(meta.source).to.be.ok();
 		expect(meta.ext).to.be('html');
-		expect(meta.size).to.not.be.ok();
+		expect(meta).to.not.have.property("size");
 		expect(meta.width).to.be.ok();
 		expect(meta.height).to.be.ok();
 	}).timeout(10000);
