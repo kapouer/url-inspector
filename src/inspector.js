@@ -122,7 +122,9 @@ function lexize(str) {
 function guessIcon(urlObj, obj, cb) {
 	if (obj.ext == "html") {
 		const iconObj = new URL("/favicon.ico", urlObj);
-		iconObj.headers = Object.assign({}, urlObj.headers);
+		iconObj.headers = Object.assign({}, urlObj.headers, {
+			'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+		});
 
 		agent.exists(iconObj, (mime) => {
 			if (mime && mime.type == "image") obj.icon = iconObj.href;
@@ -139,7 +141,9 @@ function guessIcon(urlObj, obj, cb) {
 			obj.site = urlObjRoot.hostname;
 			delete obj.reference;
 		}
-		urlObjRoot.headers = Object.assign({}, urlObj.headers);
+		urlObjRoot.headers = Object.assign({}, urlObj.headers, {
+			'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+		});
 		debug("find favicon", urlObjRoot);
 		agent.request(urlObjRoot, iobj, (err) => {
 			if (err) debug("favicon not found", err);
@@ -229,6 +233,9 @@ function lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb) {
 		if (obj.width && obj.height || obj.type != "video") {
 			return cb(null, obj);
 		}
+		thumbnailObj.headers = {
+			'Accept': 'image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+		};
 		inspector(thumbnailObj, {
 			nofavicon: true,
 			nocanonical: true,
