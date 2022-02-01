@@ -12,4 +12,13 @@ describe("user-agent suite", () => {
 		expect(meta.type).to.be("link");
 	}).timeout(10000);
 
+	it("no connection reset on andra", async () => {
+		const meta = await inspector('https://www.andra.fr/espace-producteurs/conditions-de-prise-en-charge-des-objets-radioactifs');
+		expect(meta.type).to.be("link");
+	}).timeout(10000);
+
+	it("no 403 on team viewer", async () => {
+		const meta = await inspector('https://www.teamviewer.com/en-us/download/windows/');
+		expect(meta.type).to.be("link");
+	}).timeout(10000);
 });
