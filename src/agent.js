@@ -15,7 +15,7 @@ const inspectStreat = require('./streat');
 
 // maximum bytes to download for each type of data
 const inspectors = {
-	embed: [inspectEmbed.embed, 10000],
+	embed: [inspectEmbed.embed, 30000],
 	svg: [inspectSax.svg, 30000],
 	image: [inspectStreat.media, 128000, 0.1],
 	audio: [inspectStreat.media, 200000, 0.1],
