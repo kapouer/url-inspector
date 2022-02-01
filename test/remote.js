@@ -145,7 +145,8 @@ describe("remote suite", () => {
 		expect(meta.author).to.be.ok();
 		expect(meta.size).to.not.be.ok();
 		expect(meta.description).to.be.ok();
-		//expect(meta.thumbnail).to.be.ok();
+		// no longer inspecting the page itself to avoid too many requests
+		// expect(meta.thumbnail).to.be.ok();
 		expect(meta.html.includes('<script')).to.not.be.ok();
 	}).timeout(10000);
 
