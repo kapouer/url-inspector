@@ -88,17 +88,12 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 Installation
 ------------
 
-```shell
-npm install url-inspector
-```
+Besides `npm i url-inspector`:
 
-Add `-g` switch to install the executable.
+* exiftool
+* libcurl (and libcurl-dev if node-libcurl needs to be rebuilt)
 
-exiftool executable must be available:
-
-* a package is available for debian/ubuntu: libimage-exiftool-perl
-and for fedora: perl-Image-ExifTool.
-* Otherwise it is installable from [exiftool](http://owl.phy.queensu.ca/~phil/exiftool/)
+Both programs are well-maintained, and available in most linux distributions.
 
 API
 ---
