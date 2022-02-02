@@ -112,7 +112,10 @@ const instagram = {
 			"https://instagr.am/reel/*"
 		],
 		"url": "https://api.instagram.com/oembed/",
-		"formats": ["json"]
+		"formats": ["json"],
+		builder: function (urlObj, obj) {
+			obj.icon = "https://www.instagram.com/favicon.ico";
+		}
 	}]
 };
 
