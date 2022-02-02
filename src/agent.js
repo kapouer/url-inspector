@@ -7,7 +7,7 @@ const mime = require('mime');
 const fs = require('fs');
 const { PassThrough } = require('stream');
 const debug = require('debug')('url-inspector');
-const { curly } = require('node-libcurl');
+const { curly, CurlCode } = require('node-libcurl');
 const { getProxyForUrl } = require('proxy-from-env');
 
 const inspectSax = require('./sax');
@@ -283,7 +283,12 @@ function curlRequest(urlObj) {
 				if (last && last.location) headers.location = last.location;
 				res.headers = headers;
 				res.statusCode = statusCode;
-				data.on('error', () => {
+				data.on('error', (err) => {
+					if (err.isCurlError && err.code === CurlCode.CURLE_ABORTED_BY_CALLBACK) {
+			      // this is expected
+			    } else {
+			      throw err
+    			}
 					res.end();
 				});
 				data.pipe(res);
