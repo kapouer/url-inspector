@@ -480,6 +480,14 @@ function normalize(obj) {
 	delete obj.location;
 	if (obj.size == null && 'size' in obj) delete obj.size;
 
+	if (obj.title && obj.title.includes('\n')) {
+		const parts = obj.title.split(/\n+/);
+		obj.title = parts.shift();
+		if (!obj.description && parts.length > 0) {
+			obj.description = parts.join('\n');
+		}
+	}
+
 	return obj;
 }
 
