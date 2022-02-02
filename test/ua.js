@@ -26,4 +26,14 @@ describe("user-agent suite", () => {
 		const meta = await inspector('https://sport.sky.de/fussball/artikel/wolfsburg-transfer-news-weghorst-kurz-vor-wechsel-in-die-premier-league-sky-info/12528713/34942');
 		expect(meta.type).to.be("link");
 	}).timeout(10000);
+
+	it("no redirect to login on instagram", async () => {
+		const meta = await inspector('https://www.instagram.com/p/CZdfmzqvOqT/');
+		expect(meta.type).to.be("embed");
+		expect(meta.mime).to.be("text/html");
+		expect(meta.title).to.be("See you soon Queenstown 👋🏼");
+		expect(meta.description).to.be.ok();
+		expect(meta.html).to.contain("<blockquote");
+		expect(meta).to.not.have.property("error");
+	}).timeout(10000);
 });
