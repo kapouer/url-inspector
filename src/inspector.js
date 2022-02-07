@@ -215,7 +215,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 
 function sourceInspection(obj, opts, cb) {
 	if (opts.nosource || !obj.source || obj.ext != "html" || obj.source == obj.url || /video|audio|image/.test(obj.type) == false) return cb;
-	const urlObj = new URL(obj.source);
+	const urlObj = new URL(obj.source, obj.url);
 	if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return cb;
 	debug("source inspection", obj.mime, obj.type, obj.source);
 	return function (err, obj) {

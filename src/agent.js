@@ -56,7 +56,7 @@ exports.request = function (urlObj, obj, cb) {
 			// definitely an error - status above 600 could be an anti-bot system
 			return cb(statusCode);
 		}
-		if (headers.location) obj.location = new URL(headers.location, urlObj.href);
+		if (headers.location) obj.location = new URL(headers.location, urlObj);
 		let contentType = headers['content-type'];
 		if (!contentType) contentType = mime.getType(Path.basename(urlObj.pathname));
 		const mimeObj = parseType(contentType);
@@ -116,7 +116,7 @@ exports.request = function (urlObj, obj, cb) {
 			delete obj.noembed;
 			let canon = obj.canonical;
 			if (canon && urlObj.protocol != "file:" && canon != obj.source && obj.nocanonical !== true) {
-				canon = new URL(canon);
+				canon = new URL(canon, urlObj);
 				canon.redirects = (urlObj.redirects || 0) + 1;
 			}
 			delete obj.canonical;
@@ -127,7 +127,7 @@ exports.request = function (urlObj, obj, cb) {
 				// prevent loops
 				obj.noembed = true;
 				debug("fetch embed", obj.oembed);
-				const urlObjEmbed = new URL(obj.oembed);
+				const urlObjEmbed = new URL(obj.oembed, urlObj);
 				urlObjEmbed.headers = Object.assign({}, urlObj.headers);
 				if (urlObj.protocol) urlObjEmbed.protocol = urlObj.protocol;
 				exports.request(urlObjEmbed, Object.assign({}, obj), (err, cobj, ctags) => {

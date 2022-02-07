@@ -36,4 +36,9 @@ describe("user-agent suite", () => {
 		expect(meta.html).to.contain("<blockquote");
 		expect(meta).to.not.have.property("error");
 	}).timeout(10000);
+
+	it("no crash with relative canonical url", async () => {
+		const meta = await inspector('https://project-everest.github.io');
+		expect(meta.type).to.be("link");
+	}).timeout(10000);
 });
