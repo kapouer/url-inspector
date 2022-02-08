@@ -285,10 +285,10 @@ function curlRequest(urlObj) {
 				res.statusCode = statusCode;
 				data.on('error', (err) => {
 					if (err.isCurlError && err.code === CurlCode.CURLE_ABORTED_BY_CALLBACK) {
-			      // this is expected
-			    } else {
-			      throw err
-    			}
+						// this is expected
+					} else {
+						throw err;
+					}
 					res.end();
 				});
 				data.pipe(res);
