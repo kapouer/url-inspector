@@ -18,6 +18,8 @@ const accepts = {
 
 module.exports = inspector;
 
+inspector.get = agent.get;
+
 function inspector(url, opts, cb) {
 	if (typeof opts == "function" && !cb) {
 		cb = opts;

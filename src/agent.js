@@ -298,3 +298,5 @@ function curlRequest(urlObj) {
 		});
 	});
 }
+
+exports.get = curlRequest;
