@@ -143,14 +143,15 @@ opts.providers = [{
  }];
 ```
 
-const obj = await inspector(url, opts);
+url-inspector uses node-libcurl to make http requests, and exposes it as:
 
-// or callback-style method (won't be available forever...)
-inspector(url, opts, function(err, obj) {
-
-});
-
+```js
+const req = await inspector.get(urlObj);
 ```
+
+where `req.abort()` stops the request, `req.res` is the response stream,
+and `res.statusCode`, `res.headers` are available.
+
 
 Command-line client
 -------------------
