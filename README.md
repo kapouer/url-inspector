@@ -107,10 +107,29 @@ const opts = {
  ua: "Mozilla/5.0", // some oembed providers might not answer otherwise
  nofavicon: false, // disable any favicon-related additional request
  nosource: false, // disable any sub-source inspection for audio, video, image types
- providers: [{ // an array of custom OEmbed providers, or path to a module exporting such an array
+ // new in version 2.3.0
+ file: true
+};
+
+// opts are optional
+
+const obj = await inspector(url, opts);
+
+```
+
+By default oembed providers are
+
+* found from a curated list of providers
+* discovered in the inspected web pages
+
+It is possible to add custom providers in the options, by passing
+an array or a path to a module exporting an array:
+
+```js
+opts.providers = [{
   provider_name: "Custom OEmbed provider",
   endpoints: [{
-   schemes: ["http:\/\/video\.com\/*"],
+   schemes: ["http:\\/\\/video\\.com\\/*"],
    builder(urlObj, obj) {
     // can see current obj and override arbitrary props
     obj.embed = "custom embed url";
@@ -121,12 +140,8 @@ const opts = {
     return true;
    }
   }]
- }],
- // new in version 2.3.0
- file: true
-};
-
-// opts are optional
+ }];
+```
 
 const obj = await inspector(url, opts);
 
