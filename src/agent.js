@@ -254,6 +254,8 @@ function curlRequest(urlObj) {
 				curlyLowerCaseHeaders: true,
 				curlyStreamResponse: method == "get",
 				curlyResponseBodyParsers: false,
+				sslVerifyPeer: false,
+				sslVerifyHost: false,
 				httpHeader: headersList
 			};
 			const proxyUrl = getProxyForUrl(urlObj);
