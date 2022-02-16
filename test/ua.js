@@ -41,4 +41,9 @@ describe("user-agent suite", () => {
 		const meta = await inspector('https://project-everest.github.io');
 		expect(meta.type).to.be("link");
 	}).timeout(10000);
+
+	it("should get redirected favicon", async () => {
+		const meta = await inspector('https://www.eurosport.fr/ski-alpin/pekin-2022/2022/slalom-2e-manche-clement-noel_vid1634674/embed-video.shtml');
+		expect(meta.icon).to.be.ok();
+	});
 });
