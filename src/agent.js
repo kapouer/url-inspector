@@ -30,7 +30,8 @@ const inspectors = {
 
 exports.exists = function (urlObj, cb) {
 	urlObj.method = 'HEAD';
-	curlRequest(urlObj).then(res => {
+	curlRequest(urlObj).then(req => {
+		const res = req.res;
 		const status = res.statusCode;
 		debug("remote", urlObj, "returns", status);
 		if (status == 204 || res.headers['content-length'] == 0) {
@@ -244,7 +245,7 @@ function curlRequest(urlObj) {
 	});
 	const method = (urlObj.method || "get").toLowerCase();
 	const res = new PassThrough();
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		setImmediate(() => {
 			const opts = {
 				maxRedirs: 10,
@@ -265,7 +266,7 @@ function curlRequest(urlObj) {
 					opts.proxy = proxyUrl;
 				}
 			}
-			const ret = curly[method](urlObj.href, opts).then(({
+			curly[method](urlObj.href, opts).then(({
 				headers: hlist,
 				data,
 				statusCode
@@ -283,7 +284,7 @@ function curlRequest(urlObj) {
 				if (last && last.location) headers.location = last.location;
 				res.headers = headers;
 				res.statusCode = statusCode;
-				data.on('error', (err) => {
+				if (data.on) data.on('error', (err) => {
 					if (err.isCurlError && err.code === CurlCode.CURLE_ABORTED_BY_CALLBACK) {
 						// this is expected
 					} else {
@@ -291,10 +292,12 @@ function curlRequest(urlObj) {
 					}
 					res.end();
 				});
-				data.pipe(res);
-				return req;
+				if (data.pipe) data.pipe(res);
+
+				resolve(req);
+			}).catch(err => {
+				reject(err);
 			});
-			resolve(ret);
 		});
 	});
 }
