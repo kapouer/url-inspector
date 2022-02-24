@@ -159,7 +159,11 @@ exports.html = function (obj, res, cb) {
 			}
 			curLevel--;
 			if (curText && curKey == "jsonld") {
-				importJsonLD(tags, curText, priorities);
+				try {
+					importJsonLD(tags, curText, priorities);
+				} catch (err) {
+					finish(err);
+				}
 			} else if (curText && (!priorities[curKey] || curPriority > priorities[curKey])) {
 				debug("Tag", tagName, "has key", curKey, "with text content", curText);
 				tags[curKey] = curText;
@@ -167,10 +171,7 @@ exports.html = function (obj, res, cb) {
 			curText = null;
 			curKey = null;
 		},
-		onerror(err) {
-			console.error(err);
-			finish();
-		}
+		onerror: finish
 	});
 
 	res.once('close', finish);
@@ -179,7 +180,7 @@ exports.html = function (obj, res, cb) {
 
 	let finished = false;
 
-	function finish() {
+	function finish(err) {
 		if (finished) return;
 		finished = true;
 		parserStream.end();
@@ -187,7 +188,7 @@ exports.html = function (obj, res, cb) {
 		if (type) obj.type = type;
 		delete tags.type;
 		Object.assign(obj, tags);
-		cb();
+		cb(err);
 	}
 
 	res.pipe(parserStream);
@@ -262,8 +263,9 @@ function importJsonLD(tags, text, priorities) {
 			duration: "duration"
 		}, priorities, 4);
 	} catch (ex) {
-		// eslint-disable-next-line no-console
-		console.error("Cannot parse json-ld, ignoring", ex, text);
+		ex.message += " in\n" + text;
+		if (debug.enabled) throw ex;
+		else console.error(ex);
 	}
 }
 

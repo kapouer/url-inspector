@@ -105,8 +105,8 @@ exports.request = function (urlObj, obj, cb) {
 
 		fun[0](obj, res, (err, tags) => {
 			if (err) {
-				// eslint-disable-next-line no-console
-				console.error(err);
+				if (debug.enabled) return cb(err);
+				else console.error(err);
 			}
 			req.abort();
 			// request oembed when
