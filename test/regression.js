@@ -1,3 +1,4 @@
+const debug = require('debug');
 const inspector = require('..');
 const expect = require('expect.js');
 
@@ -46,4 +47,17 @@ describe("regression suite", () => {
 		const meta = await inspector('https://www.eurosport.fr/ski-alpin/pekin-2022/2022/slalom-2e-manche-clement-noel_vid1634674/embed-video.shtml');
 		expect(meta.icon).to.be.ok();
 	});
+
+	it("no json-ld failure on figaro", async () => {
+		try {
+			debug.enable('url-inspector');
+			const meta = await inspector('https://www.lefigaro.fr/flash-eco/l-ukraine-ferme-son-espace-aerien-pour-l-aviation-civile-20220224');
+			expect(meta.type).to.be("link");
+		} catch (ex) {
+			expect(ex).to.not.be.ok();
+		} finally {
+			debug.disable('url-inspector');
+		}
+
+	}).timeout(5000);
 });

@@ -245,7 +245,7 @@ function importJsonLD(tags, text, priorities) {
 			} else {
 				for (const key in item) {
 					const val = item[key];
-					if (typeof val == "object" && val["@type"]) {
+					if (val && typeof val == "object" && val["@type"]) {
 						importJsonLD(tags, val, priorities);
 					}
 				}
