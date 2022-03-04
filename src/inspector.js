@@ -390,9 +390,13 @@ function normalize(obj) {
 		delete obj.duration;
 	}
 
-	if (obj.title) obj.title = decodeHTML(obj.title);
+	if (obj.title) {
+		if (typeof obj.title != "string") obj.title = obj.title.toString();
+		obj.title = decodeHTML(obj.title);
+	}
 
 	if (obj.description) {
+		if (typeof obj.description != "string") obj.description = obj.description.toString();
 		if (obj.title) obj.description = obj.description.replace(obj.title, "").trim();
 		obj.description = decodeHTML(obj.description.split('\n')[0].trim());
 	}
@@ -548,6 +552,7 @@ function normNum(str) {
 }
 
 function normString(str) {
+	if (typeof str != "string") str = str.toString();
 	return decodeHTML(str.replace(/^@/, '').replace(/_/g, ' '));
 }
 

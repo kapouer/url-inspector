@@ -60,4 +60,10 @@ describe("regression suite", () => {
 		}
 
 	}).timeout(5000);
+
+	it("should inspect image with number as title", async () => {
+		const meta = await inspector(`file://./test/fixtures/image.png`, { file: true });
+		expect(meta.title).to.be('36771364');
+		expect(meta.type).to.be('image');
+	});
 });
