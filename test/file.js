@@ -17,4 +17,10 @@ describe("file suite", () => {
 		expect(meta.title).to.be.ok();
 	});
 
+	it("should inspect svg image", async () => {
+		const meta = await inspector(`file://./test/fixtures/test.svg`, { file: true });
+		expect(meta.title).to.be.ok();
+		expect(meta.type).to.be('image');
+	});
+
 });
