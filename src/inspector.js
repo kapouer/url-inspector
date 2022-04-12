@@ -19,6 +19,9 @@ const accepts = {
 module.exports = inspector;
 
 inspector.get = agent.get;
+inspector.prepare = function (url, opts) {
+	return inspector(url, Object.assign({}, opts, { prepare: true }));
+};
 
 function inspector(url, opts, cb) {
 	if (typeof opts == "function" && !cb) {
@@ -28,32 +31,34 @@ function inspector(url, opts, cb) {
 	if (!opts) {
 		opts = {};
 	}
+
+	const urlObj = ((url) => {
+		if (typeof url == "string" && url.startsWith('file:')) {
+			return new URL(url.replace(/^file:\/\//, ''), `file://${process.cwd()}/`);
+		} else {
+			return new URL(url);
+		}
+	})(url);
+
+	if (urlObj.protocol == "file:") {
+		if (!opts.file) {
+			// eslint-disable-next-line no-console
+			console.warn("file: protocol is disabled");
+			return cb(400);
+		}
+		opts.nofavicon = true;
+	}
+	urlObj.headers = {};
+	const oEmbedUrl = opts.noembed ? {} : supportsOEmbed(urlObj, opts.providers);
+	if (oEmbedUrl.redirect) {
+		url = urlObj.href;
+	}
+	if (opts.prepare) return urlObj;
 	return new Promise((pass, fail) => {
 		if (!cb) cb = function (err, obj) {
 			if (err) fail(err);
 			else pass(obj);
 		};
-		const urlObj = ((url) => {
-			if (typeof url == "string" && url.startsWith('file:')) {
-				return new URL(url.replace(/^file:\/\//, ''), `file://${process.cwd()}/`);
-			} else {
-				return new URL(url);
-			}
-		})(url);
-
-		if (urlObj.protocol == "file:") {
-			if (!opts.file) {
-				// eslint-disable-next-line no-console
-				console.warn("file: protocol is disabled");
-				return cb(400);
-			}
-			opts.nofavicon = true;
-		}
-		urlObj.headers = {};
-		const oEmbedUrl = opts.noembed ? {} : supportsOEmbed(urlObj, opts.providers);
-		if (oEmbedUrl.redirect) {
-			url = urlObj.href;
-		}
 		const obj = { url };
 		requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts, (err, obj, tags) => {
 			if (err) return cb(err);

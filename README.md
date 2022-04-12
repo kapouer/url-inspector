@@ -143,6 +143,12 @@ opts.providers = [{
  }];
 ```
 
+Since providers can rewrite url, it is possible to only get the rewritten url:
+
+```js
+const urlObj = await inspector.prepare(url);
+```
+
 url-inspector uses node-libcurl to make http requests, and exposes it as:
 
 ```js
