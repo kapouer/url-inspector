@@ -29,7 +29,7 @@
     "url": "https://github.com/kapouer/url-inspector/issues"
   },
   "dependencies": {
-    "@kapouer/oembed-providers": "^1.0.20211104",
+    "oembed-providers": "^1.0.20220906",
     "bl": "^5.0.0",
     "content-disposition": "^0.5.4",
     "content-type": "^1.0.4",
