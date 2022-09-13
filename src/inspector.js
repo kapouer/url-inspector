@@ -5,7 +5,7 @@ const { Parser } = require("htmlparser2");
 const { DomHandler } = require("domhandler");
 const { default: DomRender } = require("dom-serializer");
 const debug = require('debug')('url-inspector');
-const OEmbedProviders = require('@kapouer/oembed-providers');
+const OEmbedProviders = require('oembed-providers');
 const CustomOEmbedProviders = require('./custom-oembed-providers');
 const agent = require('./agent');
 
