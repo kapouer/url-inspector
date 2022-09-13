@@ -74,6 +74,7 @@ function inspector(url, opts, cb) {
 			if (obj.thumbnail) {
 				if (Array.isArray(obj.thumbnail)) obj.thumbnail = obj.thumbnail[0];
 				const thumbnailObj = new URL(obj.thumbnail, urlObj);
+				obj.thumbnail = thumbnailObj.href;
 				cb = lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb);
 			}
 			if (obj.title == null && urlObj.pathname) {
