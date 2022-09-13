@@ -66,4 +66,9 @@ describe("regression suite", () => {
 		expect(meta.title).to.be('36771364');
 		expect(meta.type).to.be('image');
 	});
+
+	it("should return a full url for thumbnail", async () => {
+		const meta = await inspector('https://www.calameo.com/read/007173083c1207babc7c2');
+		expect(meta.thumbnail.startsWith('https://')).to.be(true);
+	}).timeout(10000);
 });
