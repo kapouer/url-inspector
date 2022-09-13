@@ -6,8 +6,10 @@ exports.embed = function (obj, res, cb) {
 		if (err) return cb(err);
 		let tags;
 		try {
-			tags = JSON.parse(data.toString());
+			data = data.toString();
+			tags = JSON.parse(data);
 		} catch (ex) {
+			console.error(data);
 			if (ex) return cb(ex);
 		}
 		importTags(tags, obj, {
