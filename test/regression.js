@@ -52,7 +52,7 @@ describe("regression suite", () => {
 		try {
 			debug.enable('url-inspector');
 			const meta = await inspector('https://www.lefigaro.fr/flash-eco/l-ukraine-ferme-son-espace-aerien-pour-l-aviation-civile-20220224');
-			expect(meta.type).to.be("link");
+			expect(meta.type).to.be("image");
 		} catch (ex) {
 			expect(ex).to.not.be.ok();
 		} finally {

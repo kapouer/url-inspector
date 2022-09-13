@@ -42,11 +42,11 @@ describe("remote suite", () => {
 
 	it("should return meta with thumbnail for a figaro article", async () => {
 		const meta = await inspector('http://www.lefigaro.fr/actualite-france/2016/02/07/01016-20160207ARTFIG00183-accident-de-bretigny-ce-que-la-sncf-aurait-prefere-cacher-a-la-justice.php');
-		expect(meta.type).to.be('link');
+		expect(meta.type).to.be('image');
 		expect(meta.thumbnail).to.be.ok();
 		expect(meta.title).to.be.ok();
 		expect(meta.mime).to.be('text/html');
-		expect(meta.source).to.not.be.ok();
+		expect(meta.source).to.be.ok();
 		expect(meta.ext).to.be('html');
 		expect(meta.width).to.not.be.ok();
 		expect(meta.height).to.not.be.ok();
@@ -62,7 +62,7 @@ describe("remote suite", () => {
 		expect(meta.duration).to.be('00:04:35');
 		expect(meta.mime).to.be('text/html');
 		expect(meta.source).to.be.ok();
-		expect(meta.source.indexOf('players.brightcove.net') > 0).to.be.ok();
+		expect(meta.source.startsWith('https://video.lefigaro.fr')).to.be.ok();
 		expect(meta.ext).to.be('html');
 		expect(meta.html).to.be.ok();
 		expect(meta.html.startsWith('<iframe src')).to.be.ok();
@@ -70,7 +70,7 @@ describe("remote suite", () => {
 
 	it("should support json+ld test 2", async () => {
 		const meta = await inspector('https://www.lefigaro.fr/politique/presidentielle-2022-la-classe-politique-s-oppose-majoritairement-au-vote-par-anticipation-20210217');
-		expect(meta.type).to.be('link');
+		expect(meta.type).to.be('image');
 		expect(meta.thumbnail).to.be.ok();
 		expect(meta.title).to.be.ok();
 		expect(meta.mime).to.be('text/html');
@@ -78,7 +78,7 @@ describe("remote suite", () => {
 		expect(Number.isNaN(Date.parse(meta.date))).to.not.be.ok();
 		expect(meta.ext).to.be('html');
 		expect(meta.html).to.be.ok();
-		expect(meta.html.startsWith('<a href')).to.be.ok();
+		expect(meta.html.startsWith('<img')).to.be.ok();
 	}).timeout(10000);
 
 	it("should just work with github.com", async () => {
