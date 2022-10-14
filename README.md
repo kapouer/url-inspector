@@ -36,7 +36,7 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 
 * ext
   The file extension, only derived from the mime type.
-  To be used only for file names.
+  Safe to be used as file extension.
 
 * type
   what the resource represents
