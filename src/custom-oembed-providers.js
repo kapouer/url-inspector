@@ -6,7 +6,7 @@ const googlemaps = {
 			/goo\.gl\/maps\/.+/
 		],
 		builder: function (urlObj, obj) {
-			obj.type = "embed";
+			obj.type = "page";
 			obj.html = `<iframe src="//maps.google.com/maps?t=m&q=${encodeURIComponent(obj.title)}&output=embed"></iframe>`;
 			obj.site = 'Google Maps';
 			const parts = (obj.title || '').split('·');

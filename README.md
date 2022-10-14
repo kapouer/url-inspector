@@ -35,20 +35,24 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   The inspected mime type could be more accurate than the http header.
 
 * ext
-  the extension matching the mime type (not the file extension)
+  The file extension, only derived from the mime type.
+  To be used only for file names.
 
 * type
   what the resource represents
-  image, video, audio, link, file, embed, archive
+  page, image, video, audio, file
+
+* use
+  how the resource is used:
+  link, image, video, audio, embed.
+
+  Given a resource of type image and mime type text/html, its use will most likely be as a link - unless the web page exports an embed.
 
 * html
-  a canonical html representation of the full resource,
-  depending on the type and mime, could be an image, anchor, video, audio, or iframe.
+  the html representation of the resource, according to type and use.
 
 * script
-  url of a script to install along with the html representation
-  Breaking change: used to be in the html representation, but that required
-  special handling of html to make it work.
+  url of a script that must be installed along with the html representation.
 
 * date (YYYY-MD-DD format)
   creation or modification date
@@ -75,9 +79,8 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   *optional* a URL to a thumbnail, could be a data-uri for embedded images
 
 * source
-  *optional* a URL that can go in a 'src' attribute; for example a resource can
-  be an html page representing an image type. The URL of the image itself would
-  be stored here; same thing for audio, video, embed types.
+  *optional* a URL that can go in a 'src' attribute; for example a resource can be an html page representing an image type.
+  The URL of the image itself would be stored here; same thing for audio, video, embed types.
 
 * error
   *optional* an http error code, or string
@@ -157,7 +160,6 @@ const req = await inspector.get(urlObj);
 
 where `req.abort()` stops the request, `req.res` is the response stream,
 and `res.statusCode`, `res.headers` are available.
-
 
 Command-line client
 -------------------

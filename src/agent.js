@@ -14,6 +14,24 @@ const inspectSax = require('./sax');
 const inspectEmbed = require('./embed');
 const inspectStreat = require('./streat');
 
+const archiveTypes = [
+	"x-tar",
+	"x-archive",
+	"x-brotli",
+	"x-bz2",
+	"x-lzma",
+	"x-lzip",
+	"gzip",
+	"x-xz",
+	"x-compress",
+	"zstd",
+	"x-7z-compressed",
+	"x-arj",
+	"x-rar-compressed",
+	"x-gtar",
+	"zip"
+];
+
 // maximum bytes to download for each type of data
 const inspectors = {
 	embed: [inspectEmbed.embed, 30000],
@@ -21,7 +39,7 @@ const inspectors = {
 	image: [inspectStreat.media, 128000, 0.1],
 	audio: [inspectStreat.media, 200000, 0.1],
 	video: [inspectStreat.media, 512000, 0.1],
-	link: [inspectSax.html, 512000],
+	html: [inspectSax.html, 512000],
 	file: [inspectStreat.file, 32000],
 	archive: [(obj, res, cb) => {
 		cb(null, obj);
@@ -61,12 +79,8 @@ exports.request = function (urlObj, obj, cb) {
 		let contentType = headers['content-type'];
 		if (!contentType) contentType = mime.getType(Path.basename(urlObj.pathname));
 		const mimeObj = parseType(contentType);
-		if (obj.type == "embed") {
-			obj.mime = "text/html";
-		} else {
-			obj.mime = MediaTyper.format(mimeObj);
-			obj.type = mime2type(mimeObj);
-		}
+		obj.mime = MediaTyper.format(mimeObj);
+		obj.type = mime2type(mimeObj);
 		obj.ext = mime.getExtension(obj.mime);
 
 		const contentLength = headers['content-length'];
@@ -87,7 +101,7 @@ exports.request = function (urlObj, obj, cb) {
 			}
 		}
 
-		const fun = inspectors[obj.type];
+		const fun = inspectors[getInspectorType(obj, mimeObj)];
 		if (urlObj.protocol != "file:") pipeLimit(req, res, fun[1], fun[2]);
 
 		debug("(mime, type, length) is (%s, %s, %d)", obj.mime, obj.type, obj.size);
@@ -124,9 +138,9 @@ exports.request = function (urlObj, obj, cb) {
 			delete obj.nocanonical;
 
 			if (fetchEmbed) {
-				obj.type = "embed";
 				// prevent loops
 				obj.noembed = true;
+				obj.isEmbed = true;
 				debug("fetch embed", obj.oembed);
 				const urlObjEmbed = new URL(obj.oembed, urlObj);
 				urlObjEmbed.headers = Object.assign({}, urlObj.headers);
@@ -153,6 +167,17 @@ exports.request = function (urlObj, obj, cb) {
 		});
 	});
 };
+
+function getInspectorType({ isEmbed }, { type, subtype }) {
+	let itype;
+	if (subtype == "svg") itype = 'svg';
+	else if (["image", "video", "audio"].includes(type)) itype = type;
+	else if (/^x?html$/.test(subtype)) itype = 'html';
+	else if (subtype == "json") itype = isEmbed ? 'embed' : 'archive';
+	else if (archiveTypes.includes(subtype)) itype = 'archive';
+	else itype = 'file';
+	return itype;
+}
 
 function doRequest(urlObj, cb) {
 	let req;
@@ -182,7 +207,7 @@ function doRequest(urlObj, cb) {
 				cb(null, req, res);
 			}
 		}).catch((err) => {
-			if (urlObj.headers['User-Agent']) {
+			if (err.name == 'Error' && urlObj.headers['User-Agent']) {
 				debug("retrying with default curl ua");
 				delete urlObj.headers["User-Agent"];
 				doRequest(urlObj, cb);
@@ -196,15 +221,11 @@ function doRequest(urlObj, cb) {
 function mime2type(obj) {
 	let type = 'file';
 	if (obj.subtype == "html") {
-		type = 'link';
+		type = 'page';
 	} else if (obj.subtype == 'svg') {
-		type = 'svg';
+		type = 'page';
 	} else if (['image', 'audio', 'video'].indexOf(obj.type) >= 0) {
 		type = obj.type;
-	} else if (['x-xz', 'x-gtar', 'x-gtar-compressed', 'x-tar', 'gzip', 'zip'].indexOf(obj.subtype) >= 0) {
-		type = 'archive';
-	} else if (obj.subtype == "json") {
-		type = 'embed';
 	}
 	return type;
 }

@@ -137,7 +137,7 @@ function getOrigin(urlObj) {
 }
 
 function guessIcon(urlObj, obj, cb) {
-	if (obj.ext == "html") {
+	if (obj.type == "page") {
 		const iconObj = new URL("/favicon.ico", urlObj);
 		iconObj.headers = Object.assign({}, urlObj.headers, {
 			'Accept': accepts.image,
@@ -175,10 +175,8 @@ function guessIcon(urlObj, obj, cb) {
 function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 	if (!embedObj.discovery && embedObj.url) {
 		debug("oembed candidate");
-		const embedUrl = new URL(embedObj.url);
-		obj.type = "embed";
-		obj.mime = "text/html";
-		embedObj.obj = embedUrl;
+		embedObj.obj = new URL(embedObj.url);
+		obj.isEmbed = true;
 	}
 	if (opts.noembed) obj.noembed = true;
 	if (opts.nocanonical) obj.nocanonical = true;
@@ -222,7 +220,7 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 }
 
 function sourceInspection(obj, opts, cb) {
-	if (opts.nosource || !obj.source || obj.ext != "html" || obj.source == obj.url || /video|audio|image/.test(obj.type) == false) return cb;
+	if (opts.nosource || !obj.source || ['video', 'audio', 'image', 'page'].includes(obj.type) == false || obj.source == obj.url) return cb;
 	const urlObj = new URL(obj.source, obj.url);
 	if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return cb;
 	debug("source inspection", obj.mime, obj.type, obj.source);
@@ -356,24 +354,16 @@ function supportsOEmbed(urlObj, providers) {
 }
 
 function normalize(obj) {
-	if (!obj.ext) {
-		// eslint-disable-next-line no-console
-		console.warn("Using extname", obj.pathname);
-		obj.ext = Path.extname(obj.pathname).substring(1);
+	delete obj.pathname;
+
+	// obj.ext is already set by mime
+	obj.ext = obj.ext.toLowerCase();
+	switch (obj.ext) {
+		case "jpeg":
+			obj.ext = "jpg";
+			break;
 	}
 
-	delete obj.pathname;
-	if (obj.ext) {
-		obj.ext = obj.ext.toLowerCase();
-		switch (obj.ext) {
-			case "jpeg":
-				obj.ext = "jpg";
-				break;
-			case "mpga":
-				obj.ext = "mp3";
-				break;
-		}
-	}
 
 	let duree = obj.duration;
 	if (obj.bitrate && !duree && obj.size) {
@@ -407,55 +397,27 @@ function normalize(obj) {
 		obj.description = decodeHTML(obj.description.split('\n')[0].trim());
 	}
 
-	if (obj.type == "embed") delete obj.size;
-
 	if (obj.site) obj.site = normString(obj.site);
 	if (obj.author) obj.author = normString(obj.author);
 
-	const alt = encodeURI(obj.title);
-
-	if (!obj.source && obj.ext == "html") {
-		if (obj.type == "image") {
-			if (obj.image) obj.source = obj.image;
-			else if (!obj.html) obj.type = 'link';
-		} else if (obj.type == "audio") {
-			if (obj.audio) obj.source = obj.audio;
-			else if (obj.embed) obj.source = obj.embed;
-			else if (!obj.html) obj.type = 'link';
-		} else if (obj.type == "video") {
-			if (obj.video) obj.source = obj.video;
-			else if (obj.embed) obj.source = obj.embed;
-			else if (!obj.html) obj.type = 'link';
+	if (!obj.source) {
+		if (obj.type == "image" && obj.image) {
+			obj.source = obj.image;
+		} else if (obj.type == "video" && obj.video) {
+			obj.source = obj.video;
+		} else if (obj.type == "audio" && obj.audio) {
+			obj.source = obj.audio;
 		} else if (obj.embed) {
 			obj.source = obj.embed;
-			obj.type = 'embed';
 		}
 	}
 
-	if (obj.image) {
-		if (!obj.thumbnail && obj.type != 'image') obj.thumbnail = obj.image;
-		delete obj.image;
-	}
-	if (obj.audio) delete obj.audio;
-	if (obj.video) delete obj.video;
-	if (obj.embed) delete obj.embed;
-	if (obj.oembed) delete obj.oembed;
-	if (!obj.html) {
-		const src = obj.source || obj.url;
-		if (obj.type == "embed" || (obj.ext == "html" && ["audio", "video"].includes(obj.type))) {
-			obj.html = `<iframe src="${src}"></iframe>`;
-		} else if (obj.type == "image") {
-			obj.html = `<img src="${src}" alt="${alt}" />`;
-		} else if (obj.type == "video") {
-			obj.html = `<video src="${src}"></video>`;
-		} else if (obj.type == "audio") {
-			obj.html = `<audio src="${src}"></audio>`;
-		} else if (obj.type == "link") {
-			obj.html = `<a href="${src}">${obj.title}</a>`;
-		} else if (obj.type == "file" || obj.type == "archive") {
-			obj.html = `<a href="${src}" target="_blank">${obj.title}</a>`;
-		}
-	} else {
+	const alt = encodeURI(obj.title);
+	const src = obj.source || obj.url;
+
+
+	if (obj.html) {
+		obj.use = 'embed';
 		const handler = new DomHandler((error, dom) => {
 			let changed = false;
 			traverseTree(dom, (node) => {
@@ -472,7 +434,36 @@ function normalize(obj) {
 		const parser = new Parser(handler);
 		parser.write(obj.html);
 		parser.end();
+	} else if (obj.ext == "html") {
+		obj.use = 'link';
+		obj.html = `<a href="${src}">${obj.title}</a>`;
+	} else if (obj.type == "image") {
+		obj.html = `<img src="${src}" alt="${alt}" />`;
+		obj.use = 'image';
+	} else if (obj.type == "video") {
+		obj.use = 'video';
+		obj.html = `<video src="${src}"></video>`;
+	} else if (obj.type == "audio") {
+		obj.use = 'audio';
+		obj.html = `<audio src="${src}"></audio>`;
+	} else {
+		obj.use = 'link';
+		obj.html = `<a href="${src}" target="_blank">${obj.title}</a>`;
 	}
+
+
+
+	if (obj.image) {
+		if (!obj.thumbnail && obj.type != 'image') {
+			obj.thumbnail = obj.image;
+		}
+		delete obj.image;
+	}
+	if (obj.audio) delete obj.audio;
+	if (obj.video) delete obj.video;
+	if (obj.embed) delete obj.embed;
+	if (obj.oembed) delete obj.oembed;
+
 	if (obj.date) obj.date = normDate(obj.date);
 	if (!obj.date) delete obj.date;
 

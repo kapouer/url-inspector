@@ -199,6 +199,7 @@ exports.svg = function (obj, res, cb) {
 		onopentag(tagName, attrs) {
 			if (tagName.toLowerCase() != "svg") return;
 			obj.type = "image";
+			obj.use = "image";
 			const box = attrs.viewbox || attrs.viewBox;
 			if (!box) return cb();
 			const parts = box.split(/\s+/);
@@ -254,7 +255,7 @@ function importJsonLD(tags, text, priorities) {
 		importTags(ld, tags, {
 			name: "title",
 			description: "description",
-			embedurl: "source",
+			embedurl: "embed",
 			thumbnailurl: "thumbnail",
 			datepublished: "date",
 			uploaddate: "date",
@@ -274,7 +275,7 @@ function mapType(type) {
 	if (/(^|\/|:)(video|movie)/i.test(type)) type = 'video';
 	else if (/(^|\/|:)(audio|music)/i.test(type)) type = 'audio';
 	else if (/(^|\/|:)(image|photo)/i.test(type)) type = 'image';
-	else if (/(^|\/|:)(newsarticle)/i.test(type)) type = 'link';
+	else if (/(^|\/|:)(newsarticle)/i.test(type)) type = 'page';
 	else type = null;
 	return type;
 }

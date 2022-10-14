@@ -2,19 +2,11 @@ const inspector = require('..');
 const expect = require('expect.js');
 
 describe("remote suite", () => {
-	it("should return embeddable content at https://myspace.com/unefemmemariee/music/songs", async () => {
-		const meta = await inspector('https://myspace.com/rockbluesonemanbandquotch/music/song/testing-one-1408200-1424584');
-		expect(meta.type).to.be("audio");
-		expect(meta.ext).to.be("html");
-		expect(meta.html).to.be.ok();
-		expect(meta.html.startsWith('<iframe')).to.be.ok();
-	}).timeout(10000);
-
 	it("should inspect large file without downloading it entirely", async () => {
 		const meta = await inspector('https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-4.3.3.tar.xz');
 		expect(meta.title).to.be.ok();
 		expect(meta.size).to.be.greaterThan(80000000);
-		expect(meta.type).to.be('archive');
+		expect(meta.type).to.be('file');
 		expect(meta.ext).to.be('xz');
 	}).timeout(10000);
 
@@ -65,7 +57,7 @@ describe("remote suite", () => {
 		expect(meta.source.startsWith('https://video.lefigaro.fr')).to.be.ok();
 		expect(meta.ext).to.be('html');
 		expect(meta.html).to.be.ok();
-		expect(meta.html.startsWith('<iframe src')).to.be.ok();
+		expect(meta.html.startsWith('<a ')).to.be.ok();
 	}).timeout(10000);
 
 	it("should support json+ld test 2", async () => {
@@ -78,12 +70,13 @@ describe("remote suite", () => {
 		expect(Number.isNaN(Date.parse(meta.date))).to.not.be.ok();
 		expect(meta.ext).to.be('html');
 		expect(meta.html).to.be.ok();
-		expect(meta.html.startsWith('<img')).to.be.ok();
+		expect(meta.html.startsWith('<a ')).to.be.ok();
 	}).timeout(10000);
 
 	it("should just work with github.com", async () => {
 		const meta = await inspector('https://github.com/kapouer/url-inspector');
-		expect(meta.type).to.be('link');
+		expect(meta.type).to.be('page');
+		expect(meta.use).to.be('link');
 		expect(meta.title).to.be.ok();
 		expect(meta.size).to.not.be.ok();
 	}).timeout(10000);
@@ -112,7 +105,8 @@ describe("remote suite", () => {
 
 	it("should redirect properly", async () => {
 		const meta = await inspector('https://github.com/Stuk/jszip/archive/master.zip');
-		expect(meta.type).to.be('archive');
+		expect(meta.type).to.be('file');
+		expect(meta.use).to.be('link');
 		expect(meta.title).to.be.ok();
 	}).timeout(10000);
 
@@ -132,7 +126,7 @@ describe("remote suite", () => {
 
 	it("should not change type if schema has no embed", async () => {
 		const meta = await inspector('http://www.lefigaro.fr/actualite-france/2016/01/07/01016-20160107LIVWWW00158-en-direct-un-homme-abattu-devant-un-commissariat-de-police-a-paris.php');
-		expect(meta.type).to.be('link');
+		expect(meta.type).to.be('page');
 		expect(meta.thumbnail).to.be.ok();
 	}).timeout(10000);
 
@@ -140,7 +134,8 @@ describe("remote suite", () => {
 		const url = 'https://twitter.com/kapouer/status/731420341927587840?ref_src=twsrc%5Etfw';
 		const meta = await inspector(url);
 		expect(meta.url).to.be(url);
-		expect(meta.type).to.be('embed');
+		expect(meta.type).to.be('page');
+		expect(meta.use).to.be('embed');
 		expect(meta.date).to.be.ok();
 		expect(meta.author).to.be.ok();
 		expect(meta.size).to.not.be.ok();
@@ -152,7 +147,8 @@ describe("remote suite", () => {
 
 	it("should get google map metadata", async () => {
 		const meta = await inspector('https://goo.gl/maps/S5HZeNf3AGwAsrTi9');
-		expect(meta.type).to.be('embed');
+		expect(meta.type).to.be('page');
+		expect(meta.use).to.be('embed');
 		expect(meta.description).to.be('9 Rue de la Gare, 86490 Beaumont Saint-Cyr');
 		expect(meta.title).to.be('Coopérative Agricole La Tricherie');
 		expect(meta.site).to.be('Google Maps');
@@ -161,7 +157,8 @@ describe("remote suite", () => {
 
 	it("should follow 303 redirect and send cookies back", async () => {
 		const meta = await inspector('http://www.nytimes.com/2016/05/31/us/politics/donald-trump-hong-kong-riverside-south.html?_r=0');
-		expect(meta.type).to.be('embed');
+		expect(meta.type).to.be('page');
+		expect(meta.use).to.be('embed');
 		expect(meta.html).to.be.ok();
 		expect(meta.thumbnail).to.be.ok();
 	}).timeout(10000);
@@ -192,7 +189,8 @@ describe("remote suite", () => {
 
 	it("should not fail on redirection", async () => {
 		const meta = await inspector('http://atag-europe.com/');
-		expect(meta.type).to.be('embed');
+		expect(meta.type).to.be('page');
+		expect(meta.use).to.be('embed');
 	}).timeout(10000);
 
 });

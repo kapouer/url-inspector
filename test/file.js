@@ -5,11 +5,12 @@ describe("file suite", () => {
 	it("should inspect relative path", async () => {
 		const meta = await inspector(`file://./test/fixtures/songs.html`, { file: true });
 		expect(meta.type).to.be("audio");
+		expect(meta.use).to.be("link");
 		expect(meta.ext).to.be("html");
 		expect(meta.html).to.be.ok();
 		expect(meta.keywords.join(', ')).to.be('unefemmemariee, music, streaming, songs, myspace, online, listen, free, release, latest');
 		expect(meta.size).to.be(108482);
-		expect(meta.html.startsWith('<iframe')).to.be.ok();
+		expect(meta.html.startsWith('<a ')).to.be.ok();
 	});
 
 	it("should inspect absolute path", async () => {
@@ -21,6 +22,7 @@ describe("file suite", () => {
 		const meta = await inspector(`file://./test/fixtures/test.svg`, { file: true });
 		expect(meta.title).to.be.ok();
 		expect(meta.type).to.be('image');
+		expect(meta.use).to.be.ok('image');
 	});
 
 });

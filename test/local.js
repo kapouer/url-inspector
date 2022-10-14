@@ -93,10 +93,10 @@ describe("local suite", () => {
 		delete meta.url;
 		assert.deepStrictEqual(meta, {
 			type: 'video',
+			use: 'embed',
 			mime: 'text/html',
 			description: "Description texté",
 			duration: '00:03:58',
-			size: 574,
 			title: 'Le Dauphin dauphin',
 			author: 'Thibaud Gayral',
 			date: "2012-12-07",
@@ -110,5 +110,17 @@ describe("local suite", () => {
 		});
 
 	});
+
+
+	it("should parse instagram page", async () => {
+		const meta = await inspector(`${host}/insta.html`);
+		expect(meta.type).to.be("page");
+		expect(meta.use).to.be("link");
+		expect(meta.mime).to.be("text/html");
+		expect(meta.title).to.be("See you soon Queenstown 👋🏼");
+		expect(meta.description).to.be.ok();
+		expect(meta.html).to.contain("<blockquote");
+		expect(meta).to.not.have.property("error");
+	}).timeout(10000);
 
 });

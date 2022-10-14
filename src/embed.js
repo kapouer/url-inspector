@@ -26,8 +26,20 @@ exports.embed = function (obj, res, cb) {
 			duration: 'duration',
 			upload_date: 'date'
 		});
-		if (obj.type == "photo") obj.type = "image";
-		else if (obj.type == "rich" || !obj.type) obj.type = "embed";
+		switch (obj.type) {
+			case "photo":
+				obj.type = "image";
+				break;
+			case "video":
+				break;
+			default:
+				obj.type = "page";
+		}
+		obj.mime = "text/html";
+		obj.ext = "html";
+		obj.use = "embed";
+		delete obj.isEmbed;
+		delete obj.size;
 		cb(null, tags);
 	}));
 };

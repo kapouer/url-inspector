@@ -46,3 +46,12 @@ Version 4.0.0
 -------------
 
 * use libcurl to work around many issues with nodejs http(s,2) client.
+
+Version 5.0.0
+-------------
+
+* Change `type` semantics (link becomes page, archive becomes file).
+
+* New field: `use` tells how the resource should be shown.
+
+* Update default html fields according to type/use
