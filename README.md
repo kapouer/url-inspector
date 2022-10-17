@@ -38,15 +38,15 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
   The file extension, only derived from the mime type.
   Safe to be used as file extension.
 
-* type
+* what
   what the resource represents
   page, image, video, audio, file
 
-* use
+* type
   how the resource is used:
   link, image, video, audio, embed.
 
-  Given a resource of type image and mime type text/html, its use will most likely be as a link - unless the web page exports an embed.
+  Example: if what:image and mime:text/html, and no html snippet is found, type will be 'link'.
 
 * html
   the html representation of the resource, according to type and use.

@@ -80,7 +80,7 @@ exports.request = function (urlObj, obj, cb) {
 		if (!contentType) contentType = mime.getType(Path.basename(urlObj.pathname));
 		const mimeObj = parseType(contentType);
 		obj.mime = MediaTyper.format(mimeObj);
-		obj.type = mime2type(mimeObj);
+		obj.what = mime2what(mimeObj);
 		obj.ext = mime.getExtension(obj.mime);
 
 		const contentLength = headers['content-length'];
@@ -104,7 +104,7 @@ exports.request = function (urlObj, obj, cb) {
 		const fun = inspectors[getInspectorType(obj, mimeObj)];
 		if (urlObj.protocol != "file:") pipeLimit(req, res, fun[1], fun[2]);
 
-		debug("(mime, type, length) is (%s, %s, %d)", obj.mime, obj.type, obj.size);
+		debug("(mime, type, length) is (%s, %s, %d)", obj.mime, obj.what, obj.size);
 		let charset = mimeObj.parameters && mimeObj.parameters.charset;
 		if (charset) {
 			charset = charset.toLowerCase();
@@ -218,16 +218,16 @@ function doRequest(urlObj, cb) {
 	}
 }
 
-function mime2type(obj) {
-	let type = 'file';
+function mime2what(obj) {
+	let what = 'file';
 	if (obj.subtype == "html") {
-		type = 'page';
+		what = 'page';
 	} else if (obj.subtype == 'svg') {
-		type = 'page';
-	} else if (['image', 'audio', 'video'].indexOf(obj.type) >= 0) {
-		type = obj.type;
+		what = 'page';
+	} else if (['image', 'audio', 'video'].includes(obj.type)) {
+		what = obj.type;
 	}
-	return type;
+	return what;
 }
 
 function pipeLimit(req, res, length, percent) {

@@ -137,7 +137,7 @@ function getOrigin(urlObj) {
 }
 
 function guessIcon(urlObj, obj, cb) {
-	if (obj.type == "page") {
+	if (obj.what == "page") {
 		const iconObj = new URL("/favicon.ico", urlObj);
 		iconObj.headers = Object.assign({}, urlObj.headers, {
 			'Accept': accepts.image,
@@ -220,10 +220,10 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 }
 
 function sourceInspection(obj, opts, cb) {
-	if (opts.nosource || !obj.source || ['video', 'audio', 'image', 'page'].includes(obj.type) == false || obj.source == obj.url) return cb;
+	if (opts.nosource || !obj.source || obj.source == obj.url || ['video', 'audio', 'image', 'page'].includes(obj.what) == false) return cb;
 	const urlObj = new URL(obj.source, obj.url);
 	if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return cb;
-	debug("source inspection", obj.mime, obj.type, obj.source);
+	debug("source inspection", obj.mime, obj.what, obj.source);
 	return function (err, obj) {
 		if (err) return cb(err, obj);
 		opts = Object.assign({}, opts);
@@ -235,7 +235,7 @@ function sourceInspection(obj, opts, cb) {
 				debug("Error fetching subsource", err);
 				return cb(null, obj);
 			}
-			if (sourceObj.type != obj.type) return cb(null, obj);
+			if (sourceObj.what != obj.what) return cb(null, obj);
 			obj.source = sourceObj.url;
 			['mime', 'ext', 'type', 'size', 'width', 'height', 'duration'].forEach((key) => {
 				if (sourceObj[key]) obj[key] = sourceObj[key];
@@ -248,7 +248,7 @@ function sourceInspection(obj, opts, cb) {
 function lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb) {
 	return function (err, obj) {
 		if (err) return cb(err);
-		if (obj.width && obj.height || obj.type != "video") {
+		if (obj.width && obj.height || obj.what != "video") {
 			return cb(null, obj);
 		}
 		thumbnailObj.headers = {
@@ -401,11 +401,11 @@ function normalize(obj) {
 	if (obj.author) obj.author = normString(obj.author);
 
 	if (!obj.source) {
-		if (obj.type == "image" && obj.image) {
+		if (obj.what == "image" && obj.image) {
 			obj.source = obj.image;
-		} else if (obj.type == "video" && obj.video) {
+		} else if (obj.what == "video" && obj.video) {
 			obj.source = obj.video;
-		} else if (obj.type == "audio" && obj.audio) {
+		} else if (obj.what == "audio" && obj.audio) {
 			obj.source = obj.audio;
 		} else if (obj.embed) {
 			obj.source = obj.embed;
@@ -417,7 +417,7 @@ function normalize(obj) {
 
 
 	if (obj.html) {
-		obj.use = 'embed';
+		obj.type = 'embed';
 		const handler = new DomHandler((error, dom) => {
 			let changed = false;
 			traverseTree(dom, (node) => {
@@ -434,27 +434,30 @@ function normalize(obj) {
 		const parser = new Parser(handler);
 		parser.write(obj.html);
 		parser.end();
+	} else if (obj.embed) {
+		obj.type = 'embed';
+		obj.html = `<iframe src="${obj.embed}"></iframe>`;
 	} else if (obj.ext == "html") {
-		obj.use = 'link';
+		obj.type = 'link';
 		obj.html = `<a href="${src}">${obj.title}</a>`;
-	} else if (obj.type == "image") {
+	} else if (obj.what == "image") {
 		obj.html = `<img src="${src}" alt="${alt}" />`;
-		obj.use = 'image';
-	} else if (obj.type == "video") {
-		obj.use = 'video';
+		obj.type = 'image';
+	} else if (obj.what == "video") {
+		obj.type = 'video';
 		obj.html = `<video src="${src}"></video>`;
-	} else if (obj.type == "audio") {
-		obj.use = 'audio';
+	} else if (obj.what == "audio") {
+		obj.type = 'audio';
 		obj.html = `<audio src="${src}"></audio>`;
 	} else {
-		obj.use = 'link';
+		obj.type = 'link';
 		obj.html = `<a href="${src}" target="_blank">${obj.title}</a>`;
 	}
 
 
 
 	if (obj.image) {
-		if (!obj.thumbnail && obj.type != 'image') {
+		if (!obj.thumbnail && obj.what != 'image') {
 			obj.thumbnail = obj.image;
 		}
 		delete obj.image;

@@ -184,8 +184,8 @@ exports.html = function (obj, res, cb) {
 		if (finished) return;
 		finished = true;
 		parserStream.end();
-		const type = mapType(tags.type);
-		if (type) obj.type = type;
+		const type = mapWhat(tags.type);
+		if (type) obj.what = type;
 		delete tags.type;
 		Object.assign(obj, tags);
 		cb(err);
@@ -199,7 +199,7 @@ exports.svg = function (obj, res, cb) {
 		onopentag(tagName, attrs) {
 			if (tagName.toLowerCase() != "svg") return;
 			obj.type = "image";
-			obj.use = "image";
+			obj.what = "image";
 			const box = attrs.viewbox || attrs.viewBox;
 			if (!box) return cb();
 			const parts = box.split(/\s+/);
@@ -238,7 +238,7 @@ function importJsonLD(tags, text, priorities) {
 			if (!item) return;
 			const type = item["@type"];
 			if (!type) return;
-			const knownType = mapType(type);
+			const knownType = mapWhat(type);
 			if (knownType) {
 				ld = item;
 				tags.type = knownType;
@@ -270,7 +270,7 @@ function importJsonLD(tags, text, priorities) {
 	}
 }
 
-function mapType(type) {
+function mapWhat(type) {
 	if (!type) return type;
 	if (/(^|\/|:)(video|movie)/i.test(type)) type = 'video';
 	else if (/(^|\/|:)(audio|music)/i.test(type)) type = 'audio';

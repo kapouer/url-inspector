@@ -13,7 +13,7 @@ exports.embed = function (obj, res, cb) {
 			if (ex) return cb(ex);
 		}
 		importTags(tags, obj, {
-			type: 'type',
+			type: 'what',
 			title: 'title',
 			thumbnail_url: 'thumbnail',
 			width: 'width',
@@ -26,18 +26,18 @@ exports.embed = function (obj, res, cb) {
 			duration: 'duration',
 			upload_date: 'date'
 		});
-		switch (obj.type) {
+		switch (obj.what) {
 			case "photo":
-				obj.type = "image";
+				obj.what = "image";
 				break;
 			case "video":
 				break;
 			default:
-				obj.type = "page";
+				obj.what = "page";
 		}
 		obj.mime = "text/html";
 		obj.ext = "html";
-		obj.use = "embed";
+		obj.type = "embed";
 		delete obj.isEmbed;
 		delete obj.size;
 		cb(null, tags);

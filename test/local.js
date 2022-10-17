@@ -54,7 +54,8 @@ describe("local suite", () => {
 
 	it("should correctly parse json-ld to get embedUrl and inspect thumbnail to get dimensions of video", async () => {
 		const meta = await inspector(`${host}/jsonld.html`);
-		expect(meta.type).to.be('video');
+		expect(meta.what).to.be('video');
+		expect(meta.type).to.be('embed');
 		expect(meta.date).to.be.ok();
 		expect(meta.width).to.be.ok();
 		expect(meta.height).to.be.ok();
@@ -64,7 +65,8 @@ describe("local suite", () => {
 
 	it("should return embeddable content", async () => {
 		const meta = await inspector(`${host}/songs.html`);
-		expect(meta.type).to.be("audio");
+		expect(meta.what).to.be("audio");
+		expect(meta.type).to.be("link");
 		expect(meta.ext).to.be("html");
 		expect(meta.html).to.be.ok();
 		expect(meta.html.startsWith('<iframe')).to.be.ok();
@@ -73,7 +75,8 @@ describe("local suite", () => {
 	it("should fetch thumbnailUrl from nytimes jsonld", async () => {
 		const meta = await inspector(`${host}/nytimes.html`);
 		expect(meta.thumbnail).to.be.ok();
-		expect(meta.type).to.be("video");
+		expect(meta.what).to.be("video");
+		expect(meta.type).to.be("embed");
 		expect(meta.ext).to.be("html");
 		expect(meta.html).to.be.ok();
 		expect(meta.html.startsWith('<iframe')).to.be.ok();
@@ -92,8 +95,8 @@ describe("local suite", () => {
 		});
 		delete meta.url;
 		assert.deepStrictEqual(meta, {
-			type: 'video',
-			use: 'embed',
+			what: 'video',
+			type: 'embed',
 			mime: 'text/html',
 			description: "Description texté",
 			duration: '00:03:58',
@@ -114,8 +117,8 @@ describe("local suite", () => {
 
 	it("should parse instagram page", async () => {
 		const meta = await inspector(`${host}/insta.html`);
-		expect(meta.type).to.be("page");
-		expect(meta.use).to.be("link");
+		expect(meta.what).to.be("page");
+		expect(meta.type).to.be("link");
 		expect(meta.mime).to.be("text/html");
 		expect(meta.title).to.be("See you soon Queenstown 👋🏼");
 		expect(meta.description).to.be.ok();
