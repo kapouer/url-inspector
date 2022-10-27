@@ -149,7 +149,22 @@ describe("remote suite", () => {
 		expect(meta.date).to.be.ok();
 		expect(meta.author).to.be.ok();
 		expect(meta.size).to.not.be.ok();
-		expect(meta.description).to.be.ok();
+		expect(meta.description).to.be('copycat');
+		// no longer inspecting the page itself to avoid too many requests
+		// expect(meta.thumbnail).to.be.ok();
+		expect(meta.html.includes('<script')).to.not.be.ok();
+	}).timeout(10000);
+
+	it("should append description to title and get picture, try2", async () => {
+		const url = 'https://twitter.com/nicojamain/status/1585536111111245825';
+		const meta = await inspector(url);
+		expect(meta.url).to.be(url);
+		expect(meta.what).to.be('page');
+		expect(meta.type).to.be('embed');
+		expect(meta.date).to.be.ok();
+		expect(meta.author).to.be.ok();
+		expect(meta.size).to.not.be.ok();
+		expect(meta.description).to.be('La @NASA va donc annoncer aujourd’hui à 20h heure française deux découvertes MAJEURES faites récemment sur Mars !! Rendez-vous à été donné à la presse internationale.');
 		// no longer inspecting the page itself to avoid too many requests
 		// expect(meta.thumbnail).to.be.ok();
 		expect(meta.html.includes('<script')).to.not.be.ok();

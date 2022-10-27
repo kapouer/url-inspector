@@ -71,9 +71,15 @@ const twitter = {
 			obj.icon = "https://abs.twimg.com/favicons/twitter.2.ico";
 			Object.assign(obj, (/\((?<title>@\w+)\)/.exec(obj.html) || {}).groups);
 
-			const { text } = (/<p[^>]*>(?<text>.*?)(<a\s|<\/p>)/.exec(obj.html) || {}).groups || {};
+			const { text } = (/<p[^>]*>(?<text>.*?)<\/p>/.exec(obj.html) || {}).groups || {};
 			if (text) {
-				obj.description = text.replace(/<br>/g, ' ').replace(/\s+/g, ' ');
+				obj.description = text
+					.replace(/<br>/g, ' ')
+					.replace(/\s+/g, ' ')
+					.replace(/<a[^>]*>pic\.twitter\.com.*<\/a>/g, '')
+					.replace(/<a[^>]*>/g, '')
+					.replace(/<\/a>/g, '')
+					.replace(/\. .*/g, '.');
 			}
 			Object.assign(obj, (/\((?<title>@\w+)\)/.exec(obj.html) || {}).groups);
 		}
