@@ -85,9 +85,6 @@ with [url-inspector-daemon](http://github.com/kapouer/url-inspector-daemon)
 * error
   *optional* an http error code, or string
 
-* all
-  an object with all additional metadata that was found
-
 Installation
 ------------
 
@@ -106,7 +103,6 @@ const inspector = require('url-inspector');
 
 // options and their defaults
 const opts = {
- all: false, // return all available non-normalized metadata
  ua: "Mozilla/5.0", // some oembed providers might not answer otherwise
  nofavicon: false, // disable any favicon-related additional request
  nosource: false, // disable any sub-source inspection for audio, video, image types

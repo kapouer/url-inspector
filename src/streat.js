@@ -5,76 +5,63 @@ const Streat = require('streat');
 const streat = new Streat();
 streat.start();
 
-exports.media = function (obj, res, cb) {
-	streat.run(res, {
+exports.media = async function (obj, res) {
+	const tags = await streat.run(res, {
 		step: res.local ? Infinity : 0
-	}, (err, tags) => {
-		if (err) return cb(err);
-		try {
-			importTags(tags, obj, {
-				imagewidth: 'width',
-				imageheight: 'height',
-				duration: 'duration',
-				format: 'mime',
-				mimetype: 'mime',
-				filetypeextension: 'ext',
-				extension: 'ext',
-				title: 'title',
-				artist: 'artist',
-				album: 'album',
-				objectname: 'title',
-				audiobitrate: 'bitrate',
-				creator: 'author',
-				credit: 'author',
-				imagedescription: 'description',
-				description: 'description',
-				modifydate: 'date',
-				datetimecreated: 'date',
-				datetimeoriginal: 'date',
-				referenceurl: 'reference',
-				'caption-abstract': 'description',
-				keywords: 'keywords'
-			});
-
-			if (!obj.thumbnail && tags.Picture && tags.PictureMIMEType) {
-				obj.thumbnail = dataUri.encode(
-					Buffer.from(tags.Picture.replace(/^base64:/, ''), 'base64'),
-					tags.PictureMIMEType
-				);
-			}
-			if (obj.title && obj.artist && (String(obj.title)).indexOf(obj.artist) < 0) {
-				obj.title = obj.title + ' - ' + obj.artist;
-				delete obj.artist;
-			}
-			if (obj.date) {
-				const exifDate = parseExifDate(obj.date);
-				if (exifDate) obj.date = exifDate;
-				else delete obj.date;
-			}
-			// copy to be able to serialize to JSON
-			cb(null, tags);
-		} catch (err) {
-			cb(err);
-		}
 	});
+	importTags(tags, obj, {
+		imagewidth: 'width',
+		imageheight: 'height',
+		duration: 'duration',
+		format: 'mime',
+		mimetype: 'mime',
+		filetypeextension: 'ext',
+		extension: 'ext',
+		title: 'title',
+		artist: 'artist',
+		album: 'album',
+		objectname: 'title',
+		audiobitrate: 'bitrate',
+		creator: 'author',
+		credit: 'author',
+		imagedescription: 'description',
+		description: 'description',
+		modifydate: 'date',
+		datetimecreated: 'date',
+		datetimeoriginal: 'date',
+		referenceurl: 'reference',
+		'caption-abstract': 'description',
+		keywords: 'keywords'
+	});
+
+	if (!obj.thumbnail && tags.Picture && tags.PictureMIMEType) {
+		obj.thumbnail = dataUri.encode(
+			Buffer.from(tags.Picture.replace(/^base64:/, ''), 'base64'),
+			tags.PictureMIMEType
+		);
+	}
+	if (obj.title && obj.artist && (String(obj.title)).indexOf(obj.artist) < 0) {
+		obj.title = obj.title + ' - ' + obj.artist;
+		delete obj.artist;
+	}
+	if (obj.date) {
+		const exifDate = parseExifDate(obj.date);
+		if (exifDate) obj.date = exifDate;
+		else delete obj.date;
+	}
+	return tags;
 };
 
-exports.file = function (obj, res, cb) {
-	streat.run(res, (err, tags) => {
-		if (err) return cb(err);
-		try {
-			importTags(tags, obj, {
-				mimetype: 'mime',
-				extension: 'ext',
-				filetypeextension: 'ext',
-				title: 'title'
-				//,pagecount: 'pages'
-			});
-			cb(null, tags);
-		} catch (err) {
-			cb(err);
-		}
+exports.file = async function (obj, res) {
+	const tags = await streat.run(res);
+	importTags(tags, obj, {
+		mimetype: 'mime',
+		extension: 'ext',
+		filetypeextension: 'ext',
+		title: 'title'
+		//,pagecount: 'pages'
 	});
+	return tags;
 };
 
 function parseExifDate(str) {

@@ -1,8 +1,9 @@
 const debug = require('debug')('url-inspector');
+const { Deferred } = require('class-deferred');
 const { WritableStream } = require("htmlparser2/lib/WritableStream");
 const importTags = require('./tags');
 
-exports.html = function (obj, res, cb) {
+exports.html = async function (obj, res) {
 	// collect tags
 	const selectors = {
 		title: {
@@ -28,15 +29,29 @@ exports.html = function (obj, res, cb) {
 			property: {
 				'og:title': "title",
 				'og:description': "description",
-				'og:image': "image",
-				'og:audio': "audio",
-				'og:video': "video",
+				'og:image': "image.url",
+				'og:audio': "audio.url",
+				'og:video': "video.url",
 				'og:url': "url",
 				'og:type': "type",
 				'og:site_name': "site",
-				'og:video:url': "video",
-				'og:audio:url': "audio",
-				'og:image:url': "image",
+				'og:video:url': "video.url",
+				'og:video:secure_url': "video.url",
+				'og:video:type': "video.type",
+				'og:video:width': "video.width",
+				'og:video:height': "video.height",
+				'og:video:duration': "video.duration",
+				'video:duration': "video.duration",
+				'og:audio:url': "audio.url",
+				'og:audio:secure_url': "audio.url",
+				'og:audio:type': "audio.type",
+				'og:audio:duration': "audio.duration",
+				'audio:duration': "audio.duration",
+				'og:image:url': "image.url",
+				'og:image:secure_url': "image.url",
+				'og:image:type': "image.type",
+				'og:image:width': "image.width",
+				'og:image:height': "image.height",
 				'article:published_time': "date"
 			},
 			name: {
@@ -47,6 +62,9 @@ exports.html = function (obj, res, cb) {
 				'twitter:site': "site",
 				'twitter:type': "type",
 				'twitter:creator': "author",
+				'twitter:player': "video.url",
+				'twitter:player:width': "video.width",
+				'twitter:player:height': "video.height",
 				'author': "author",
 				'keywords': "keywords",
 				'description': "description"
@@ -139,7 +157,13 @@ exports.html = function (obj, res, cb) {
 			debug("Tag", name, "has key", key, "with priority", priority, "and value", val, "in attribute", mkey);
 			if (mkey && val && (!priorities[key] || priority > priorities[key])) {
 				priorities[key] = priority;
-				tags[key] = val;
+				const [keyGroup, keyName] = key.split('.');
+				if (keyName) {
+					if (!tags[keyGroup]) tags[keyGroup] = {};
+					tags[keyGroup][keyName] = val;
+				} else {
+					tags[key] = val;
+				}
 				if (key == "icon" && obj.onlyfavicon) {
 					finish();
 				}
@@ -179,6 +203,7 @@ exports.html = function (obj, res, cb) {
 	res.once('finish', finish);
 
 	let finished = false;
+	const defer = new Deferred();
 
 	function finish(err) {
 		if (finished) return;
@@ -188,24 +213,26 @@ exports.html = function (obj, res, cb) {
 		if (type) obj.what = type;
 		delete tags.type;
 		Object.assign(obj, tags);
-		cb(err);
+		defer.resolve();
 	}
 
 	res.pipe(parserStream);
+	return defer;
 };
 
-exports.svg = function (obj, res, cb) {
+exports.svg = async function (obj, res) {
 	const parserStream = new WritableStream({
 		onopentag(tagName, attrs) {
 			if (tagName.toLowerCase() != "svg") return;
 			obj.type = "image";
 			obj.what = "image";
 			const box = attrs.viewbox || attrs.viewBox;
-			if (!box) return cb();
-			const parts = box.split(/\s+/);
-			if (parts.length == 4) {
-				obj.width = parseFloat(parts[2]);
-				obj.height = parseFloat(parts[3]);
+			if (box) {
+				const parts = box.split(/\s+/);
+				if (parts.length == 4) {
+					obj.width = parseFloat(parts[2]);
+					obj.height = parseFloat(parts[3]);
+				}
 			}
 			finish();
 		},
@@ -220,14 +247,16 @@ exports.svg = function (obj, res, cb) {
 	res.once('finish', finish);
 
 	let finished = false;
+	const d = new Deferred();
 
 	function finish() {
 		if (finished) return;
 		finished = true;
 		parserStream.end();
-		cb();
+		d.resolve();
 	}
 	res.pipe(parserStream);
+	return d;
 };
 
 function importJsonLD(tags, text, priorities) {

@@ -1,4 +1,4 @@
-const Path = require('path');
+const Path = require('node:path');
 const { Duration } = require('luxon');
 
 const { Parser } = require("htmlparser2");
@@ -23,16 +23,9 @@ inspector.prepare = function (url, opts) {
 	return inspector(url, Object.assign({}, opts, { prepare: true }));
 };
 
-function inspector(url, opts, cb) {
-	if (typeof opts == "function" && !cb) {
-		cb = opts;
-		opts = null;
-	}
-	if (!opts) {
-		opts = {};
-	}
+async function inspector(url, opts = {}) {
 
-	const urlObj = ((url) => {
+	const urlObj = (url => {
 		if (typeof url == "string" && url.startsWith('file:')) {
 			return new URL(url.replace(/^file:\/\//, ''), `file://${process.cwd()}/`);
 		} else {
@@ -44,7 +37,7 @@ function inspector(url, opts, cb) {
 		if (!opts.file) {
 			// eslint-disable-next-line no-console
 			console.warn("file: protocol is disabled");
-			return cb(400);
+			throw new Error(400);
 		}
 		opts.nofavicon = true;
 	}
@@ -54,47 +47,34 @@ function inspector(url, opts, cb) {
 		url = urlObj.href;
 	}
 	if (opts.prepare) return urlObj;
-	return new Promise((pass, fail) => {
-		if (!cb) cb = function (err, obj) {
-			if (err) fail(err);
-			else pass(obj);
-		};
-		const obj = { url };
-		requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts, (err, obj, tags) => {
-			if (err) return cb(err);
-			if (!obj) return cb(400);
+	const obj = { url };
+	const tags = await requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts);
+	if (!tags) throw new Error(400);
+	if (!obj.site) {
+		obj.site = urlObj.hostname;
+	}
+	obj.pathname = urlObj.pathname;
+	if (obj.thumbnail) {
+		if (Array.isArray(obj.thumbnail)) obj.thumbnail = obj.thumbnail[0];
+		const thumbnailObj = new URL(obj.thumbnail, urlObj);
+		obj.thumbnail = thumbnailObj.href;
+		await lastResortDimensionsFromThumbnail(thumbnailObj, obj);
+	}
+	if (obj.title == null && urlObj.pathname) {
+		obj.title = lexize(Path.basename(urlObj.pathname));
+	}
+	normalize(obj);
 
-			if (!obj.site) {
-				obj.site = urlObj.hostname;
-			}
-			obj.pathname = urlObj.pathname;
+	await sourceInspection(obj, opts);
 
-			cb = sourceInspection(obj, opts, cb);
-
-			if (obj.thumbnail) {
-				if (Array.isArray(obj.thumbnail)) obj.thumbnail = obj.thumbnail[0];
-				const thumbnailObj = new URL(obj.thumbnail, urlObj);
-				obj.thumbnail = thumbnailObj.href;
-				cb = lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb);
-			}
-			if (obj.title == null && urlObj.pathname) {
-				obj.title = lexize(Path.basename(urlObj.pathname));
-			}
-			normalize(obj);
-
-			if (opts.all && tags) obj.all = tags;
-
-			if (obj.icon && !obj.icon.startsWith('data:')) {
-				obj.icon = new URL(obj.icon, urlObj).href;
-				cb(null, obj);
-			} else if (opts.nofavicon) {
-				cb(null, obj);
-			} else {
-				guessIcon(urlObj, obj, cb);
-			}
-		});
-	});
+	if (obj.icon && !obj.icon.startsWith('data:')) {
+		obj.icon = new URL(obj.icon, urlObj).href;
+	} else if (!opts.nofavicon) {
+		await guessIcon(urlObj, obj);
+	}
+	return obj;
 }
+
 
 function lexize(str) {
 	const list = [];
@@ -136,18 +116,15 @@ function getOrigin(urlObj) {
 	return origin.href;
 }
 
-function guessIcon(urlObj, obj, cb) {
+async function guessIcon(urlObj, obj) {
 	if (obj.what == "page") {
 		const iconObj = new URL("/favicon.ico", urlObj);
 		iconObj.headers = Object.assign({}, urlObj.headers, {
 			'Accept': accepts.image,
 			'Origin': getOrigin(urlObj)
 		});
-
-		agent.exists(iconObj, (mime) => {
-			if (mime && mime.type == "image") obj.icon = iconObj.href;
-			cb(null, obj);
-		});
+		const mime = await agent.exists(iconObj);
+		if (mime && mime.type == "image") obj.icon = iconObj.href;
 	} else {
 		const iobj = {
 			onlyfavicon: true
@@ -164,15 +141,17 @@ function guessIcon(urlObj, obj, cb) {
 			Origin: getOrigin(urlObjRoot)
 		});
 		debug("find favicon", urlObjRoot);
-		agent.request(urlObjRoot, iobj, (err) => {
-			if (err) debug("favicon not found", err);
-			if (iobj.icon) obj.icon = (new URL(iobj.icon, iobj.location || urlObjRoot)).href;
-			cb(null, obj);
-		});
+		try {
+			await agent.request(urlObjRoot, iobj);
+		} catch (err) {
+			debug("favicon not found", err);
+		}
+		if (iobj.icon) obj.icon = (new URL(iobj.icon, iobj.location || urlObjRoot)).href;
 	}
+	return obj;
 }
 
-function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
+async function requestPageOrEmbed(urlObj, embedObj, obj, opts) {
 	if (!embedObj.discovery && embedObj.url) {
 		debug("oembed candidate");
 		embedObj.obj = new URL(embedObj.url);
@@ -191,97 +170,81 @@ function requestPageOrEmbed(urlObj, embedObj, obj, opts, cb) {
 		"Upgrade-Insecure-Requests": "1",
 		"User-Agent": embedObj.ua || opts.ua || "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36",
 	}, urlObj.headers);
-	if (embedObj.obj) embedObj.obj.headers = Object.assign({}, urlObj.headers);
+	if (embedObj.obj) {
+		embedObj.obj.headers = Object.assign({}, urlObj.headers);
+	}
 	const actualObj = embedObj.obj || urlObj;
-	agent.request(actualObj, obj, (err, robj, tags) => {
-		if (err) {
-			if (embedObj.obj) {
-				return inspector(urlObj.href, Object.assign({ noembed: true, error: err }, opts), cb);
-			} else if (embedObj.url) {
-				embedObj.discovery = false;
-				return requestPageOrEmbed({}, embedObj, obj, opts, cb);
-			} else {
-				return cb(err);
-			}
+	try {
+		return await agent.request(actualObj, obj);
+	} catch (err) {
+		if (embedObj.obj) {
+			return inspector(urlObj.href, Object.assign({
+				noembed: true, error: err
+			}, opts));
+		} else if (embedObj.url) {
+			embedObj.discovery = false;
+			return requestPageOrEmbed({}, embedObj, obj, opts);
+		} else {
+			throw err;
 		}
-		if (typeof embedObj.builder == "function") {
-			embedObj.builder(urlObj, robj, tags);
-		}
-		if (embedObj.obj && !robj.title) {
-			// inspect page too
-			return inspector(urlObj.href, Object.assign({ noembed: true, error: err }, opts), (err, sobj) => {
-				if (err) cb(err);
-				else cb(null, Object.assign(sobj, robj), tags);
-			});
-		}
-
-		cb(null, robj, tags);
-	});
+	}
 }
 
-function sourceInspection(obj, opts, cb) {
-	if (opts.nosource || !obj.source || obj.source == obj.url || ['video', 'audio', 'image', 'page'].includes(obj.what) == false) return cb;
+async function sourceInspection(obj, opts, cb) {
+	if (opts.nosource || !obj.source || obj.source == obj.url || ['video', 'audio', 'image', 'page'].includes(obj.what) == false) return obj;
 	const urlObj = new URL(obj.source, obj.url);
-	if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return cb;
+	if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return obj;
 	debug("source inspection", obj.mime, obj.what, obj.source);
-	return function (err, obj) {
-		if (err) return cb(err, obj);
-		opts = Object.assign({}, opts);
-		if (obj.icon) opts.nofavicon = true;
-		opts.nosource = true;
-		opts.nocanonical = true;
-		inspector(obj.source, opts, (err, sourceObj) => {
-			if (err) {
-				debug("Error fetching subsource", err);
-				return cb(null, obj);
-			}
-			if (sourceObj.what != obj.what) return cb(null, obj);
-			obj.source = sourceObj.url;
-			['mime', 'ext', 'type', 'size', 'width', 'height', 'duration'].forEach((key) => {
-				if (sourceObj[key]) obj[key] = sourceObj[key];
-			});
-			cb(null, obj);
+	opts = Object.assign({}, opts);
+	if (obj.icon) opts.nofavicon = true;
+	opts.nosource = true;
+	opts.nocanonical = true;
+	try {
+		const sourceObj = await inspector(obj.source, opts);
+		if (sourceObj.what != obj.what) return obj;
+		obj.source = sourceObj.url;
+		['mime', 'ext', 'type', 'size', 'width', 'height', 'duration'].forEach(key => {
+			if (sourceObj[key]) obj[key] = sourceObj[key];
 		});
-	};
+	} catch (err) {
+		debug("Error fetching subsource", err);
+	}
+	return obj;
 }
 
-function lastResortDimensionsFromThumbnail(thumbnailObj, obj, cb) {
-	return function (err, obj) {
-		if (err) return cb(err);
-		if (obj.width && obj.height || obj.what != "video") {
-			return cb(null, obj);
-		}
-		thumbnailObj.headers = {
-			Accept: accepts.image,
-			Origin: getOrigin(thumbnailObj)
-		};
-		inspector(thumbnailObj, {
+async function lastResortDimensionsFromThumbnail(thumbnailObj, obj) {
+	if (obj.width && obj.height || obj.what != "video") {
+		return obj;
+	}
+	thumbnailObj.headers = {
+		Accept: accepts.image,
+		Origin: getOrigin(thumbnailObj)
+	};
+	try {
+		const sourceObj = await inspector(thumbnailObj, {
 			nofavicon: true,
 			nocanonical: true,
 			nosource: true
-		}, (err, sourceObj) => {
-			if (err) {
-				delete obj.thumbnail;
-				debug("Error fetching thumbnail", thumbnailObj.href, err);
-				return cb(null, obj);
-			}
-			obj.thumbnail = thumbnailObj.href;
-			if (sourceObj.width && sourceObj.height) {
-				obj.width = sourceObj.width;
-				obj.height = sourceObj.height;
-			}
-			cb(null, obj);
 		});
-	};
+		obj.thumbnail = thumbnailObj.href;
+		if (sourceObj.width && sourceObj.height) {
+			obj.width = sourceObj.width;
+			obj.height = sourceObj.height;
+		}
+	} catch (err) {
+		delete obj.thumbnail;
+		debug("Error fetching thumbnail", thumbnailObj.href, err);
+	}
+	return obj;
 }
 
 function findEndpoint(url, list, endpoint = {}) {
 	endpoint.last = false;
 	if (!list) return endpoint;
-	list.find((provider) => {
-		provider.endpoints.find((point) => {
+	list.find(provider => {
+		provider.endpoints.find(point => {
 			if (!point.schemes) return;
-			if (point.schemes.find((scheme) => {
+			if (point.schemes.find(scheme => {
 				const reg = scheme instanceof RegExp
 					? scheme
 					: new RegExp("^" + scheme.replace(/\*/g, ".*") + "$");
@@ -364,6 +327,24 @@ function normalize(obj) {
 			break;
 	}
 
+	if (obj.title) {
+		if (typeof obj.title != "string") obj.title = obj.title.toString();
+		obj.title = decodeHTML(obj.title);
+	}
+
+	if (obj.description) {
+		if (typeof obj.description != "string") obj.description = obj.description.toString();
+		if (obj.title) obj.description = obj.description.replace(obj.title, "").trim();
+		obj.description = decodeHTML(obj.description.split('\n')[0].trim());
+	}
+
+	if (obj.site) obj.site = normString(obj.site);
+	if (obj.author) obj.author = normString(obj.author);
+
+	normalizeMedia(obj, obj.what);
+	if (!obj.source && obj.embed) {
+		obj.source = obj.embed;
+	}
 
 	let duree = obj.duration;
 	if (obj.bitrate && !duree && obj.size) {
@@ -386,32 +367,6 @@ function normalize(obj) {
 		delete obj.duration;
 	}
 
-	if (obj.title) {
-		if (typeof obj.title != "string") obj.title = obj.title.toString();
-		obj.title = decodeHTML(obj.title);
-	}
-
-	if (obj.description) {
-		if (typeof obj.description != "string") obj.description = obj.description.toString();
-		if (obj.title) obj.description = obj.description.replace(obj.title, "").trim();
-		obj.description = decodeHTML(obj.description.split('\n')[0].trim());
-	}
-
-	if (obj.site) obj.site = normString(obj.site);
-	if (obj.author) obj.author = normString(obj.author);
-
-	if (!obj.source) {
-		if (obj.what == "image" && obj.image) {
-			obj.source = obj.image;
-		} else if (obj.what == "video" && obj.video) {
-			obj.source = obj.video;
-		} else if (obj.what == "audio" && obj.audio) {
-			obj.source = obj.audio;
-		} else if (obj.embed) {
-			obj.source = obj.embed;
-		}
-	}
-
 	const alt = encodeURI(obj.title);
 	const src = obj.source || obj.url;
 
@@ -420,7 +375,7 @@ function normalize(obj) {
 		obj.type = 'embed';
 		const handler = new DomHandler((error, dom) => {
 			let changed = false;
-			traverseTree(dom, (node) => {
+			traverseTree(dom, node => {
 				if (node.name == "script") {
 					changed = true;
 					const src = node.attribs.src;
@@ -518,6 +473,36 @@ function normKeywords({ title, keywords }) {
 	return list;
 }
 
+function normalizeMedia(obj, what) {
+	const info = obj[what];
+	delete obj[what];
+	if (typeof info == "object") {
+		if (info.url) {
+			obj.source = info.url;
+			if (info.duration) obj.duration = info.duration;
+			if (!info.type) {
+				// not really trusted, just consider url shall be source and inspected
+			} else if (info.type.startsWith('text/html')) {
+				const attrs = [`src="${info.url}"`];
+				if (info.width) attrs.push(`width="${info.width}"`);
+				if (info.height) attrs.push(`height="${info.height}"`);
+				obj.html = `<iframe ${attrs.join(' ')}></iframe>`;
+			} else if (info.type.startsWith(what + '/')) {
+				const attrs = [`src="${info.url}"`];
+				if (info.width) attrs.push(`width="${info.width}"`);
+				if (info.height) attrs.push(`height="${info.height}"`);
+				if (what == "image") {
+					obj.html = `<img ${attrs.join(' ')} />`;
+				} else {
+					obj.html = `<${what} ${attrs.join(' ')}></${what}>`;
+				}
+			}
+		}
+	} else {
+		obj.source = info;
+	}
+}
+
 function subPush(list, str) {
 	let found = false;
 	list.forEach((item, i) => {
@@ -556,16 +541,16 @@ function normString(str) {
 	return decodeHTML(str.replace(/^@/, '').replace(/_/g, ' '));
 }
 
-function traverseTree(node, i, cb) {
-	if (cb === undefined && i !== null) {
-		cb = i;
+function traverseTree(node, i, visitor) {
+	if (visitor === undefined && i !== null) {
+		visitor = i;
 		i = null;
 	}
 	if (Array.isArray(node)) {
-		node.forEach((child, i) => traverseTree(child, i, cb));
+		node.forEach((child, i) => traverseTree(child, i, visitor));
 		return;
 	}
-	if (cb(node, i) === false) {
+	if (visitor(node, i) === false) {
 		return false;
 	} else {
 		let i, childNode;
@@ -574,7 +559,7 @@ function traverseTree(node, i, cb) {
 			childNode = node.children[i];
 		}
 		while (childNode !== undefined) {
-			if (traverseTree(childNode, i, cb) === false) {
+			if (traverseTree(childNode, i, visitor) === false) {
 				return false;
 			} else {
 				childNode = node.children[++i];

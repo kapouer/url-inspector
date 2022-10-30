@@ -3,6 +3,9 @@
   "version": "5.0.2",
   "description": "Get metadata about any url",
   "main": "src/inspector.js",
+  "engines": {
+    "node": ">=12"
+  },
   "scripts": {
     "test": "mocha"
   },
@@ -12,6 +15,10 @@
   "bin": {
     "url-inspector": "bin/url-inspector.js"
   },
+  "files": [
+    "bin/*",
+    "src/*"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/kapouer/url-inspector.git"
@@ -29,8 +36,8 @@
     "url": "https://github.com/kapouer/url-inspector/issues"
   },
   "dependencies": {
-    "oembed-providers": "^1.0.20220906",
     "bl": "^5.0.0",
+    "class-deferred": "^1.0.1",
     "content-disposition": "^0.5.4",
     "content-type": "^1.0.4",
     "dashdash": "^2.0.0",
@@ -44,8 +51,9 @@
     "media-typer": "^1.1.0",
     "mime": "^3.0.0",
     "node-libcurl": "^2.3.4",
+    "oembed-providers": "^1.0.20220906",
     "proxy-from-env": "^1.1.0",
-    "streat": "^0.3.0",
+    "streat": "^0.4.0",
     "strong-data-uri": "^1.0.6"
   },
   "devDependencies": {
@@ -54,10 +62,6 @@
     "express": "^4.18.2",
     "mocha": "^10.0.0"
   },
-  "files": [
-    "bin/*",
-    "src/*"
-  ],
   "eslintConfig": {
     "extends": "@kapouer/eslint-config",
     "overrides": [
