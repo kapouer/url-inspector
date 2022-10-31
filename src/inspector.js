@@ -1,4 +1,4 @@
-const Path = require('node:path');
+const Path = require('path');
 const { Duration } = require('luxon');
 
 const { Parser } = require("htmlparser2");

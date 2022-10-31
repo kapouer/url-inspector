@@ -1,11 +1,11 @@
-const Path = require('node:path');
+const Path = require('path');
 const ContentDisposition = require('content-disposition');
 const ContentType = require('content-type');
 const MediaTyper = require('media-typer');
 const iconv = require('iconv-lite');
 const mime = require('mime');
-const fs = require('node:fs');
-const { PassThrough } = require('node:stream');
+const fs = require('fs');
+const { PassThrough } = require('stream');
 const debug = require('debug')('url-inspector');
 const { curly, CurlCode } = require('node-libcurl');
 const { getProxyForUrl } = require('proxy-from-env');
