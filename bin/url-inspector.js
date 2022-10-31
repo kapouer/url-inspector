@@ -30,13 +30,13 @@ try {
 	opts = parser.parse(process.argv);
 } catch(e) {
 	console.error(e.toString());
-	opts = {help: true};
+	opts = { help: true };
 }
 
 let url = opts._args && opts._args.pop();
 
 if (opts.help || !url) {
-	const help = parser.help({includeEnv: true}).trimRight();
+	const help = parser.help({includeEnv: true}).trimEnd();
 	console.info('usage: url-inspector [OPTIONS] <url>\n' + 'options:\n' + help);
 	process.exit(0);
 }
@@ -50,10 +50,10 @@ if (opts.providers) {
 	opts.providers = require(opts.providers);
 }
 
-inspector(url, opts).then((meta) => {
+inspector(url, opts).then(meta => {
 	console.info(require('util').inspect(meta));
 	process.exit(0);
-}).catch((err) => {
+}).catch(err => {
 	console.error(err);
 	process.exit(1);
 });
