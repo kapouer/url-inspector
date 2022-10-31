@@ -173,7 +173,19 @@ async function requestPageOrEmbed(urlObj, embedObj, obj, opts) {
 	}
 	const actualObj = embedObj.obj || urlObj;
 	try {
-		return await agent.request(actualObj, obj);
+		const robj = await agent.request(actualObj, obj);
+		if (typeof embedObj.builder == "function") {
+			embedObj.builder(urlObj, robj);
+		}
+		if (embedObj.obj && !robj.title) {
+			// inspect page too
+			const sobj = await inspector(urlObj.href, Object.assign({
+				noembed: true
+			}, opts));
+			return Object.assign(sobj, robj);
+		} else {
+			return robj;
+		}
 	} catch (err) {
 		if (embedObj.obj) {
 			return inspector(urlObj.href, Object.assign({
