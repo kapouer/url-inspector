@@ -65,8 +65,9 @@ describe("local suite", () => {
 
 	it("should return embeddable content", async () => {
 		const meta = await inspector(`${host}/songs.html`);
+		// the actual online url is broken
 		expect(meta.what).to.be("audio");
-		expect(meta.type).to.be("link");
+		expect(meta.type).to.be("embed");
 		expect(meta.ext).to.be("html");
 		expect(meta.html).to.be.ok();
 		expect(meta.html.startsWith('<iframe')).to.be.ok();
