@@ -301,12 +301,12 @@ async function curlRequest(urlObj) {
 	res.headers = headers;
 	res.statusCode = statusCode;
 	if (data.on) data.on('error', err => {
+		res.end();
 		if (err.isCurlError && err.code === CurlCode.CURLE_ABORTED_BY_CALLBACK) {
 			// this is expected
 		} else {
 			throw err;
 		}
-		res.end();
 	});
 	if (data.pipe) data.pipe(res);
 	return req;
