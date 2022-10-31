@@ -199,7 +199,10 @@ async function sourceInspection(obj, opts, cb) {
 	opts.nocanonical = true;
 	try {
 		const sourceObj = await inspector(obj.source, opts);
-		if (sourceObj.what != obj.what) return obj;
+		// inspected source is only interesting if it is an embed
+		if (sourceObj.what != obj.what || sourceObj.type != 'embed') {
+			return obj;
+		}
 		obj.source = sourceObj.url;
 		['mime', 'ext', 'type', 'size', 'width', 'height', 'duration'].forEach(key => {
 			if (sourceObj[key]) obj[key] = sourceObj[key];
@@ -340,35 +343,15 @@ function normalize(obj) {
 	if (obj.author) obj.author = normString(obj.author);
 
 	normalizeMedia(obj, obj.what);
-	if (!obj.source && obj.embed) {
-		obj.source = obj.embed;
-	}
 
-	let duree = obj.duration;
-	if (obj.bitrate && !duree && obj.size) {
-		const rate = parseInt(obj.bitrate) * 1000 / 8;
-		duree = Duration.fromObject({
-			seconds: parseInt(obj.size / rate)
-		});
-	} else if (duree) {
-		duree = Duration.fromISO(duree);
-		if (!duree.isValid && parseInt(obj.duration).toString() == obj.duration) {
-			duree = Duration.fromObject({
-				seconds: parseInt(obj.duration)
-			});
-		}
-	}
-	delete obj.bitrate;
-	if (duree && duree.isValid) {
-		obj.duration = duree.toFormat('hh:mm:ss');
-	} else {
-		delete obj.duration;
-	}
+	normalizeDuration(obj);
 
 	const alt = encodeURI(obj.title);
 	const src = obj.source || obj.url;
 
-
+	if (!obj.source && obj.embed) {
+		obj.source = obj.embed;
+	}
 	if (obj.html) {
 		obj.type = 'embed';
 		const handler = new DomHandler((error, dom) => {
@@ -478,17 +461,20 @@ function normalizeMedia(obj, what) {
 		if (info.url) {
 			obj.source = info.url;
 			if (info.duration) obj.duration = info.duration;
+			const attrs = [`src="${info.url}"`];
+			if (info.width) {
+				attrs.push(`width="${info.width}"`);
+				obj.width = info.width;
+			}
+			if (info.height) {
+				attrs.push(`height="${info.height}"`);
+				obj.height = info.height;
+			}
 			if (!info.type) {
 				// not really trusted, just consider url shall be source and inspected
-			} else if (info.type.startsWith('text/html')) {
-				const attrs = [`src="${info.url}"`];
-				if (info.width) attrs.push(`width="${info.width}"`);
-				if (info.height) attrs.push(`height="${info.height}"`);
+			} else if (info.type.startsWith('text/html') || info.type.endsWith('/vnd.facebook.bridge')) {
 				obj.html = `<iframe ${attrs.join(' ')}></iframe>`;
-			} else if (info.type.startsWith(what + '/')) {
-				const attrs = [`src="${info.url}"`];
-				if (info.width) attrs.push(`width="${info.width}"`);
-				if (info.height) attrs.push(`height="${info.height}"`);
+			} else if (new RegExp(`^${what}\\/\\w+$`).test(info.type) && obj.type == what) {
 				if (what == "image") {
 					obj.html = `<img ${attrs.join(' ')} />`;
 				} else {
@@ -498,6 +484,29 @@ function normalizeMedia(obj, what) {
 		}
 	} else {
 		obj.source = info;
+	}
+}
+
+function normalizeDuration(obj) {
+	let duree = obj.duration;
+	if (obj.bitrate && !duree && obj.size) {
+		const rate = parseInt(obj.bitrate) * 1000 / 8;
+		duree = Duration.fromObject({
+			seconds: parseInt(obj.size / rate)
+		});
+	} else if (duree) {
+		duree = Duration.fromISO(duree);
+		if (!duree.isValid && parseInt(obj.duration).toString() == obj.duration) {
+			duree = Duration.fromObject({
+				seconds: parseInt(obj.duration)
+			});
+		}
+	}
+	delete obj.bitrate;
+	if (duree && duree.isValid) {
+		obj.duration = duree.toFormat('hh:mm:ss');
+	} else {
+		delete obj.duration;
 	}
 }
 
