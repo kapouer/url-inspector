@@ -206,6 +206,7 @@ exports.html = async function (obj, res) {
 	const defer = new Deferred();
 
 	function finish(err) {
+		if (err) console.error(err);
 		if (finished) return;
 		finished = true;
 		parserStream.end();
@@ -237,8 +238,7 @@ exports.svg = async function (obj, res) {
 			finish();
 		},
 		onerror(err) {
-			console.error(err);
-			finish();
+			finish(err);
 		}
 	});
 
@@ -294,8 +294,7 @@ function importJsonLD(tags, text, priorities) {
 		}, priorities, 4);
 	} catch (ex) {
 		ex.message += " in\n" + text;
-		if (debug.enabled) throw ex;
-		else console.error(ex);
+		throw ex;
 	}
 }
 

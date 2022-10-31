@@ -9,6 +9,7 @@ const { PassThrough } = require('node:stream');
 const debug = require('debug')('url-inspector');
 const { curly, CurlCode } = require('node-libcurl');
 const { getProxyForUrl } = require('proxy-from-env');
+const HttpError = require('http-errors');
 
 const inspectSax = require('./sax');
 const inspectEmbed = require('./embed');
@@ -75,7 +76,7 @@ exports.request = async function (urlObj, obj) {
 
 	if (statusCode < 200 || (statusCode >= 400 && statusCode < 600)) {
 		// definitely an error - status above 600 could be an anti-bot system
-		throw new Error(statusCode);
+		throw new HttpError[statusCode]("Error fetching: " + urlObj.href);
 	}
 	if (headers.location) obj.location = new URL(headers.location, urlObj);
 	let contentType = headers['content-type'];
@@ -194,12 +195,12 @@ async function doRequest(urlObj) {
 			const res = req.res;
 			if (res.statusCode == 403) {
 				req.abort();
-				throw new Error(403);
+				throw new HttpError[res.statusCode]("Error fetching: " + urlObj.href);
 			} else {
 				return req;
 			}
 		} catch(err) {
-			if (err.name == 'Error' && urlObj.headers['User-Agent']) {
+			if (err.statusCode && urlObj.headers['User-Agent']) {
 				debug("retrying with default curl ua");
 				delete urlObj.headers["User-Agent"];
 				return doRequest(urlObj);
@@ -299,7 +300,7 @@ async function curlRequest(urlObj) {
 	if (last && last.location) headers.location = last.location;
 	res.headers = headers;
 	res.statusCode = statusCode;
-	if (data.on) data.on('error', (err) => {
+	if (data.on) data.on('error', err => {
 		if (err.isCurlError && err.code === CurlCode.CURLE_ABORTED_BY_CALLBACK) {
 			// this is expected
 		} else {

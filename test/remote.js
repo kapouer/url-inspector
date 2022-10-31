@@ -106,7 +106,7 @@ describe("remote suite", () => {
 		try {
 			await inspector('https://google.com/ctalo');
 		} catch (err) {
-			expect(err).to.be(404);
+			expect(err.statusCode).to.be(404);
 		}
 	}).timeout(10000);
 

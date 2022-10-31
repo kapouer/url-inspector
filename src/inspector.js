@@ -5,6 +5,7 @@ const { Parser } = require("htmlparser2");
 const { DomHandler } = require("domhandler");
 const { default: DomRender } = require("dom-serializer");
 const debug = require('debug')('url-inspector');
+const HttpError = require('http-errors');
 const OEmbedProviders = require('oembed-providers');
 const CustomOEmbedProviders = require('./custom-oembed-providers');
 const agent = require('./agent');
@@ -35,9 +36,7 @@ async function inspector(url, opts = {}) {
 
 	if (urlObj.protocol == "file:") {
 		if (!opts.file) {
-			// eslint-disable-next-line no-console
-			console.warn("file: protocol is disabled");
-			throw new Error(400);
+			throw new HttpError[400]("file: protocol is disabled");
 		}
 		opts.nofavicon = true;
 	}
@@ -49,7 +48,7 @@ async function inspector(url, opts = {}) {
 	if (opts.prepare) return urlObj;
 	const obj = { url };
 	const tags = await requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts);
-	if (!tags) throw new Error(400);
+	if (!tags) throw new HttpError[400]("Failed to fetch tags: " + urlObj.href);
 	if (!obj.site) {
 		obj.site = urlObj.hostname;
 	}
@@ -64,7 +63,6 @@ async function inspector(url, opts = {}) {
 		obj.title = lexize(Path.basename(urlObj.pathname));
 	}
 	normalize(obj);
-
 	await sourceInspection(obj, opts);
 
 	if (obj.icon && !obj.icon.startsWith('data:')) {
