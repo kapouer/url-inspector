@@ -116,6 +116,8 @@ const obj = await inspector(url, opts);
 
 ```
 
+Inspector throws http-errors instances.
+
 By default oembed providers are
 
 * found from a curated list of providers

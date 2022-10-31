@@ -65,3 +65,9 @@ Version 5.0.1
 
 * what: the field that tells what the url represents
 
+Version 6.0.0
+-------------
+
+* drop the `all` option
+* throw using http-errors (err becomes err.statusCode)
+* node >= 12 required
