@@ -209,7 +209,6 @@ exports.html = async function (obj, res) {
 		if (err) console.error(err);
 		if (finished) return;
 		finished = true;
-		parserStream.end();
 		const type = mapWhat(tags.type);
 		if (type) obj.what = type;
 		delete tags.type;
@@ -252,7 +251,6 @@ exports.svg = async function (obj, res) {
 	function finish() {
 		if (finished) return;
 		finished = true;
-		parserStream.end();
 		d.resolve();
 	}
 	res.pipe(parserStream);
