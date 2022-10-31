@@ -406,7 +406,17 @@ function normalize(obj) {
 
 	if (obj.image) {
 		if (!obj.thumbnail && obj.what != 'image') {
-			obj.thumbnail = obj.image;
+			if (obj.image.url) {
+				if (obj.image.type) {
+					if (obj.image.type.startsWith('image/')) {
+						obj.thumbnail = obj.image.url;
+					}
+				} else {
+					obj.thumbnail = obj.image.url;
+				}
+			} else {
+				obj.thumbnail = obj.image;
+			}
 		}
 		delete obj.image;
 	}
