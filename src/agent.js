@@ -181,7 +181,7 @@ function getInspectorType({ isEmbed }, { type, subtype }) {
 async function doRequest(urlObj) {
 	if (urlObj.protocol == "file:") {
 		const stat = await fs.promises.stat(urlObj.pathname);
-		const req = fs.createReadStream(urlObj.pathname);
+		const req = fs.createReadStream(urlObj.pathname).on('error', err => console.error(err));
 		if (!req.abort) req.abort = req.destroy;
 		req.headers = {
 			'content-length': stat.size.toString()
