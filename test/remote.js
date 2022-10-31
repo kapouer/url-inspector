@@ -72,7 +72,7 @@ describe("remote suite", () => {
 		expect(meta.thumbnail).to.be.ok();
 		expect(meta.title).to.be.ok();
 		expect(meta.mime).to.be('text/html');
-		expect(meta.author).to.be.ok('Dinah Cohen');
+		expect(meta.author).to.be('Le Figaro');
 		expect(Number.isNaN(Date.parse(meta.date))).to.not.be.ok();
 		expect(meta.ext).to.be('html');
 		expect(meta.html).to.be.ok();
