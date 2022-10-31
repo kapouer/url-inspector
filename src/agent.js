@@ -293,7 +293,6 @@ async function curlRequest(urlObj) {
 			data.destroy();
 		}
 	};
-	res.headers = {};
 	const headers = hlist.pop();
 	delete headers.result;
 	const last = hlist.pop();
