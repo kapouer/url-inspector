@@ -217,6 +217,8 @@ describe("remote suite", () => {
 	it("should not fail on redirection", async () => {
 		const meta = await inspector('http://atag-europe.com/');
 		expect(meta.what).to.be('page');
+		expect(meta.html).to.be.ok();
+		expect(meta.html.startsWith('<blockquote ')).to.be.ok();
 		expect(meta.type).to.be('embed');
 	}).timeout(10000);
 
