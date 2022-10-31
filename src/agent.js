@@ -232,7 +232,7 @@ function pipeLimit(req, res, length, percent) {
 		}
 	}
 	let curLength = 0;
-	res.on('data', (buf) => {
+	res.on('data', buf => {
 		if (res.nolimit) return;
 		curLength += buf.length;
 		if (curLength >= length) {
@@ -304,6 +304,7 @@ async function curlRequest(urlObj) {
 		if (err.isCurlError && err.code === CurlCode.CURLE_ABORTED_BY_CALLBACK) {
 			// this is expected
 		} else {
+			// rethrow, let curly handle it
 			throw err;
 		}
 	});
