@@ -46,9 +46,7 @@ async function inspector(url, opts = {}) {
 		url = urlObj.href;
 	}
 	if (opts.prepare) return urlObj;
-	const obj = { url };
-	const tags = await requestPageOrEmbed(urlObj, oEmbedUrl, obj, opts);
-	if (!tags) throw new HttpError[400]("Failed to fetch tags: " + urlObj.href);
+	const obj = await requestPageOrEmbed(urlObj, oEmbedUrl, { url }, opts);
 	if (!obj.site) {
 		obj.site = urlObj.hostname;
 	}

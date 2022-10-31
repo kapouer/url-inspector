@@ -39,5 +39,5 @@ exports.embed = async function (obj, res) {
 	obj.type = "embed";
 	delete obj.isEmbed;
 	delete obj.size;
-	return tags;
+	return obj;
 };
