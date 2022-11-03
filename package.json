@@ -44,7 +44,6 @@
     "debug": ">=4.3.4",
     "dom-serializer": "^2.0.0",
     "domhandler": "^5.0.3",
-    "entities": "^4.4.0",
     "htmlparser2": "^8.0.1",
     "http-errors": "^2.0.0",
     "iconv-lite": "^0.6.3",

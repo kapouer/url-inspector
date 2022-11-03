@@ -10,8 +10,6 @@ const OEmbedProviders = require('oembed-providers');
 const CustomOEmbedProviders = require('./custom-oembed-providers');
 const agent = require('./agent');
 
-const { decodeHTML } = require('entities');
-
 const accepts = {
 	image: "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
 	document: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
@@ -339,18 +337,24 @@ function normalize(obj) {
 	}
 
 	if (obj.title) {
-		if (typeof obj.title != "string") obj.title = obj.title.toString();
-		obj.title = decodeHTML(obj.title);
+		if (typeof obj.title != "string") {
+			obj.title = obj.title.toString();
+		}
+		obj.title = htmlToString(obj.title);
 	}
 
 	if (obj.description) {
-		if (typeof obj.description != "string") obj.description = obj.description.toString();
-		if (obj.title) obj.description = obj.description.replace(obj.title, "").trim();
-		obj.description = decodeHTML(obj.description.split('\n')[0].trim());
+		if (typeof obj.description != "string") {
+			obj.description = obj.description.toString();
+		}
+		if (obj.title) {
+			obj.description = obj.description.replace(obj.title, "").trim();
+		}
+		obj.description = htmlToString(obj.description).split('\n')[0].trim();
 	}
 
-	if (obj.site) obj.site = normString(obj.site);
-	if (obj.author) obj.author = normString(obj.author);
+	if (obj.site) obj.site = normString(htmlToString(obj.site));
+	if (obj.author) obj.author = normString(htmlToString(obj.author));
 
 	normalizeMedia(obj, obj.what);
 
@@ -563,9 +567,20 @@ function normNum(str) {
 	return Number.isNaN(n) ? undefined : n;
 }
 
+function htmlToString(str) {
+	const parts = [];
+	const parser = new Parser({
+		ontext(str) {
+			parts.push(str);
+		}
+	});
+	parser.write(str);
+	parser.end();
+	return parts.join('').trim();
+}
+
 function normString(str) {
-	if (typeof str != "string") str = str.toString();
-	return decodeHTML(str.replace(/^@/, '').replace(/_/g, ' '));
+	return str.replace(/^@/, '').replace(/_/g, ' ');
 }
 
 function traverseTree(node, i, visitor) {

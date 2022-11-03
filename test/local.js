@@ -12,7 +12,7 @@ describe("local suite", () => {
 			ready();
 		});
 		app.use((req, res, next) => {
-			if (req.path == "/latin.html") {
+			if (req.path == "/latin.html" || req.path == "/lavieenbois.html") {
 				res.type("text/html; charset=iso-8859-1");
 			} else if (req.path == "/oembed.json") {
 				return res.json({
@@ -44,12 +44,18 @@ describe("local suite", () => {
 		expect(meta.title).to.be('Accentué à');
 	});
 
-	it("should get title", async () => {
+	it("should get title and description", async () => {
 		const meta = await inspector(`${host}/lavieenbois.html`);
-		expect(meta.title).to.be("Pascal Oudet - Sculpture - Wood art");
+		expect(meta.title).to.be("Créations © Wood & art");
+		expect(meta.description).to.be("créations sculptures");
 	});
 	it("should not crash with svg", async () => {
 		const meta = await inspector(`${host}/test.svg`);
+		expect(meta.mime).to.be('image/svg+xml');
+		expect(meta.type).to.be('image');
+		expect(meta.what).to.be('image');
+		expect(meta.width).to.be(256);
+		expect(meta.height).to.be(256);
 	});
 
 	it("should correctly parse json-ld to get embedUrl and inspect thumbnail to get dimensions of video", async () => {
