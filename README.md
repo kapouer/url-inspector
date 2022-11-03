@@ -27,51 +27,51 @@ npx url-inspector <url>
 Normalized metadata
 -------------------
 
-- url
+- url:
   url of the inspected resource
-- title
+- title:
   title of the resource, or filename, or last component of pathname with query
-- description
+- description:
   *optional* longer description, without title in it, and only the first line.
-- site
+- site:
   the name of the site, or the domain name
-- mime
+- mime:
   RFC 7231 mime type of the resource (defaults to Content-Type)
   The inspected mime type could be more accurate than the http header.
-- ext
+- ext:
   The file extension, only derived from the mime type.
   Safe to be used as file extension.
-- what
+- what:
   what the resource represents
   page, image, video, audio, file
-- type
+- type:
   how the resource is used:
   link, image, video, audio, embed.
   Example: if what:image and mime:text/html, and no html snippet is found, type will be 'link'.
-- html
+- html:
   the html representation of the resource, according to type and use.
-- script
+- script:
   url of a script that must be installed along with the html representation.
 - date (YYYY-MD-DD format)
   creation or modification date
-- author
+- author:
   *optional* credit, author (without the @ prefix and with _ replaced by spaces)
-- keywords
+- keywords:
   *optional* array of collected keywords (lowercased words that are not in title words).
-- size (number)
-  *optional* Content-Length; discarded when type is embed
-- icon
+- size:
+  *optional* Content-Length as integer; discarded when type is embed
+- icon:
   *optional* link to the favicon of the site
-- width, height (number)
-  *optional* dimensions
-- duration (hh:mm:ss string)
-  *optional*
-- thumbnail
+- width, height:
+  *optional* dimensions as integers
+- duration:
+  *optional* hh:mm:ss string
+- thumbnail:
   *optional* a URL to a thumbnail, could be a data-uri for embedded images
-- source
+- source:
   *optional* a URL that can go in a 'src' attribute; for example a resource can be an html page representing an image type.
   The URL of the image itself would be stored here; same thing for audio, video, embed types.
-- error
+- error:
   *optional* an http error code, or string
 
 Installation
