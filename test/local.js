@@ -30,6 +30,10 @@ describe("local suite", () => {
 				});
 			} else if (req.path == "/video") {
 				return res.sendStatus(403);
+			} else if (req.path == "/image/toto") {
+				req.url = '/image.png';
+			} else if (req.path == "/image/test") {
+				return res.sendStatus(500);
 			}
 			next();
 		}, express.static(__dirname + '/fixtures'));
@@ -130,6 +134,26 @@ describe("local suite", () => {
 
 	});
 
+	it("should inspect only once when url is redirected by provider", async () => {
+		const meta = await inspector(`${host}/image/test`, {
+			meta: {
+				title: 'tata',
+				author: '<p>user autho</p>r'
+			},
+			providers: [{
+				name: "local2",
+				endpoints: [{
+					schemes: ['.*'],
+					redirect(obj) {
+						obj.pathname = obj.pathname.replace('/test', '/toto');
+						return true;
+					}
+				}]
+			}]
+		});
+		expect(meta.title).to.be('tata');
+		expect(meta.author).to.be('user author');
+	});
 
 	it("should parse instagram page", async () => {
 		const meta = await inspector(`${host}/insta.html`);
