@@ -71,3 +71,11 @@ Version 6.0.0
 * drop the `all` option
 * throw using http-errors (err becomes err.statusCode)
 * node >= 12 required
+
+Version 7.0.0
+-------------
+
+* expose Inspector class
+* `inspector(url, opts)` becomes `new Inspector(opts).lookup({url})`
+* the object passed to lookup can contain user-set metadata that won't be overwritten
+* `inspector.normalize(obj)` to normalize an object without lookup

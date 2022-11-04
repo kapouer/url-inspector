@@ -88,7 +88,7 @@ API
 ---
 
 ```js
-const inspector = require('url-inspector');
+const Inspector = require('url-inspector');
 
 const opts = {
  ua: "Mozilla/5.0", // override ua, defaults to somewhat modern browser
@@ -99,7 +99,9 @@ const opts = {
  providers: null // custom providers (module path or array)
 };
 
-const obj = await inspector(url, opts);
+const inspector = new Inspector(opts);
+
+const obj = await inspector.lookup({ url });
 
 ```
 
@@ -116,16 +118,17 @@ an array or a path to a module exporting an array.
 
 See `src/custom-oembed-providers.js` for examples.
 
-Since providers can rewrite url, it is possible to only get the rewritten url:
+
+To normalize an already existing metadata object, including url rewriting done by providers, and other changes in fields, do:
 
 ```js
-const urlObj = await inspector.prepare(url);
+await inspector.normalize(obj);
 ```
 
 url-inspector uses node-libcurl to make http requests, and exposes it as:
 
 ```js
-const req = await inspector.get(urlObj);
+const req = await Inspector.get(urlObj);
 ```
 
 where `req.abort()` stops the request, `req.res` is the response stream,

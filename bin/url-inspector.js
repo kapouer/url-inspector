@@ -41,7 +41,7 @@ if (opts.help || !url) {
 	process.exit(0);
 }
 
-const inspector = require('..');
+const Inspector = require('..');
 
 opts.file = true;
 if (url.startsWith('./') || url.startsWith('/')) url = "file://" + url;
@@ -50,7 +50,7 @@ if (opts.providers) {
 	opts.providers = require(opts.providers);
 }
 
-inspector(url, opts).then(meta => {
+(new Inspector(opts)).lookup({ url }).then(meta => {
 	console.info(require('util').inspect(meta));
 	process.exit(0);
 }).catch(err => {
