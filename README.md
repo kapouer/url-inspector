@@ -102,7 +102,7 @@ const opts = {
 
 const inspector = new Inspector(opts);
 
-const obj = await inspector.lookup(url);
+const obj = await inspector.look(url);
 
 ```
 
@@ -119,16 +119,10 @@ an array or a path to a module exporting an array.
 
 See `src/custom-oembed-providers.js` for examples.
 
-To pass an incomplete metadata object to further inspect, do
-
-```js
-await inspector.lookup(obj); // where obj.url is set
-```
-
 To normalize an already existing metadata object, including url rewriting done by providers, and other changes in fields, do:
 
 ```js
-await inspector.normalize(obj);
+await inspector.norm(obj);
 ```
 
 url-inspector uses node-libcurl to make http requests, and exposes it as:

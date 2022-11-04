@@ -20,14 +20,14 @@ module.exports = class Inspector {
 		this.file = opts.file;
 	}
 
-	normalize(obj) {
+	norm(obj) {
 		const [urlObj] = this.prepareUrl(obj);
 		Norm.process(obj, urlObj);
 		return obj;
 	}
 
-	async lookup(pObj) {
-		if (typeof pObj == "string") pObj = { url: pObj };
+	async look(url) {
+		const pObj = { url };
 		const [urlObj, oEmbedUrl] = this.prepareUrl(pObj);
 		const obj = await this.requestPageOrEmbed(urlObj, oEmbedUrl, pObj);
 		if (obj.thumbnail) {
@@ -48,6 +48,7 @@ module.exports = class Inspector {
 	}
 
 	prepareUrl(obj) {
+		if (!obj.url) return [{}];
 		const urlObj = (url => {
 			if (typeof url == "string" && url.startsWith('file:')) {
 				return new URL(url.replace(/^file:\/\//, ''), `file://${process.cwd()}/`);
@@ -159,18 +160,20 @@ module.exports = class Inspector {
 			}
 			if (embedObj.obj && !robj.title) {
 				// inspect page too
-				const sobj = await this.lookup({ url: urlObj.href }, Object.assign({
+				const inspector = new Inspector(Object.assign({
 					noembed: true
 				}, opts));
+				const sobj = await inspector.look(urlObj.href);
 				return Object.assign(sobj, robj);
 			} else {
 				return robj;
 			}
 		} catch (err) {
 			if (embedObj.obj) {
-				return this.lookup({ url: urlObj.href }, Object.assign({
+				const inspector = new Inspector(Object.assign({
 					noembed: true, error: err
 				}, opts));
+				return inspector.look(urlObj.href);
 			} else if (embedObj.url) {
 				embedObj.discovery = false;
 				return this.requestPageOrEmbed({}, embedObj, obj, opts);

@@ -51,7 +51,7 @@ module.exports = class Norm {
 		}
 
 		// obj.ext is already set by mime
-		obj.ext = obj.ext.toLowerCase();
+		if (obj.ext) obj.ext = obj.ext.toLowerCase();
 		switch (obj.ext) {
 			case "jpeg":
 				obj.ext = "jpg";

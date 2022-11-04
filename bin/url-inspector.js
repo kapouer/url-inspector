@@ -50,7 +50,7 @@ if (opts.providers) {
 	opts.providers = require(opts.providers);
 }
 
-(new Inspector(opts)).lookup({ url }).then(meta => {
+(new Inspector(opts)).look(url).then(meta => {
 	console.info(require('util').inspect(meta));
 	process.exit(0);
 }).catch(err => {

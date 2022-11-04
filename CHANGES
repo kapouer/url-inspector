@@ -76,6 +76,6 @@ Version 7.0.0
 -------------
 
 * expose Inspector class
-* `inspector(url, opts)` becomes `new Inspector(opts).lookup({url})`
-* the object passed to lookup can contain user-set metadata that won't be overwritten
-* `inspector.normalize(obj)` to normalize an object without lookup
+* `inspector(url, opts)` becomes `new Inspector(opts).look({url})`
+* the object passed to look can contain user-set metadata that won't be overwritten
+* `inspector.norm(obj)` to normalize an object without look
