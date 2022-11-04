@@ -96,6 +96,7 @@ const opts = {
  nosource: false, // disable main embedded media sub-inspection
  file: true, // local files inspection is only enabled by default when using CLI
  meta: {} // user-entered metadata, to be merged and normalized
+ providers: null // custom providers (module path or array)
 };
 
 const obj = await inspector(url, opts);
@@ -107,7 +108,7 @@ Inspector throws http-errors instances.
 By default oembed providers are
 
 - found from a curated list of providers
-- found from an additional or custom list of providers
+- found from a custom list, required from opts.providers
 - discovered in the inspected web pages
 
 It is possible to add custom providers in the options, by passing
