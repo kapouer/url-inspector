@@ -1,8 +1,7 @@
-const Path = require('path');
-
 const debug = require('debug')('url-inspector');
 const HttpError = require('http-errors');
 const processProvider = require('./provider');
+const sourceInspection = require('./source');
 
 const agent = require('./agent');
 const Norm = require('./norm');
@@ -38,7 +37,7 @@ module.exports = class Inspector {
 			await this.lastResortDimensionsFromThumbnail(thumbnailObj, obj);
 		}
 		Norm.process(obj, urlObj);
-		await this.sourceInspection(obj);
+		if (!this.nosource) await sourceInspection(obj, this);
 
 		if (obj.icon && !obj.icon.startsWith('data:')) {
 			obj.icon = new URL(obj.icon, urlObj).href;
@@ -94,31 +93,7 @@ module.exports = class Inspector {
 		return obj;
 	}
 
-	async sourceInspection(obj) {
-		if (this.nosource || !obj.source || obj.source == obj.url || ['video', 'audio', 'image', 'page'].includes(obj.what) == false) return obj;
-		const urlObj = new URL(obj.source, obj.url);
-		if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return obj;
-		debug("source inspection", obj.mime, obj.what, obj.source);
-		const opts = Object.assign({}, this);
-		if (obj.icon) opts.nofavicon = true;
-		opts.nosource = true;
-		opts.nocanonical = true;
-		try {
-			const inspector = new Inspector(opts);
-			const sourceObj = await inspector.lookup({ url: obj.source });
-			// inspected source is only interesting if it is an embed
-			if (sourceObj.what != obj.what || sourceObj.type != 'embed') {
-				return obj;
-			}
-			obj.source = sourceObj.url;
-			['mime', 'ext', 'type', 'size', 'width', 'height', 'duration'].forEach(key => {
-				if (sourceObj[key]) obj[key] = sourceObj[key];
-			});
-		} catch (err) {
-			debug("Error fetching subsource", err);
-		}
-		return obj;
-	}
+
 	async guessIcon(urlObj, obj) {
 		if (obj.what == "page") {
 			const iconObj = new URL("/favicon.ico", urlObj);
