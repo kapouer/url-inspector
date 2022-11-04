@@ -44,6 +44,15 @@ describe("local suite", () => {
 		expect(meta.title).to.be('Accentué à');
 	});
 
+	it("should overwrite meta.title", async () => {
+		const meta = await inspector(`${host}/latin.html`, {
+			meta: {
+				title: '<b>My own title</b>'
+			}
+		});
+		expect(meta.title).to.be('My own title');
+	});
+
 	it("should get title and description", async () => {
 		const meta = await inspector(`${host}/lavieenbois.html`);
 		expect(meta.title).to.be("Créations © Wood & art");

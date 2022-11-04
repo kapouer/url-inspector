@@ -94,7 +94,8 @@ const opts = {
  ua: "Mozilla/5.0", // override ua, defaults to somewhat modern browser
  nofavicon: false, // disable additional requests to get a favicon
  nosource: false, // disable main embedded media sub-inspection
- file: true // local files inspection is only enabled by default when using CLI
+ file: true, // local files inspection is only enabled by default when using CLI
+ meta: {} // user-entered metadata, to be merged and normalized
 };
 
 const obj = await inspector(url, opts);

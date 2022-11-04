@@ -58,7 +58,7 @@ async function inspector(url, opts = {}) {
 	if (obj.title == null && urlObj.pathname) {
 		obj.title = lexize(Path.basename(urlObj.pathname));
 	}
-	normalize(obj);
+	normalize(obj, opts.meta);
 	await sourceInspection(obj, opts);
 
 	if (obj.icon && !obj.icon.startsWith('data:')) {
@@ -325,7 +325,8 @@ function supportsOEmbed(urlObj, providers) {
 	return ret;
 }
 
-function normalize(obj) {
+function normalize(obj, meta = {}) {
+	Object.assign(obj, meta);
 	delete obj.pathname;
 
 	// obj.ext is already set by mime
