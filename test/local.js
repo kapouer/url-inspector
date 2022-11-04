@@ -1,14 +1,34 @@
-const inspector = require('..');
 const expect = require('expect.js');
 const express = require('express');
 const assert = require('assert');
+const Inspector = require('..');
 
 describe("local suite", () => {
-	let app, server, host;
+	let app, server, host, inspector;
+
 	before((ready) => {
 		app = express();
 		server = app.listen(() => {
 			host = "http://localhost:" + server.address().port;
+			inspector = new Inspector({
+				providers: [{
+					name: "local",
+					endpoints: [{
+						schemes: [host.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&') + '/*'],
+						url: `${host}/oembed.{format}`,
+						discovery: true
+					}]
+				}, {
+					name: "local2",
+					endpoints: [{
+						schemes: ['.*'],
+						redirect(obj) {
+							obj.pathname = obj.pathname.replace('/test', '/toto');
+							return true;
+						}
+					}]
+				}]
+			});
 			ready();
 		});
 		app.use((req, res, next) => {
@@ -44,26 +64,25 @@ describe("local suite", () => {
 	});
 
 	it("should convert from other charsets", async () => {
-		const meta = await inspector(`${host}/latin.html`);
+		const meta = await inspector.lookup(`${host}/latin.html`);
 		expect(meta.title).to.be('Accentué à');
 	});
 
 	it("should overwrite meta.title", async () => {
-		const meta = await inspector(`${host}/latin.html`, {
-			meta: {
-				title: '<b>My own title</b>'
-			}
+		const meta = await inspector.lookup({
+			url: `${host}/latin.html`,
+			title: '<b>My own title</b>'
 		});
 		expect(meta.title).to.be('My own title');
 	});
 
 	it("should get title and description", async () => {
-		const meta = await inspector(`${host}/lavieenbois.html`);
+		const meta = await inspector.lookup(`${host}/lavieenbois.html`);
 		expect(meta.title).to.be("Créations © Wood & art");
 		expect(meta.description).to.be("créations sculptures");
 	});
 	it("should not crash with svg", async () => {
-		const meta = await inspector(`${host}/test.svg`);
+		const meta = await inspector.lookup(`${host}/test.svg`);
 		expect(meta.mime).to.be('image/svg+xml');
 		expect(meta.type).to.be('image');
 		expect(meta.what).to.be('image');
@@ -72,7 +91,7 @@ describe("local suite", () => {
 	});
 
 	it("should correctly parse json-ld to get embedUrl and inspect thumbnail to get dimensions of video", async () => {
-		const meta = await inspector(`${host}/jsonld.html`);
+		const meta = await inspector.lookup(`${host}/jsonld.html`);
 		expect(meta.what).to.be('video');
 		expect(meta.type).to.be('embed');
 		expect(meta.date).to.be.ok();
@@ -83,7 +102,7 @@ describe("local suite", () => {
 	});
 
 	it("should return embeddable content", async () => {
-		const meta = await inspector(`${host}/songs.html`);
+		const meta = await inspector.lookup(`${host}/songs.html`);
 		// the actual online url is broken
 		expect(meta.what).to.be("audio");
 		expect(meta.type).to.be("embed");
@@ -93,7 +112,7 @@ describe("local suite", () => {
 	});
 
 	it("should fetch thumbnailUrl from nytimes jsonld", async () => {
-		const meta = await inspector(`${host}/nytimes.html`);
+		const meta = await inspector.lookup(`${host}/nytimes.html`);
 		expect(meta.thumbnail).to.be.ok();
 		expect(meta.what).to.be("video");
 		expect(meta.type).to.be("embed");
@@ -103,16 +122,7 @@ describe("local suite", () => {
 	}).timeout(3000);
 
 	it("should not crash when oembed discovery fails", async () => {
-		const meta = await inspector(`${host}/video`, {
-			providers: [{
-				name: "local",
-				endpoints: [{
-					schemes: [host.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&') + '/*'],
-					url: `${host}/oembed.{format}`,
-					discovery: true
-				}]
-			}]
-		});
+		const meta = await inspector.lookup(`${host}/video`);
 		delete meta.url;
 		assert.deepStrictEqual(meta, {
 			what: 'video',
@@ -135,28 +145,17 @@ describe("local suite", () => {
 	});
 
 	it("should inspect only once when url is redirected by provider", async () => {
-		const meta = await inspector(`${host}/image/test`, {
-			meta: {
-				title: 'tata',
-				author: '<p>user autho</p>r'
-			},
-			providers: [{
-				name: "local2",
-				endpoints: [{
-					schemes: ['.*'],
-					redirect(obj) {
-						obj.pathname = obj.pathname.replace('/test', '/toto');
-						return true;
-					}
-				}]
-			}]
+		const meta = await inspector.lookup({
+			url: `${host}/image/test`,
+			title: 'tata',
+			author: '<p>user autho</p>r'
 		});
 		expect(meta.title).to.be('tata');
 		expect(meta.author).to.be('user author');
 	});
 
 	it("should parse instagram page", async () => {
-		const meta = await inspector(`${host}/insta.html`);
+		const meta = await inspector.lookup(`${host}/insta.html`);
 		expect(meta.what).to.be("page");
 		expect(meta.type).to.be("link");
 		expect(meta.mime).to.be("text/html");

@@ -45,7 +45,7 @@ module.exports = class Norm {
 		return origin.href;
 	}
 
-	static normalize(obj, urlObj) {
+	static process(obj, urlObj) {
 		if (!obj.site) {
 			obj.site = urlObj.hostname;
 		}
@@ -180,7 +180,7 @@ module.exports = class Norm {
 		return obj;
 	}
 
-	keywords({ title, keywords }) {
+	static keywords({ title, keywords }) {
 		if (!keywords) return;
 		if (typeof keywords == "string") {
 			keywords = keywords.split(/[,\s]/g);
@@ -201,7 +201,7 @@ module.exports = class Norm {
 		return list;
 	}
 
-	media(obj, what) {
+	static media(obj, what) {
 		const info = obj[what];
 		delete obj[what];
 		if (typeof info == "object") {
@@ -234,7 +234,7 @@ module.exports = class Norm {
 		}
 	}
 
-	duration(obj) {
+	static duration(obj) {
 		let duree = obj.duration;
 		if (obj.bitrate && !duree && obj.size) {
 			const rate = parseInt(obj.bitrate) * 1000 / 8;

@@ -1,6 +1,16 @@
 url-inspector
 =============
 
+Synopsys
+--------
+
+```sh
+npx url-inspector <url>
+```
+
+Description
+-----------
+
 Get normalized metadata about what a URL mainly represents.
 
 This is a Node.js module.
@@ -15,17 +25,8 @@ Sources of information:
 
 Inspection stops when enough information has been gathered, or when a maximum number of bytes (depending on media type) have been downloaded.
 
-Usage
------
-
-Quick test using command-line:
-
-```sh
-npx url-inspector <url>
-```
-
-Normalized metadata
--------------------
+Format
+------
 
 - url:
   url of the inspected resource
@@ -74,8 +75,8 @@ Normalized metadata
 - error:
   *optional* an http error code, or string
 
-Installation
-------------
+Install
+-------
 
 url-inspector currently requires those external libraries/tools:
 
@@ -84,8 +85,8 @@ url-inspector currently requires those external libraries/tools:
 
 Both programs are well-maintained, and available in most linux distributions.
 
-API
----
+Usage
+-----
 
 ```js
 const Inspector = require('url-inspector');
@@ -101,7 +102,7 @@ const opts = {
 
 const inspector = new Inspector(opts);
 
-const obj = await inspector.lookup({ url });
+const obj = await inspector.lookup(url);
 
 ```
 
@@ -118,6 +119,11 @@ an array or a path to a module exporting an array.
 
 See `src/custom-oembed-providers.js` for examples.
 
+To pass an incomplete metadata object to further inspect, do
+
+```js
+await inspector.lookup(obj); // where obj.url is set
+```
 
 To normalize an already existing metadata object, including url rewriting done by providers, and other changes in fields, do:
 

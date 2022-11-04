@@ -1,9 +1,11 @@
-const inspector = require('..');
+const Inspector = require('..');
 const expect = require('expect.js');
+
+const inspector = new Inspector({ file: true });
 
 describe("file suite", () => {
 	it("should inspect relative path", async () => {
-		const meta = await inspector(`file://./test/fixtures/songs.html`, { file: true });
+		const meta = await inspector.lookup(`file://./test/fixtures/songs.html`);
 		expect(meta.what).to.be("audio");
 		expect(meta.type).to.be("embed");
 		expect(meta.ext).to.be("html");
@@ -14,16 +16,23 @@ describe("file suite", () => {
 	});
 
 	it("should inspect absolute path", async () => {
-		const meta = await inspector(`file://${__dirname}/fixtures/lavieenbois.html`, { file: true });
+		const meta = await inspector.lookup(`file://${__dirname}/fixtures/lavieenbois.html`);
 		expect(meta.title).to.be.ok();
 		expect(meta.what).to.be("page");
 	});
 
 	it("should inspect svg image", async () => {
-		const meta = await inspector(`file://./test/fixtures/test.svg`, { file: true });
+		const meta = await inspector.lookup(`file://./test/fixtures/test.svg`);
 		expect(meta.title).to.be.ok();
 		expect(meta.type).to.be('image');
 		expect(meta.what).to.be('image');
+	});
+
+	it("should inspect image with number as title", async () => {
+		const meta = await inspector.lookup(`file://./test/fixtures/image.png`);
+		expect(meta.title).to.be('36771364');
+		expect(meta.type).to.be('image');
+		expect(meta.what).to.be("image");
 	});
 
 });

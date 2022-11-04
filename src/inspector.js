@@ -15,7 +15,7 @@ module.exports = class Inspector {
 	static get(urlObj) {
 		return agent.get(urlObj);
 	}
-	constructor(opts) {
+	constructor(opts = {}) {
 		this.providers = opts.providers;
 		this.nofavicon = opts.nofavicon;
 		this.file = opts.file;
@@ -28,6 +28,7 @@ module.exports = class Inspector {
 	}
 
 	async lookup(pObj) {
+		if (typeof pObj == "string") pObj = { url: pObj };
 		const [urlObj, oEmbedUrl] = this.prepareUrl(pObj);
 		const obj = await this.requestPageOrEmbed(urlObj, oEmbedUrl, pObj);
 		if (obj.thumbnail) {
@@ -47,7 +48,7 @@ module.exports = class Inspector {
 		return obj;
 	}
 
-	prepareUrl(obj, opts) {
+	prepareUrl(obj) {
 		const urlObj = (url => {
 			if (typeof url == "string" && url.startsWith('file:')) {
 				return new URL(url.replace(/^file:\/\//, ''), `file://${process.cwd()}/`);
@@ -57,7 +58,7 @@ module.exports = class Inspector {
 		})(obj.url);
 
 		if (urlObj.protocol == "file:") {
-			if (!opts.file) {
+			if (!this.file) {
 				throw new HttpError[400]("file: protocol is disabled");
 			}
 		}
@@ -93,17 +94,18 @@ module.exports = class Inspector {
 		return obj;
 	}
 
-	async sourceInspection(obj, opts) {
-		if (opts.nosource || !obj.source || obj.source == obj.url || ['video', 'audio', 'image', 'page'].includes(obj.what) == false) return obj;
+	async sourceInspection(obj) {
+		if (this.nosource || !obj.source || obj.source == obj.url || ['video', 'audio', 'image', 'page'].includes(obj.what) == false) return obj;
 		const urlObj = new URL(obj.source, obj.url);
 		if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return obj;
 		debug("source inspection", obj.mime, obj.what, obj.source);
-		opts = Object.assign({}, opts);
+		const opts = Object.assign({}, this);
 		if (obj.icon) opts.nofavicon = true;
 		opts.nosource = true;
 		opts.nocanonical = true;
 		try {
-			const sourceObj = await this.lookup({ url: obj.source }, opts);
+			const inspector = new Inspector(opts);
+			const sourceObj = await inspector.lookup({ url: obj.source });
 			// inspected source is only interesting if it is an embed
 			if (sourceObj.what != obj.what || sourceObj.type != 'embed') {
 				return obj;
@@ -152,7 +154,7 @@ module.exports = class Inspector {
 		return obj;
 	}
 
-	async requestPageOrEmbed(urlObj, embedObj, obj, opts) {
+	async requestPageOrEmbed(urlObj, embedObj, obj, opts = this) {
 		if (!embedObj.discovery && embedObj.url) {
 			debug("oembed candidate");
 			embedObj.obj = new URL(embedObj.url);
