@@ -67,7 +67,7 @@ describe("regression suite", () => {
 	}).timeout(5000);
 
 	it("should return a full url for thumbnail", async () => {
-		const meta = await inspector('https://www.calameo.com/read/007173083c1207babc7c2');
+		const meta = await inspector.look('https://www.calameo.com/read/007173083c1207babc7c2');
 		expect(meta.what).to.be("page");
 		expect(meta.thumbnail).to.be.ok();
 		expect(meta.thumbnail.startsWith('https://')).to.be(true);
