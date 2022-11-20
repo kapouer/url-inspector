@@ -154,19 +154,20 @@ export async function request(urlObj, obj) {
 			const urlObjEmbed = new URL(obj.oembed, urlObj);
 			urlObjEmbed.headers = Object.assign({}, urlObj.headers);
 			if (urlObj.protocol) urlObjEmbed.protocol = urlObj.protocol;
-			const cobj = await exports.request(urlObjEmbed, Object.assign({}, obj));
+			const cobj = await request(urlObjEmbed, Object.assign({}, obj));
 			cobj.size = obj.size; // embed cannot tell the size
 			return cobj;
 		} else if (canon && canon.redirects < 5 && canon.pathname != urlObj.pathname && canon.pathname + '/' != urlObj.pathname && canon.pathname != urlObj.pathname + '/') {
 			debug("fetch canonical url", canon.href);
 			canon.headers = Object.assign({}, urlObj.headers);
-			const cobj = await exports.request(canon, obj);
+			const cobj = await request(canon, obj);
 			cobj.location = canon;
 			return cobj;
 		} else {
 			return obj;
 		}
 	} catch (err) {
+		console.error(err);
 		return obj;
 	}
 }
