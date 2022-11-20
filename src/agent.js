@@ -287,6 +287,9 @@ async function curlRequest(urlObj) {
 		}
 	}
 
+	// workaround https://github.com/JCMais/node-libcurl/issues/332
+	await new Promise(resolve => setImmediate(resolve));
+
 	const {
 		headers: hlist,
 		data,
