@@ -74,11 +74,10 @@ export async function html(obj, res) {
 				name: "title",
 				description: "description",
 				duration: "duration",
-				image: "image", // give priority to thumbnailurl when defined on same node
+				image: "image.url",
 				thumbnailurl: "thumbnail",
 				embedurl: "embed",
-				width: "width",
-				height: "height",
+				width: "width", height: "height", // not sure it's useful
 				datepublished: "date"
 			}
 		}
@@ -160,8 +159,13 @@ export async function html(obj, res) {
 				priorities[key] = priority;
 				const [keyGroup, keyName] = key.split('.');
 				if (keyName) {
-					if (!tags[keyGroup]) tags[keyGroup] = {};
-					tags[keyGroup][keyName] = val;
+					if (tags[keyGroup] == null) {
+						tags[keyGroup] = {};
+					} else if (typeof tags[keyGroup] != "object") {
+						console.error("tag", keyGroup, "is already there", key);
+					} else {
+						tags[keyGroup][keyName] = val;
+					}
 				} else {
 					tags[key] = val;
 				}
