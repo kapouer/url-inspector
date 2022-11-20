@@ -2,7 +2,12 @@
   "name": "url-inspector",
   "version": "7.0.0",
   "description": "Get metadata about any url",
+  "type": "module",
   "main": "src/inspector.js",
+  "exports": {
+    ".": "./src/inspector.js",
+    "./package.json": "./package.json"
+  },
   "engines": {
     "node": ">=12"
   },
@@ -53,7 +58,7 @@
     "node-libcurl": "^2.3.4",
     "oembed-providers": "^1.0.20220906",
     "proxy-from-env": "^1.1.0",
-    "streat": "^0.4.1",
+    "streat": "^1.0.0",
     "strong-data-uri": "^1.0.6"
   },
   "devDependencies": {

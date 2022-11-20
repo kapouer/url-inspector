@@ -89,7 +89,8 @@ Usage
 -----
 
 ```js
-const Inspector = require('url-inspector');
+
+import Inspector from 'url-inspector';
 
 const opts = {
  ua: "Mozilla/5.0", // override ua, defaults to somewhat modern browser

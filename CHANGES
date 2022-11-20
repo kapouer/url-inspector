@@ -79,3 +79,10 @@ Version 7.0.0
 * `inspector(url, opts)` becomes `new Inspector(opts).look({url})`
 * the object passed to look can contain user-set metadata that won't be overwritten
 * `inspector.norm(obj)` to normalize an object without look
+
+Version 8.0.0
+-------------
+
+* Move to ESM
+* Depends streat 1.0.0 which properly clean exiftool process on exit
+* opts.providers must be an array, not a path. Only --providers cli can be a path.

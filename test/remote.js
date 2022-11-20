@@ -1,5 +1,5 @@
-const expect = require('expect.js');
-const Inspector = require('..');
+import expect from 'expect.js';
+import Inspector from 'url-inspector';
 
 describe("remote suite", () => {
 	const inspector = new Inspector();

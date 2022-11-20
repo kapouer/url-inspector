@@ -1,12 +1,14 @@
-const debug = require('debug')('url-inspector');
-const HttpError = require('http-errors');
-const processProvider = require('./provider');
-const sourceInspection = require('./source');
+import Debug from 'debug';
+import HttpError from 'http-errors';
+import processProvider from './provider.js';
+import sourceInspection from './source.js';
 
-const agent = require('./agent');
-const Norm = require('./norm');
+import * as agent from './agent.js';
+import Norm from './norm.js';
 
-module.exports = class Inspector {
+const debug = Debug('url-inspector');
+
+export default class Inspector {
 	static accepts = {
 		image: "image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
 		document: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
@@ -182,4 +184,4 @@ module.exports = class Inspector {
 			}
 		}
 	}
-};
+}

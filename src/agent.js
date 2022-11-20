@@ -1,19 +1,23 @@
-const Path = require('path');
-const ContentDisposition = require('content-disposition');
-const ContentType = require('content-type');
-const MediaTyper = require('media-typer');
-const iconv = require('iconv-lite');
-const mime = require('mime');
-const fs = require('fs');
-const { PassThrough } = require('stream');
-const debug = require('debug')('url-inspector');
-const { curly, CurlCode } = require('node-libcurl');
-const { getProxyForUrl } = require('proxy-from-env');
-const HttpError = require('http-errors');
+import { basename } from 'path';
+import ContentDisposition from 'content-disposition';
+import ContentType from 'content-type';
+import MediaTyper from 'media-typer';
+import iconv from 'iconv-lite';
+import mime from 'mime';
+import { createReadStream, promises as fs } from 'fs';
 
-const inspectSax = require('./sax');
-const inspectEmbed = require('./embed');
-const inspectStreat = require('./streat');
+import { PassThrough } from 'stream';
+import Debug from 'debug';
+
+import { curly, CurlCode } from 'node-libcurl';
+import { getProxyForUrl } from 'proxy-from-env';
+import HttpError from 'http-errors';
+
+import * as inspectSax from './sax.js';
+import * as inspectEmbed from './embed.js';
+import * as inspectStreat from './streat.js';
+
+const debug = Debug('url-inspector');
 
 const archiveTypes = [
 	"x-tar",
@@ -47,7 +51,7 @@ const inspectors = {
 	}, 0]
 };
 
-exports.exists = async function (urlObj) {
+export async function exists(urlObj) {
 	urlObj.method = 'HEAD';
 	try {
 		const req = await curlRequest(urlObj);
@@ -64,9 +68,9 @@ exports.exists = async function (urlObj) {
 	} catch (err) {
 		return false;
 	}
-};
+}
 
-exports.request = async function (urlObj, obj) {
+export async function request(urlObj, obj) {
 	debug("request url", urlObj.href);
 	const req = await doRequest(urlObj);
 	let res = req.res;
@@ -80,7 +84,7 @@ exports.request = async function (urlObj, obj) {
 	}
 	if (headers.location) obj.location = new URL(headers.location, urlObj);
 	let contentType = headers['content-type'];
-	if (!contentType) contentType = mime.getType(Path.basename(urlObj.pathname));
+	if (!contentType) contentType = mime.getType(basename(urlObj.pathname));
 	const mimeObj = parseType(contentType);
 	obj.mime = MediaTyper.format(mimeObj);
 	obj.what = mime2what(mimeObj);
@@ -165,7 +169,7 @@ exports.request = async function (urlObj, obj) {
 	} catch (err) {
 		return obj;
 	}
-};
+}
 
 function getInspectorType({ isEmbed }, { type, subtype }) {
 	let itype;
@@ -180,8 +184,8 @@ function getInspectorType({ isEmbed }, { type, subtype }) {
 
 async function doRequest(urlObj) {
 	if (urlObj.protocol == "file:") {
-		const stat = await fs.promises.stat(urlObj.pathname);
-		const req = fs.createReadStream(urlObj.pathname).on('error', err => console.error(err));
+		const stat = await fs.stat(urlObj.pathname);
+		const req = createReadStream(urlObj.pathname).on('error', err => console.error(err));
 		if (!req.abort) req.abort = req.destroy;
 		req.headers = {
 			'content-length': stat.size.toString()
@@ -312,4 +316,4 @@ async function curlRequest(urlObj) {
 	return req;
 }
 
-exports.get = curlRequest;
+export const get = curlRequest;

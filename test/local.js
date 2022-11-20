@@ -1,7 +1,7 @@
-const expect = require('expect.js');
-const express = require('express');
-const assert = require('assert');
-const Inspector = require('..');
+import expect from 'expect.js';
+import Inspector from 'url-inspector';
+import express from 'express';
+import assert from 'assert';
 
 describe("local suite", () => {
 	let app, server, host, inspector;
@@ -58,7 +58,7 @@ describe("local suite", () => {
 				return res.sendStatus(500);
 			}
 			next();
-		}, express.static(__dirname + '/fixtures'));
+		}, express.static('./test/fixtures'));
 	});
 
 	after(() => {

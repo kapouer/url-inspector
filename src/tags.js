@@ -1,6 +1,4 @@
-module.exports = importTags;
-
-function importTags(tags, obj, map, priorities = {}, priority = 0) {
+export default function importTags(tags, obj, map, priorities = {}, priority = 0) {
 	let val, tag, itag, key;
 	for (tag in tags) {
 		val = tags[tag];

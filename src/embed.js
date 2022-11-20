@@ -1,8 +1,8 @@
-const importTags = require('./tags');
-const BufferList = require('bl');
-const { Deferred } = require('class-deferred');
+import importTags from './tags.js';
+import BufferList from 'bl';
+import { Deferred } from 'class-deferred';
 
-exports.embed = async function (obj, res) {
+export async function embed(obj, res) {
 	const defer = new Deferred();
 	res.pipe(BufferList((err, data) => {
 		if (err) return defer.reject(err);
@@ -40,4 +40,4 @@ exports.embed = async function (obj, res) {
 	delete obj.isEmbed;
 	delete obj.size;
 	return obj;
-};
+}

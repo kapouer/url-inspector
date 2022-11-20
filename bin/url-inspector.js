@@ -1,6 +1,7 @@
 #!/usr/bin/node
 
-const dash = require('dashdash');
+import dash from 'dashdash';
+import { inspect } from 'util';
 
 const parser = dash.createParser({options: [
 	{
@@ -41,19 +42,20 @@ if (opts.help || !url) {
 	process.exit(0);
 }
 
-const Inspector = require('..');
+import Inspector from 'url-inspector';
 
 opts.file = true;
 if (url.startsWith('./') || url.startsWith('/')) url = "file://" + url;
 
-if (opts.providers) {
-	opts.providers = require(opts.providers);
-}
-
-(new Inspector(opts)).look(url).then(meta => {
-	console.info(require('util').inspect(meta));
-	process.exit(0);
-}).catch(err => {
-	console.error(err);
-	process.exit(1);
-});
+(async function () {
+	if (opts.providers) opts.providers = await import(opts.providers);
+	const inspector = new Inspector(opts);
+	try {
+		const meta = await inspector.look(url);
+		console.info(inspect(meta));
+		process.exit(0);
+	} catch (err) {
+		console.error(err);
+		process.exit(1);
+	}
+})();

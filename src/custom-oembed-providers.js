@@ -86,5 +86,5 @@ const twitter = {
 	}]
 };
 
-module.exports = [googlemaps, youtube, twitter];
+export default [googlemaps, youtube, twitter];
 

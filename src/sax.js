@@ -1,9 +1,10 @@
-const debug = require('debug')('url-inspector');
-const { Deferred } = require('class-deferred');
-const { WritableStream } = require("htmlparser2/lib/WritableStream");
-const importTags = require('./tags');
+import { Deferred } from 'class-deferred';
+import { WritableStream } from "htmlparser2/lib/WritableStream";
+import importTags from './tags.js';
+import Debug from 'debug';
+const debug = Debug('url-inspector');
 
-exports.html = async function (obj, res) {
+export async function html(obj, res) {
 	// collect tags
 	const selectors = {
 		title: {
@@ -218,9 +219,9 @@ exports.html = async function (obj, res) {
 
 	res.pipe(parserStream);
 	return defer;
-};
+}
 
-exports.svg = async function (obj, res) {
+export async function svg(obj, res) {
 	const parserStream = new WritableStream({
 		onopentag(tagName, attrs) {
 			if (tagName.toLowerCase() != "svg") return;
@@ -255,7 +256,7 @@ exports.svg = async function (obj, res) {
 	}
 	res.pipe(parserStream);
 	return d;
-};
+}
 
 function importJsonLD(tags, text, priorities) {
 	try {

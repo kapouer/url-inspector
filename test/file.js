@@ -1,5 +1,6 @@
-const Inspector = require('..');
-const expect = require('expect.js');
+import expect from 'expect.js';
+import Inspector from 'url-inspector';
+import { resolve } from 'path';
 
 const inspector = new Inspector({ file: true });
 
@@ -16,7 +17,7 @@ describe("file suite", () => {
 	});
 
 	it("should inspect absolute path", async () => {
-		const meta = await inspector.look(`file://${__dirname}/fixtures/lavieenbois.html`);
+		const meta = await inspector.look(`file://${resolve('./test')}/fixtures/lavieenbois.html`);
 		expect(meta.title).to.be.ok();
 		expect(meta.what).to.be("page");
 	});

@@ -1,19 +1,14 @@
-const debug = require('debug')('url-inspector');
-const OEmbedProviders = require('oembed-providers');
-const CustomOEmbedProviders = require('./custom-oembed-providers');
+import { createRequire } from "module";
+import CustomOEmbedProviders from './custom-oembed-providers.js';
+import Debug from 'debug';
+const debug = Debug('url-inspector');
 
-module.exports = function processProvider(urlObj, providers) {
+const require = createRequire(import.meta.url);
+const OEmbedProviders = require("oembed-providers");
+
+export default function processProvider(urlObj, providers) {
 	const ret = {};
 	const url = urlObj.href;
-	if (typeof providers == "string") {
-		// try to require it
-		try {
-			providers = require(providers);
-		} catch (ex) {
-			// eslint-disable-next-line no-console
-			console.error("url-inspector missing providers:", providers);
-		}
-	}
 	const endpoint = findEndpoint(url, providers);
 	if (!endpoint.last) {
 		findEndpoint(url, CustomOEmbedProviders, endpoint);
@@ -57,7 +52,7 @@ module.exports = function processProvider(urlObj, providers) {
 	ret.discovery = Boolean(endpoint.discovery);
 	debug("OEmbed config", ret);
 	return ret;
-};
+}
 
 
 function findEndpoint(url, list, endpoint = {}) {

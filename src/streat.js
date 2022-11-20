@@ -1,11 +1,12 @@
-const dataUri = require('strong-data-uri');
-const { DateTime } = require('luxon');
-const importTags = require('./tags');
-const Streat = require('streat');
+import dataUri from 'strong-data-uri';
+import { DateTime } from 'luxon';
+import importTags from './tags.js';
+import Streat from 'streat';
+
 const streat = new Streat();
 streat.start();
 
-exports.media = async function (obj, res) {
+export async function media(obj, res) {
 	const tags = await streat.run(res, {
 		step: res.local ? Infinity : 0
 	});
@@ -50,9 +51,9 @@ exports.media = async function (obj, res) {
 		else delete obj.date;
 	}
 	return tags;
-};
+}
 
-exports.file = async function (obj, res) {
+export async function file(obj, res) {
 	const tags = await streat.run(res);
 	importTags(tags, obj, {
 		mimetype: 'mime',
@@ -62,7 +63,7 @@ exports.file = async function (obj, res) {
 		//,pagecount: 'pages'
 	});
 	return tags;
-};
+}
 
 function parseExifDate(str) {
 	const [date, time] = str.split(" ");

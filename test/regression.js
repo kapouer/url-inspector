@@ -1,6 +1,7 @@
-const debug = require('debug');
-const expect = require('expect.js');
-const Inspector = require('..');
+import debug from 'debug';
+import expect from 'expect.js';
+import Inspector from 'url-inspector';
+
 const inspector = new Inspector();
 
 describe("regression suite", () => {

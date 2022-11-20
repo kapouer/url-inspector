@@ -1,11 +1,13 @@
-const Path = require('path');
-const debug = require('debug')('url-inspector');
-const Inspector = require('./inspector');
+import { extname } from 'path';
+import Inspector from './inspector.js';
 
-module.exports = async function (obj, opts) {
+import Debug from 'debug';
+const debug = Debug('url-inspector');
+
+export default async function (obj, opts) {
 	if (!obj.source || obj.source == obj.url || ['video', 'audio', 'image', 'page'].includes(obj.what) == false) return obj;
 	const urlObj = new URL(obj.source, obj.url);
-	if (!urlObj.pathname || !Path.extname(urlObj.pathname)) return obj;
+	if (!urlObj.pathname || !extname(urlObj.pathname)) return obj;
 	debug("source inspection", obj.mime, obj.what, obj.source);
 	opts = Object.assign({}, opts);
 	if (obj.icon) opts.nofavicon = true;
@@ -26,4 +28,4 @@ module.exports = async function (obj, opts) {
 		debug("Error fetching subsource", err);
 	}
 	return obj;
-};
+}

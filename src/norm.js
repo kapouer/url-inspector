@@ -1,10 +1,10 @@
-const { Duration } = require('luxon');
-const Path = require('path');
-const { Parser } = require("htmlparser2");
-const { DomHandler } = require("domhandler");
-const { default: DomRender } = require("dom-serializer");
+import { Duration } from 'luxon';
+import { basename } from 'path';
+import { Parser } from "htmlparser2";
+import { DomHandler } from "domhandler";
+import { render as DomRender } from "dom-serializer";
 
-module.exports = class Norm {
+export default class Norm {
 	static lexize(str) {
 		const list = [];
 		const parts = str.split('.');
@@ -64,7 +64,7 @@ module.exports = class Norm {
 			}
 			obj.title = Norm.htmlToString(obj.title);
 		} else if (urlObj.pathname) {
-			obj.title = Norm.lexize(Path.basename(urlObj.pathname));
+			obj.title = Norm.lexize(basename(urlObj.pathname));
 		}
 		if (obj.description) {
 			if (typeof obj.description != "string") {
@@ -294,7 +294,7 @@ module.exports = class Norm {
 	static string(str) {
 		return str.replace(/^@/, '').replace(/_/g, ' ');
 	}
-};
+}
 
 
 function traverseTree(node, i, visitor) {
