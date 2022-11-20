@@ -84,5 +84,6 @@ Version 8.0.0
 -------------
 
 * Move to ESM
+* Engine: node >= 16
 * Depends streat 1.0.0 which properly clean exiftool process on exit
 * opts.providers must be an array, not a path. Only --providers cli can be a path.
