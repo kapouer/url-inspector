@@ -9,7 +9,7 @@ export async function embed(obj, res) {
 		else defer.resolve(data);
 	}));
 	const data = await defer;
-	const tags = 	JSON.parse(data.toString());
+	const tags = JSON.parse(data.toString());
 
 	importTags(tags, obj, {
 		type: 'what',
