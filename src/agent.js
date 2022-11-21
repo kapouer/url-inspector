@@ -282,6 +282,8 @@ async function curlRequest(urlObj) {
 		}
 	}
 
+	await new Promise(resolve => setImmediate(resolve));
+
 	const {
 		headers: hlist,
 		data,
