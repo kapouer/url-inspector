@@ -160,11 +160,17 @@ export async function html(obj, res) {
 				const [keyGroup, keyName] = key.split('.');
 				if (keyName) {
 					if (tags[keyGroup] == null) {
-						tags[keyGroup] = {};
+						tags[keyGroup] = { [keyName]: val };
 					} else if (typeof tags[keyGroup] != "object") {
 						console.error("tag", keyGroup, "is already there", key);
 					} else {
 						tags[keyGroup][keyName] = val;
+					}
+				} else if (tags[key] != null) {
+					if (typeof tags[key] == "object") {
+						console.error("tag", key, "is already there");
+					} else {
+						tags[key] = val;
 					}
 				} else {
 					tags[key] = val;
