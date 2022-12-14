@@ -73,4 +73,12 @@ describe("regression suite", () => {
 		expect(meta.thumbnail).to.be.ok();
 		expect(meta.thumbnail.startsWith('https://')).to.be(true);
 	}).timeout(10000);
+
+	it("should not hang when domain is not known", async () => {
+		try {
+			await inspector.look('http://moser.cm.nctu.edu.tw/gpg.html');
+		} catch (err) {
+			expect(err.statusCode).to.be(408);
+		}
+	}).timeout(10000);
 });
