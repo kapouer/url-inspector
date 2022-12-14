@@ -52,7 +52,7 @@
     "htmlparser2": "^8.0.1",
     "http-errors": "^2.0.0",
     "iconv-lite": "^0.6.3",
-    "luxon": "^3.1.0",
+    "luxon": "^3.1.1",
     "media-typer": "^1.1.0",
     "mime": "^3.0.0",
     "node-libcurl": "^3.0.0",
@@ -65,7 +65,7 @@
     "@kapouer/eslint-config": "^1.8.0",
     "expect.js": "^0.3.1",
     "express": "^4.18.2",
-    "mocha": "^10.1.0"
+    "mocha": "^10.2.0"
   },
   "eslintConfig": {
     "extends": "@kapouer/eslint-config",
