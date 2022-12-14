@@ -199,11 +199,13 @@ async function doRequest(urlObj) {
 			} else {
 				return req;
 			}
-		} catch(err) {
+		} catch (err) {
 			if (err.statusCode && urlObj.headers['User-Agent']) {
 				debug("retrying with default curl ua");
 				delete urlObj.headers["User-Agent"];
 				return doRequest(urlObj);
+			} else if (err.isCurlError && err.code == CurlCode.CURLE_OPERATION_TIMEOUTED) {
+				throw new HttpError[408]("Request Timeout");
 			} else {
 				throw err;
 			}
@@ -263,6 +265,7 @@ async function curlRequest(urlObj) {
 	const opts = {
 		maxRedirs: 10,
 		followLocation: true,
+		connectTimeout: 5,
 		acceptEncoding: "gzip, deflate, br",
 		curlyLowerCaseHeaders: true,
 		curlyStreamResponse: method == "get",
