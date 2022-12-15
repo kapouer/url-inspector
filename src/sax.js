@@ -101,14 +101,13 @@ export async function html(obj, res) {
 			if (selector && selector.text) {
 				key = selector.text;
 			} else {
-				val = attrs.itemtype || attrs.itemType;
+				val = mapWhat(attrs.itemtype || attrs.itemType);
 				if (val) {
 					if (curSchemaType && curSchemaLevel < curLevel) {
 						debug("ignoring lower level schema", curSchemaType, curSchemaLevel, curLevel);
 						return;
 					}
-					if (/\/.*(Action|Event|Page|Site|Type|Status|Audience|List|ListItem)$/.test(val)) return;
-					debug("schema type", val);
+					debug("schema type", val, curLevel);
 					// the page can declares several itemtype
 					// the order in which they appear is important
 					// nonWebPage + embedType -> ignore embedType
@@ -116,8 +115,13 @@ export async function html(obj, res) {
 					curSchemaType = val;
 					curSchemaLevel = curLevel;
 					if (!firstSchemaType) {
-						firstSchemaType = curSchemaType;
-						tags.type = val;
+						if (tags.type) {
+							// but do not overwrite previously set type
+							firstSchemaType = tags.type;
+						} else {
+							firstSchemaType = curSchemaType;
+							tags.type = val;
+						}
 					}
 					return;
 				}
@@ -155,6 +159,9 @@ export async function html(obj, res) {
 			curPriority = priority;
 			val = lattrs[mkey];
 			debug("Tag", name, "has key", key, "with priority", priority, "and value", val, "in attribute", mkey);
+			if (key == "type") {
+				val = mapWhat(val);
+			}
 			if (mkey && val && (!priorities[key] || priority > priorities[key])) {
 				priorities[key] = priority;
 				const [keyGroup, keyName] = key.split('.');
@@ -184,7 +191,7 @@ export async function html(obj, res) {
 			if (curText != null) curText += text;
 		},
 		onclosetag(tagName) {
-			if (tagName == "meta") return;
+			if (tagName == "meta" || tagName == "link") return;
 			if (tagName == "head") delete res.nolimit;
 			if (curSchemaLevel == curLevel) {
 				// we finished parsing the content of an embedded Object, abort parsing
