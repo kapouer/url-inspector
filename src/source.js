@@ -13,7 +13,7 @@ module.exports = async function (obj, opts) {
 	opts.nocanonical = true;
 	try {
 		const inspector = new Inspector(opts);
-		const sourceObj = await inspector.look({ url: obj.source });
+		const sourceObj = await inspector.look(obj.source);
 		// inspected source is only interesting if it is an embed
 		if (sourceObj.what != obj.what || sourceObj.type != 'embed') {
 			return obj;
