@@ -87,3 +87,10 @@ Version 8.0.0
 * Engine: node >= 16
 * Depends streat 1.0.0 which properly clean exiftool process on exit
 * opts.providers must be an array, not a path. Only --providers cli can be a path.
+
+Version 8.1.0
+-------------
+
+* connection timeout (default 5 seconds)
+* fix source inspection
+* fix how types are inferred
