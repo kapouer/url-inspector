@@ -7,7 +7,7 @@ const inspector = new Inspector();
 describe("regression suite", () => {
 	it("no 403 on laprovence", async () => {
 		const meta = await inspector.look('https://www.laprovence.com/actu/en-direct/6620418/mercato-om-valence-pense-a-alvaro.html');
-		expect(meta.what).to.be("page");
+		expect(meta.what).to.be("image");
 		expect(meta.type).to.be("link");
 	}).timeout(10000);
 
@@ -25,7 +25,7 @@ describe("regression suite", () => {
 
 	it("no 403 on team viewer", async () => {
 		const meta = await inspector.look('https://www.teamviewer.com/en-us/download/windows/');
-		expect(meta.what).to.be("page");
+		expect(meta.what).to.be("image");
 		expect(meta.type).to.be("link");
 	}).timeout(10000);
 

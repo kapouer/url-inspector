@@ -136,7 +136,7 @@ describe("remote suite", () => {
 
 	it("should not change type if schema has no embed", async () => {
 		const meta = await inspector.look('http://www.lefigaro.fr/actualite-france/2016/01/07/01016-20160107LIVWWW00158-en-direct-un-homme-abattu-devant-un-commissariat-de-police-a-paris.php');
-		expect(meta.what).to.be('page');
+		expect(meta.what).to.be('image');
 		expect(meta.type).to.be('link');
 		expect(meta.thumbnail).to.be.ok();
 	}).timeout(10000);
