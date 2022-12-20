@@ -86,5 +86,25 @@ const twitter = {
 	}]
 };
 
-export default [googlemaps, youtube, twitter];
+
+const instagram = {
+	provider_name: "instagram.com",
+	endpoints: [{
+		last: true,
+		schemes: [
+			'https://www.instagram.com/p/*'
+		],
+		builder(urlObj, obj) {
+			obj.site = 'Instagram';
+			obj.title = 'Instagram ' + urlObj.pathname.split('/').pop();
+			obj.icon = 'https://www.instagram.com/favicon.ico';
+			obj.html = `<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="${urlObj.href}" data-instgrm-version="14" style=" background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);"></blockquote>`;
+			obj.script = 'https://www.instagram.com/embed.js';
+			obj.type = 'embed';
+			obj.what = 'page';
+		}
+	}]
+};
+
+export default [googlemaps, youtube, twitter, instagram];
 
