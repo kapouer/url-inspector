@@ -18,6 +18,7 @@ module.exports = class Inspector {
 		this.providers = opts.providers;
 		this.nofavicon = opts.nofavicon;
 		this.file = opts.file;
+		this.noembed = opts.noembed;
 	}
 
 	norm(obj) {
@@ -160,9 +161,9 @@ module.exports = class Inspector {
 			}
 			if (embedObj.obj && !robj.title) {
 				// inspect page too
-				const inspector = new Inspector(Object.assign({
+				const inspector = new Inspector(Object.assign({}, opts, {
 					noembed: true
-				}, opts));
+				}));
 				const sobj = await inspector.look(urlObj.href);
 				return Object.assign(sobj, robj);
 			} else {
@@ -170,9 +171,9 @@ module.exports = class Inspector {
 			}
 		} catch (err) {
 			if (embedObj.obj) {
-				const inspector = new Inspector(Object.assign({
+				const inspector = new Inspector(Object.assign({}, opts, {
 					noembed: true, error: err
-				}, opts));
+				}));
 				return inspector.look(urlObj.href);
 			} else if (embedObj.url) {
 				embedObj.discovery = false;
