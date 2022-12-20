@@ -39,6 +39,8 @@ describe("regression suite", () => {
 		const meta = await inspector.look('https://www.instagram.com/p/CZdfmzqvOqT/');
 		expect(meta.what).to.be("page");
 		expect(meta.type).to.be("embed");
+		expect(meta.html.startsWith('<blockquote ')).to.ok();
+		expect(meta.script).to.be.ok();
 		expect(meta.mime).to.be("text/html");
 	}).timeout(10000);
 
