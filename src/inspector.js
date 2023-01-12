@@ -39,14 +39,13 @@ export default class Inspector {
 			obj.thumbnail = thumbnailObj.href;
 			await this.lastResortDimensionsFromThumbnail(thumbnailObj, obj);
 		}
-		Norm.process(obj, urlObj);
-		if (!this.nosource) await sourceInspection(obj, this);
-
 		if (obj.icon && !obj.icon.startsWith('data:')) {
 			obj.icon = new URL(obj.icon, urlObj).href;
 		} else if (!this.nofavicon || urlObj.protocol == "file:") {
 			await this.guessIcon(urlObj, obj);
 		}
+		Norm.process(obj, urlObj);
+		if (!this.nosource) await sourceInspection(obj, this);
 		return obj;
 	}
 

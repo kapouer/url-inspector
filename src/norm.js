@@ -177,6 +177,10 @@ export default class Norm {
 			}
 		}
 
+		if (obj.icon && obj.icon.startsWith('data:,')) {
+			obj.icon = null;
+		}
+
 		return obj;
 	}
 
