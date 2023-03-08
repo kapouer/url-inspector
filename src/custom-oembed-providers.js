@@ -46,7 +46,8 @@ const youtube = {
 			delete obj.pathname;
 			delete obj.search;
 			delete obj.query;
-			obj.path = "/watch?v=" + encodeURIComponent(videoId);
+			obj.pathname = "/watch";
+			obj.search = "?v=" + encodeURIComponent(videoId);
 			obj.hostname = "www.youtube.com";
 			return true;
 		}
