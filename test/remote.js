@@ -241,7 +241,7 @@ describe("remote suite", () => {
 		expect(meta.html.startsWith('<blockquote')).to.be.ok();
 		expect(meta.thumbnail).to.be.ok();
 		expect(meta.title).to.be.ok();
-		expect(meta.author).to.be('Bouba & Boby');
+		expect(meta.author).to.be('Boby asmr');
 		expect(meta.icon).to.be.ok();
 		expect(meta.script).to.be('https://www.tiktok.com/embed.js');
 	}).timeout(10000);
