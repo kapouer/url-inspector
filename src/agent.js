@@ -261,7 +261,7 @@ function parseType(str) {
 }
 
 async function curlRequest(urlObj) {
-	const headersList = Object.entries(urlObj.headers).map(([key, val]) => {
+	const headersList = Object.entries(urlObj.headers || {}).map(([key, val]) => {
 		return `${key}: ${val}`;
 	});
 	const method = (urlObj.method || "get").toLowerCase();
