@@ -160,7 +160,7 @@ export default class Inspector {
 			if (typeof embedObj.builder == "function") {
 				embedObj.builder(urlObj, robj);
 			}
-			if (embedObj.obj && !robj.title) {
+			if (embedObj.obj && !robj.title && urlObj.href) {
 				// inspect page too
 				const inspector = new Inspector(Object.assign({}, opts, {
 					noembed: true
@@ -171,6 +171,7 @@ export default class Inspector {
 				return robj;
 			}
 		} catch (err) {
+			if (obj.isEmbed) throw err;
 			if (embedObj.obj) {
 				const inspector = new Inspector(Object.assign({}, opts, {
 					noembed: true, error: err
