@@ -126,6 +126,14 @@ describe("remote suite", () => {
 		expect(meta.thumbnail).to.be.ok();
 	});
 
+	it("should work with vimeo with rewrite", async () => {
+		const meta = await inspector.look('https://player.vimeo.com/video/383255556?color=ffffff&portrait=0&autoplay=1');
+		expect(meta.type).to.be('embed');
+		expect(meta.what).to.be('video');
+		expect(meta.title).to.be.ok();
+		expect(meta.source).to.be.ok();
+	}).timeout(10000);
+
 
 	it("should change type if schema has embed", async () => {
 		const meta = await inspector.look('http://video.lefigaro.fr/figaro/video/une-voiture-engloutie-par-un-sinkhole-en-chine/3919138012001/');

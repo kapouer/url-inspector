@@ -107,5 +107,22 @@ const instagram = {
 	}]
 };
 
-export default [googlemaps, youtube, twitter, instagram];
+const vimeo = {
+	endpoints: [{
+		last: false,
+		schemes: [
+			'https://player.vimeo.com/video/*'
+		],
+		rewrite: function (obj) {
+			const { id } = (/^\/video\/(?<id>\w+)$/.exec(obj.pathname) || {}).groups || {};
+			if (id) {
+				obj.hostname = "vimeo.com";
+				obj.pathname = `/${id}`;
+				return true;
+			}
+		}
+	}]
+};
+
+export default [googlemaps, youtube, twitter, instagram, vimeo];
 
