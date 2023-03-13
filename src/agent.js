@@ -46,8 +46,8 @@ const inspectors = {
 	video: [inspectStreat.media, 512000, 0.1],
 	html: [inspectSax.html, 512000],
 	file: [inspectStreat.file, 32000],
-	archive: [(obj, res, cb) => {
-		cb(null, obj);
+	archive: [async (obj, res) => {
+		return obj;
 	}, 0]
 };
 
