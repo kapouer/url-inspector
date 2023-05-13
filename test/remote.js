@@ -125,6 +125,12 @@ describe("remote suite", () => {
 		expect(meta.what).to.be('video');
 		expect(meta.thumbnail).to.be.ok();
 	}).timeout(10000);
+
+	it("should work with radiofrance", async () => {
+		const meta = await inspector.look('https://www.radiofrance.fr/franceculture/podcasts/la-methode-scientifique/marie-curie-une-intelligence-irradiante-8386710#undefined');
+		expect(meta.type).to.be('link');
+		expect(meta.what).to.be('page');
+		expect(meta.thumbnail).to.be.ok();
 	});
 
 	it("should work with vimeo with rewrite", async () => {
