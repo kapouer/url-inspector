@@ -35,7 +35,7 @@ describe("local suite", () => {
 		});
 		app.use((req, res, next) => {
 			if (req.path == "/latin.html" || req.path == "/lavieenbois.html") {
-				res.type("text/html; charset=iso-8859-1");
+				res.type("text/html, text/html; charset=iso-8859-1");
 			} else if (req.path == "/oembed.json") {
 				return res.json({
 					"type": "video",
