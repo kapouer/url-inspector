@@ -61,7 +61,7 @@ export async function exists(urlObj) {
 		if (status == 204 || res.headers['content-length'] == 0) {
 			return false;
 		} else if (status >= 200 && status < 400) {
-			return parseType(res.headers['content-type']);
+			return parseType(pickHeader(res.headers['content-type']));
 		} else {
 			return false;
 		}
@@ -82,8 +82,8 @@ export async function request(urlObj, obj) {
 		// definitely an error - status above 600 could be an anti-bot system
 		throw new HttpError[statusCode]("Error fetching: " + urlObj.href);
 	}
-	if (headers.location) obj.location = new URL(headers.location, urlObj);
-	let contentType = headers['content-type'];
+	if (headers.location) obj.location = new URL(pickHeader(headers.location), urlObj);
+	let contentType = pickHeader(headers['content-type']);
 	if (!contentType) contentType = mime.getType(basename(urlObj.pathname));
 	const mimeObj = parseType(contentType);
 	obj.mime = MediaTyper.format(mimeObj);
@@ -94,7 +94,7 @@ export async function request(urlObj, obj) {
 	if (contentLength != null) {
 		obj.size = parseInt(contentLength);
 	}
-	let disposition = headers['content-disposition'];
+	let disposition = pickHeader(headers['content-disposition']);
 	if (disposition != null) {
 		debug("got content disposition", disposition);
 		if (disposition.startsWith('filename=')) disposition = 'attachment; ' + disposition;
@@ -228,6 +228,14 @@ function mime2what(obj) {
 		what = obj.type;
 	}
 	return what;
+}
+
+function pickHeader(str) {
+	if (!str) return str;
+	const list = str.split(',').map(it => it.trim());
+	let m = '';
+	for (const item of list) if (item.length > m.length) m = item;
+	return m;
 }
 
 function pipeLimit(req, res, length, percent) {
