@@ -150,12 +150,12 @@ describe("local suite", () => {
 
 	it("should parse instagram page", async () => {
 		const meta = await inspector.look(`${host}/insta.html`);
-		expect(meta.what).to.be("page");
-		expect(meta.type).to.be("link");
+		expect(meta.what).to.be("video");
+		expect(meta.type).to.be("embed");
 		expect(meta.mime).to.be("text/html");
-		expect(meta.title).to.be("See you soon Queenstown 👋🏼");
+		expect(meta.title).to.be("Le Dauphin dauphin");
 		expect(meta.description).to.be.ok();
-		expect(meta.html).to.contain("<blockquote");
+		expect(meta.html).to.contain("<iframe");
 		expect(meta).to.not.have.property("error");
 	}).timeout(10000);
 
