@@ -41,7 +41,7 @@
     "url": "https://github.com/kapouer/url-inspector/issues"
   },
   "dependencies": {
-    "bl": "^6.0.1",
+    "bl": "^6.0.7",
     "class-deferred": "^1.0.1",
     "content-disposition": "^0.5.4",
     "content-type": "^1.0.5",
@@ -52,11 +52,11 @@
     "htmlparser2": "^9.0.0",
     "http-errors": "^2.0.0",
     "iconv-lite": "^0.6.3",
-    "luxon": "^3.3.0",
+    "luxon": "^3.4.2",
     "media-typer": "^1.1.0",
     "mime": "^3.0.0",
     "node-libcurl": "^3.0.0",
-    "oembed-providers": "^1.0.20230119",
+    "oembed-providers": "^1.0.20230705",
     "proxy-from-env": "^1.1.0",
     "streat": "^1.0.0",
     "strong-data-uri": "^1.0.6"
