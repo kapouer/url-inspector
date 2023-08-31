@@ -249,14 +249,14 @@ describe("remote suite", () => {
 	}).timeout(10000);
 
 	it("should get an embed for tiktok", async () => {
-		const meta = await inspector.look('https://www.tiktok.com/@bouba_boby/video/7158866531290451206');
+		const meta = await inspector.look('https://www.tiktok.com/@scout2015/video/6718335390845095173');
 		expect(meta.what).to.be('video');
 		expect(meta.type).to.be('embed');
 		expect(meta.html).to.be.ok();
 		expect(meta.html.startsWith('<blockquote')).to.be.ok();
 		expect(meta.thumbnail).to.be.ok();
 		expect(meta.title).to.be.ok();
-		expect(meta.author).to.be('Boby asmr');
+		expect(meta.author).to.be('Scout, Suki & Stella');
 		expect(meta.icon).to.be.ok();
 		expect(meta.script).to.be('https://www.tiktok.com/embed.js');
 	}).timeout(10000);
