@@ -41,7 +41,7 @@
     "url": "https://github.com/kapouer/url-inspector/issues"
   },
   "dependencies": {
-    "bl": "^6.0.7",
+    "bl": "^6.0.12",
     "class-deferred": "^1.0.1",
     "content-disposition": "^0.5.4",
     "content-type": "^1.0.5",
@@ -49,23 +49,23 @@
     "debug": ">=4.3.4",
     "dom-serializer": "^2.0.0",
     "domhandler": "^5.0.3",
-    "htmlparser2": "^9.0.0",
+    "htmlparser2": "^9.1.0",
     "http-errors": "^2.0.0",
     "iconv-lite": "^0.6.3",
-    "luxon": "^3.4.2",
+    "luxon": "^3.4.4",
     "media-typer": "^1.1.0",
-    "mime": "^3.0.0",
-    "node-libcurl": "^3.0.0",
-    "oembed-providers": "^1.0.20230705",
+    "mime": "^4.0.1",
+    "node-libcurl": "^4.0.0",
+    "oembed-providers": "^1.0.20240122",
     "proxy-from-env": "^1.1.0",
     "streat": "^1.0.0",
     "strong-data-uri": "^1.0.6"
   },
   "devDependencies": {
-    "@kapouer/eslint-config": "^1.9.1",
+    "@kapouer/eslint-config": "^2.0.0",
     "expect.js": "^0.3.1",
-    "express": "^4.18.2",
-    "mocha": "^10.2.0"
+    "express": "^4.19.2",
+    "mocha": "^10.4.0"
   },
   "eslintConfig": {
     "extends": "@kapouer/eslint-config",
