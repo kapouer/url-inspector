@@ -98,7 +98,7 @@ export default class Inspector {
 
 
 	async guessIcon(urlObj, obj) {
-		if (obj.what == "page") {
+		if (obj.ext == "html") {
 			const iconObj = new URL("/favicon.ico", urlObj);
 			iconObj.headers = Object.assign({}, urlObj.headers, {
 				'Accept': Inspector.accepts.image,
