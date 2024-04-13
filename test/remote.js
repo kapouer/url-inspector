@@ -190,8 +190,8 @@ describe("remote suite", () => {
 		const meta = await inspector.look('https://goo.gl/maps/S5HZeNf3AGwAsrTi9');
 		expect(meta.what).to.be('page');
 		expect(meta.type).to.be('embed');
-		expect(meta.description).to.be('9 Rue de la Gare, 86490 Beaumont Saint-Cyr');
-		expect(meta.title).to.be('Coopérative Agricole La Tricherie');
+		expect(meta.description).to.be('Cité Lefort, 86490 Beaumont Saint-Cyr');
+		expect(meta.title).to.be('Cooperative Agricole de la Tricherie');
 		expect(meta.site).to.be('Google Maps');
 		expect(meta.thumbnail).to.be.ok();
 	}).timeout(10000);
@@ -257,8 +257,8 @@ describe("remote suite", () => {
 		expect(meta.thumbnail).to.be.ok();
 		expect(meta.title).to.be.ok();
 		expect(meta.author).to.be('Scout, Suki & Stella');
-		expect(meta.icon).to.be.ok();
 		expect(meta.script).to.be('https://www.tiktok.com/embed.js');
+		expect(meta.icon).to.be.ok();
 	}).timeout(10000);
 
 });
