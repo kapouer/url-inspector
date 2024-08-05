@@ -284,6 +284,9 @@ export default class Norm {
 	}
 
 	static htmlToString(str) {
+		if (str != null && Array.isArray(str)) {
+			str = str.join(', ');
+		}
 		const parts = [];
 		const parser = new Parser({
 			ontext(str) {
@@ -292,7 +295,7 @@ export default class Norm {
 		});
 		parser.write(str);
 		parser.end();
-		return parts.join('').trim();
+		return parts.join('').replaceAll(/\s\s+/g, ' ').trim();
 	}
 
 	static string(str) {
