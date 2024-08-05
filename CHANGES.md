@@ -94,3 +94,9 @@ Version 8.1.0
 * connection timeout (default 5 seconds)
 * fix source inspection
 * fix how types are inferred
+
+Version 8.6.0
+-------------
+
+* support array of strings in metadata
+* update deps
