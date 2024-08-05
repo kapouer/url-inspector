@@ -124,5 +124,16 @@ const vimeo = {
 	}]
 };
 
-export default [googlemaps, youtube, twitter, instagram, vimeo];
+const dailymotion = {
+	endpoints: [{
+		last: true,
+		schemes: [
+			'https://www.dailymotion.com/video/*',
+			'https://geo.dailymotion.com/player.html?video=*'
+		],
+		url: 'https://www.dailymotion.com/services/oembed'
+	}]
+};
+
+export default [googlemaps, youtube, twitter, instagram, vimeo, dailymotion];
 
