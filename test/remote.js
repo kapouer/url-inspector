@@ -143,7 +143,7 @@ describe("remote suite", () => {
 
 
 	it("should change type if schema has embed", async () => {
-		const meta = await inspector.look('http://video.lefigaro.fr/figaro/video/une-voiture-engloutie-par-un-sinkhole-en-chine/3919138012001/');
+		const meta = await inspector.look('https://video.lefigaro.fr/figaro/video/une-voiture-engloutie-par-un-sinkhole-en-chine/3919138012001/');
 		expect(meta.type).to.be('embed');
 		expect(meta.what).to.be('video');
 		expect(meta.thumbnail).to.be.ok();
