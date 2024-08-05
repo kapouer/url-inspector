@@ -134,7 +134,7 @@ describe("remote suite", () => {
 	});
 
 	it("should work with vimeo with rewrite", async () => {
-		const meta = await inspector.look('https://player.vimeo.com/video/383255556?color=ffffff&portrait=0&autoplay=1');
+		const meta = await inspector.look('https://vimeo.com/615990728');
 		expect(meta.type).to.be('embed');
 		expect(meta.what).to.be('video');
 		expect(meta.title).to.be.ok();
