@@ -36,4 +36,10 @@ describe("file suite", () => {
 		expect(meta.what).to.be("image");
 	});
 
+	it("should inspect image with array in authors", async () => {
+		const meta = await inspector.look(`file://./test/fixtures/meta-array.jpg`);
+		expect(meta.type).to.be('image');
+		expect(meta.author).to.be("The Samuel Courtauld Trust, The Courtauld Gallery, London");
+	});
+
 });
