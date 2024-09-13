@@ -90,11 +90,14 @@ export default class Norm {
 			obj.source = obj.embed;
 		}
 		if (obj.html) {
-			obj.type = 'embed';
 			const handler = new DomHandler((error, dom) => {
 				let changed = false;
 				traverseTree(dom, node => {
-					if (node.name == "script") {
+					if (node.name == "iframe") {
+						obj.type = 'embed';
+						if (!obj.source && node.attribs.src) obj.source = node.attribs.src;
+					} else if (node.name == "script") {
+						obj.type = 'embed';
 						changed = true;
 						const src = node.attribs.src;
 						if (src) obj.script = src;
