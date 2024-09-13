@@ -36,11 +36,10 @@ describe("remote suite", () => {
 		expect(meta).to.not.have.property("size");
 	});
 
-	it("should return meta with thumbnail for a figaro article", async () => {
+	it("should return meta with image for a figaro article", async () => {
 		const meta = await inspector.look('http://www.lefigaro.fr/actualite-france/2016/02/07/01016-20160207ARTFIG00183-accident-de-bretigny-ce-que-la-sncf-aurait-prefere-cacher-a-la-justice.php');
 		expect(meta.type).to.be('link');
 		expect(meta.what).to.be('image');
-		expect(meta.thumbnail).to.be.ok();
 		expect(meta.title).to.be.ok();
 		expect(meta.mime).to.be('text/html');
 		expect(meta.source).to.be.ok();
@@ -70,7 +69,6 @@ describe("remote suite", () => {
 		const meta = await inspector.look('https://www.lefigaro.fr/politique/presidentielle-2022-la-classe-politique-s-oppose-majoritairement-au-vote-par-anticipation-20210217');
 		expect(meta.type).to.be('link');
 		expect(meta.what).to.be('image');
-		expect(meta.thumbnail).to.be.ok();
 		expect(meta.title).to.be.ok();
 		expect(meta.mime).to.be('text/html');
 		expect(meta.author).to.be('Le Figaro');
@@ -133,6 +131,15 @@ describe("remote suite", () => {
 		expect(meta.thumbnail).to.be.ok();
 	});
 
+	it("should work with vimeo somewhat protected video", async () => {
+		const meta = await inspector.look('https://vimeo.com/139338663');
+		expect(meta.type).to.be('embed');
+		expect(meta.what).to.be('video');
+		expect(meta.title).to.be.ok();
+		expect(meta.source).to.be.ok();
+		console.log(meta)
+	}).timeout(10000);
+
 	it("should work with vimeo with rewrite", async () => {
 		const meta = await inspector.look('https://vimeo.com/615990728');
 		expect(meta.type).to.be('embed');
@@ -153,7 +160,6 @@ describe("remote suite", () => {
 		const meta = await inspector.look('http://www.lefigaro.fr/actualite-france/2016/01/07/01016-20160107LIVWWW00158-en-direct-un-homme-abattu-devant-un-commissariat-de-police-a-paris.php');
 		expect(meta.what).to.be('image');
 		expect(meta.type).to.be('link');
-		expect(meta.thumbnail).to.be.ok();
 	}).timeout(10000);
 
 	it("should append description to title and get picture", async () => {

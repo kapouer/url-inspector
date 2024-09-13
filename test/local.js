@@ -4,13 +4,14 @@ import express from 'express';
 import assert from 'assert';
 
 describe("local suite", () => {
-	let app, server, host, inspector;
+	let app, server, host, inspector, inspectorWithOEmbed, inspectorWithRedirection;
 
 	before((ready) => {
 		app = express();
 		server = app.listen(() => {
 			host = "http://localhost:" + server.address().port;
-			inspector = new Inspector({
+			inspector = new Inspector();
+			inspectorWithOEmbed = new Inspector({
 				providers: [{
 					name: "local",
 					endpoints: [{
@@ -18,7 +19,10 @@ describe("local suite", () => {
 						url: `${host}/oembed.{format}`,
 						discovery: true
 					}]
-				}, {
+				}]
+			});
+			inspectorWithRedirection = new Inspector({
+				providers: [{
 					name: "local2",
 					endpoints: [{
 						schemes: ['.*'],
@@ -121,7 +125,7 @@ describe("local suite", () => {
 	}).timeout(3000);
 
 	it("should not crash when oembed discovery fails", async () => {
-		const meta = await inspector.look(`${host}/video`);
+		const meta = await inspectorWithOEmbed.look(`${host}/video`);
 		delete meta.url;
 		assert.deepStrictEqual(meta, {
 			what: 'video',
@@ -132,6 +136,7 @@ describe("local suite", () => {
 			title: 'Le Dauphin dauphin',
 			author: 'Thibaud Gayral',
 			date: "2012-12-07",
+			source: 'https://player.vimeo.com/video/55084640?app_id=122963',
 			html: '<iframe src="https://player.vimeo.com/video/55084640?app_id=122963" width="478" height="204" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="Le Dauphin dauphin"></iframe>',
 			script: "https://some.com/file.js",
 			width: 478,
@@ -144,12 +149,12 @@ describe("local suite", () => {
 	});
 
 	it("should inspect only once when url is redirected by provider", async () => {
-		const meta = await inspector.look(`${host}/image/test`);
+		const meta = await inspectorWithRedirection.look(`${host}/image/test`);
 		expect(new URL(meta.url).pathname).to.be('/image/toto');
 	});
 
 	it("should parse instagram page", async () => {
-		const meta = await inspector.look(`${host}/insta.html`);
+		const meta = await inspectorWithOEmbed.look(`${host}/insta.html`);
 		expect(meta.what).to.be("video");
 		expect(meta.type).to.be("embed");
 		expect(meta.mime).to.be("text/html");
