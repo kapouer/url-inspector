@@ -133,7 +133,7 @@ export default class Inspector {
 	}
 
 	async requestPageOrEmbed(urlObj, embedObj, obj, opts = this) {
-		if (!embedObj.discovery && embedObj.url) {
+		if (embedObj.url) {
 			debug("oembed candidate");
 			embedObj.obj = new URL(embedObj.url);
 			obj.isEmbed = true;
