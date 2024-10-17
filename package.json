@@ -55,7 +55,7 @@
     "luxon": "^3.5.0",
     "media-typer": "^1.1.0",
     "mime": "^4.0.4",
-    "node-libcurl": "^4.0.0",
+    "node-libcurl": "^2.3.4",
     "oembed-providers": "^1.0.20240830",
     "proxy-from-env": "^1.1.0",
     "streat": "^1.0.0",
