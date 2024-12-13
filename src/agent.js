@@ -5,13 +5,14 @@ import MediaTyper from 'media-typer';
 import iconv from 'iconv-lite';
 import mime from 'mime';
 import { createReadStream, promises as fs } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
 
 import { PassThrough } from 'node:stream';
 import Debug from 'debug';
 
-import { curly, CurlCode } from 'node-libcurl';
-import { getProxyForUrl } from 'proxy-from-env';
 import HttpError from 'http-errors';
+import { pEvent } from 'p-event';
+import got from 'got';
 
 import * as inspectSax from './sax.js';
 import * as inspectEmbed from './embed.js';
@@ -54,7 +55,7 @@ const inspectors = {
 export async function exists(urlObj) {
 	urlObj.method = 'HEAD';
 	try {
-		const req = await curlRequest(urlObj);
+		const req = await makeRequest(urlObj);
 		const res = req.res;
 		const status = res.statusCode;
 		debug("remote", urlObj, "returns", status);
@@ -196,7 +197,7 @@ async function doRequest(urlObj) {
 		return req;
 	} else {
 		try {
-			const req = await curlRequest(urlObj);
+			const req = await makeRequest(urlObj);
 			const res = req.res;
 			if (res.statusCode == 403) {
 				req.abort();
@@ -268,67 +269,55 @@ function parseType(str) {
 	}
 }
 
-async function curlRequest(urlObj) {
-	const headersList = Object.entries(urlObj.headers || {}).map(([key, val]) => {
-		return `${key}: ${val}`;
-	});
-	const method = (urlObj.method || "get").toLowerCase();
-	const res = new PassThrough();
+async function makeRequest(urlObj) {
+	const abortController = new AbortController();
 
 	const opts = {
-		maxRedirs: 10,
-		followLocation: true,
-		connectTimeout: 5,
-		acceptEncoding: "gzip, deflate, br",
-		curlyLowerCaseHeaders: true,
-		curlyStreamResponse: method == "get",
-		curlyResponseBodyParsers: false,
-		sslVerifyPeer: false,
-		sslVerifyHost: false,
-		httpHeader: headersList
+		http2: true,
+		https: {
+			rejectUnauthorized: false
+		},
+		//maxRedirects: 10,
+		decompress: true,
+		timeout: {
+			lookup: 1000,
+			connect: 1000,
+			secureConnect: 1000,
+			response: 5000
+		},
+		signal: abortController.signal,
+		headers: Object.assign({
+			'User-Agent': 'curl/8.11.0',
+		}, urlObj.headers),
+		agent: {}
 	};
-	const proxyUrl = getProxyForUrl(urlObj);
-	if (proxyUrl) {
-		if (proxyUrl.startsWith('https://')) {
-			debug("https proxy", proxyUrl);
-			opts.httpProxyTunnel = proxyUrl;
+	console.log(opts.headers);
+	const streamRes = got.stream(urlObj.href, opts);
+	const res = new PassThrough();
+	try {
+		await Promise.race([
+			pEvent(streamRes, 'response').then(response => {
+				res.headers = response.headers;
+				res.statusCode = response.statusCode;
+			}),
+			pEvent(streamRes, 'error').then(err => { throw err; }),
+		]);
+		pipeline(streamRes, res);
+	} catch (err) {
+		if (err.code === "ERR_ABORTED") {
+			console.log("ignore abort error");
+		} else if (err.code === "ERR_NON_2XX_3XX_RESPONSE") {
+			throw new HttpError[err.response.statusCode]();
 		} else {
-			debug("http proxy", proxyUrl);
-			opts.proxy = proxyUrl;
-		}
-	}
-
-	// workaround https://github.com/JCMais/node-libcurl/issues/332
-	await new Promise(resolve => setImmediate(resolve));
-
-	const {
-		headers: hlist,
-		data,
-		statusCode
-	} = await curly[method](urlObj.href, opts);
-	const req = {
-		res,
-		abort() {
-			data.destroy();
-		}
-	};
-	const headers = hlist.pop();
-	delete headers.result;
-	const last = hlist.pop();
-	if (last && last.location) headers.location = last.location;
-	res.headers = headers;
-	res.statusCode = statusCode;
-	if (data.on) data.on('error', err => {
-		res.end();
-		if (err.isCurlError && err.code === CurlCode.CURLE_ABORTED_BY_CALLBACK) {
-			// this is expected
-		} else {
-			// rethrow, let curly handle it
 			throw err;
 		}
-	});
-	if (data.pipe) data.pipe(res);
-	return req;
+	}
+	return {
+		res,
+		abort() {
+			abortController.abort();
+		}
+	};
 }
 
-export const get = curlRequest;
+export const get = makeRequest;
