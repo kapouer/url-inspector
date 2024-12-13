@@ -137,7 +137,6 @@ describe("remote suite", () => {
 		expect(meta.what).to.be('video');
 		expect(meta.title).to.be.ok();
 		expect(meta.source).to.be.ok();
-		console.log(meta)
 	}).timeout(10000);
 
 	it("should work with vimeo with rewrite", async () => {
