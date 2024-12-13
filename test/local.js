@@ -1,7 +1,7 @@
 import expect from 'expect.js';
 import Inspector from 'url-inspector';
 import express from 'express';
-import assert from 'assert';
+import assert from 'node:assert';
 
 describe("local suite", () => {
 	let app, server, host, inspector, inspectorWithOEmbed, inspectorWithRedirection;

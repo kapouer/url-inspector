@@ -1,4 +1,4 @@
-import { createRequire } from "module";
+import { createRequire } from "node:module";
 import CustomOEmbedProviders from './custom-oembed-providers.js';
 import Debug from 'debug';
 const debug = Debug('url-inspector');

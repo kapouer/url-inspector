@@ -1,7 +1,7 @@
 #!/usr/bin/node
 
 import dash from 'dashdash';
-import { inspect } from 'util';
+import { inspect } from 'node:util';
 
 const parser = dash.createParser({options: [
 	{

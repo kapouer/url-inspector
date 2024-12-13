@@ -1,4 +1,4 @@
-import { extname } from 'path';
+import { extname } from 'node:path';
 import Inspector from './inspector.js';
 
 import Debug from 'debug';

@@ -1,6 +1,6 @@
 import expect from 'expect.js';
 import Inspector from 'url-inspector';
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 
 const inspector = new Inspector({ file: true });
 

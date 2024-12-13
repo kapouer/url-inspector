@@ -1,5 +1,5 @@
 import { Duration } from 'luxon';
-import { basename } from 'path';
+import { basename } from 'node:path';
 import { Parser } from "htmlparser2";
 import { DomHandler } from "domhandler";
 import { render as DomRender } from "dom-serializer";

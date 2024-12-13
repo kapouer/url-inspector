@@ -1,12 +1,12 @@
-import { basename } from 'path';
+import { basename } from 'node:path';
 import ContentDisposition from 'content-disposition';
 import ContentType from 'content-type';
 import MediaTyper from 'media-typer';
 import iconv from 'iconv-lite';
 import mime from 'mime';
-import { createReadStream, promises as fs } from 'fs';
+import { createReadStream, promises as fs } from 'node:fs';
 
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 import Debug from 'debug';
 
 import { curly, CurlCode } from 'node-libcurl';
