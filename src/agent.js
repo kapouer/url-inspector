@@ -108,7 +108,7 @@ export async function request(urlObj, obj) {
 			urlObj = new URL(disposition.parameters.filename, urlObj);
 		}
 	}
-
+	res.pause();
 	const fun = inspectors[getInspectorType(obj, mimeObj)];
 	if (urlObj.protocol != "file:") pipeLimit(req, res, fun[1], fun[2]);
 
