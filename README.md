@@ -81,7 +81,6 @@ Install
 url-inspector currently requires those external libraries/tools:
 
 - exiftool
-- libcurl (and libcurl-dev if node-libcurl needs to be rebuilt)
 
 Both programs are well-maintained, and available in most linux distributions.
 
@@ -126,7 +125,7 @@ To normalize an already existing metadata object, including url rewriting done b
 await inspector.norm(obj);
 ```
 
-url-inspector uses node-libcurl to make http requests, and exposes it as:
+url-inspector uses got to make http requests, and exposes it as:
 
 ```js
 const req = await Inspector.get(urlObj);
@@ -134,14 +133,6 @@ const req = await Inspector.get(urlObj);
 
 where `req.abort()` stops the request, `req.res` is the response stream,
 and `res.statusCode`, `res.headers` are available.
-
-Proxy support
--------------
-
-url-inspector configures http(s) proxies through proxy-from-env package
-and environment variables (http_proxy, https_proxy, all_proxy, no_proxy):
-
-Read [proxy-from-env documentation](https://github.com/Rob--W/proxy-from-env#environment-variables).
 
 License
 -------
