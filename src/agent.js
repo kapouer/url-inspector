@@ -273,6 +273,7 @@ async function makeRequest(urlObj) {
 	const abortController = new AbortController();
 
 	const opts = {
+		method: urlObj.method || 'GET',
 		http2: true,
 		https: {
 			rejectUnauthorized: false
@@ -295,7 +296,6 @@ async function makeRequest(urlObj) {
 		}, urlObj.headers),
 		agent: {}
 	};
-	console.log(opts.headers);
 	const streamRes = got.stream(urlObj.href, opts);
 	const res = new PassThrough();
 	try {
@@ -309,7 +309,7 @@ async function makeRequest(urlObj) {
 		pipeline(streamRes, res);
 	} catch (err) {
 		if (err.code === "ERR_ABORTED") {
-			console.log("ignore abort error");
+			// do nothing, but shouldn't happen here
 		} else if (err.code === "ERR_NON_2XX_3XX_RESPONSE") {
 			throw new HttpError[err.response.statusCode]();
 		} else {
