@@ -144,7 +144,6 @@ export default class Inspector {
 
 		urlObj.headers = Object.assign({
 			"Accept": Inspector.accepts.document,
-			"Accept-Encoding": "gzip, deflate, br",
 			"Cache-Control": "no-cache",
 			"DNT": "1",
 			"Pragma": "no-cache",
