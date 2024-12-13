@@ -80,7 +80,7 @@ describe("regression suite", () => {
 		try {
 			await inspector.look('http://moser.cm.nctu.edu.tw/gpg.html');
 		} catch (err) {
-			expect(err.code).to.be(6);
+			expect(err.code).to.be('ENOTFOUND');
 		}
 	}).timeout(10000);
 });

@@ -90,7 +90,7 @@ describe("remote suite", () => {
 		const meta = await inspector.look('https://upload.wikimedia.org/wikipedia/fr/thumb/3/34/Toronto_FC_%28logo%29.svg/1200px-Toronto_FC_%28logo%29.svg.png');
 		expect(meta.type).to.be('image');
 		expect(meta.what).to.be('image');
-		expect(meta.icon).to.be("https://commons.wikimedia.org/static/favicon/commons.ico");
+		expect(meta.icon).to.be("https://upload.wikimedia.org/static/favicon/commons.ico");
 	}).timeout(10000);
 
 	it("should error out with a message", async () => {
