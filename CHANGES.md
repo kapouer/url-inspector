@@ -100,3 +100,11 @@ Version 8.6.0
 
 * support array of strings in metadata
 * update deps
+
+Version 9.0.0
+-------------
+
+* drop node-libcurl, use got
+* drop proxy support, too complicated to maintain with http/s/2,
+and doesn't really improve success rate.
+* node >= 20
