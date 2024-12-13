@@ -288,6 +288,10 @@ async function makeRequest(urlObj) {
 		signal: abortController.signal,
 		headers: Object.assign({
 			'User-Agent': 'curl/8.11.0',
+			Priority: 'u=0, i',
+			'Sec-Ch-Ua': '"Chromium";v="131", "Not_A Brand";v="24"',
+			'sec-ch-ua-mobile': '?0',
+			'sec-fetch-user': '?1'
 		}, urlObj.headers),
 		agent: {}
 	};
