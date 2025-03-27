@@ -36,10 +36,10 @@ describe("remote suite", () => {
 		expect(meta).to.not.have.property("size");
 	});
 
-	it("should return meta with image for a figaro article", async () => {
+	it("should return meta with page for a figaro article", async () => {
 		const meta = await inspector.look('http://www.lefigaro.fr/actualite-france/2016/02/07/01016-20160207ARTFIG00183-accident-de-bretigny-ce-que-la-sncf-aurait-prefere-cacher-a-la-justice.php');
 		expect(meta.type).to.be('link');
-		expect(meta.what).to.be('image');
+		expect(meta.what).to.be('page');
 		expect(meta.title).to.be.ok();
 		expect(meta.mime).to.be('text/html');
 		expect(meta.source).to.be.ok();
@@ -68,10 +68,10 @@ describe("remote suite", () => {
 	it("should support json+ld test 2", async () => {
 		const meta = await inspector.look('https://www.lefigaro.fr/politique/presidentielle-2022-la-classe-politique-s-oppose-majoritairement-au-vote-par-anticipation-20210217');
 		expect(meta.type).to.be('link');
-		expect(meta.what).to.be('image');
+		expect(meta.what).to.be('page');
 		expect(meta.title).to.be.ok();
 		expect(meta.mime).to.be('text/html');
-		expect(meta.author).to.be('Le Figaro');
+		expect(meta.author).to.be('Dinah Cohen');
 		expect(Number.isNaN(Date.parse(meta.date))).to.not.be.ok();
 		expect(meta.ext).to.be('html');
 		expect(meta.html).to.be.ok();

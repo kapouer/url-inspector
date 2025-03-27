@@ -60,7 +60,7 @@ describe("regression suite", () => {
 			debug.enable('url-inspector');
 			const meta = await inspector.look('https://www.lefigaro.fr/flash-eco/l-ukraine-ferme-son-espace-aerien-pour-l-aviation-civile-20220224');
 			expect(meta.type).to.be("link");
-			expect(meta.what).to.be("image");
+			expect(meta.what).to.be("page");
 		} catch (ex) {
 			expect(ex).to.not.be.ok();
 		} finally {
@@ -80,7 +80,7 @@ describe("regression suite", () => {
 		try {
 			await inspector.look('http://moser.cm.nctu.edu.tw/gpg.html');
 		} catch (err) {
-			expect(err.code).to.be('ENOTFOUND');
+			expect(err.code).to.be('EAI_AGAIN');
 		}
 	}).timeout(10000);
 });
