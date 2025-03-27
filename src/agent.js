@@ -59,9 +59,7 @@ export async function exists(urlObj) {
 		const res = req.res;
 		const status = res.statusCode;
 		debug("remote", urlObj, "returns", status);
-		if (status == 204 || res.headers['content-length'] == 0) {
-			return false;
-		} else if (status >= 200 && status < 400) {
+		if (status >= 200 && status < 400) {
 			return parseType(pickHeader(res.headers['content-type']));
 		} else {
 			return false;
