@@ -290,6 +290,7 @@ async function makeRequest(urlObj) {
 			Priority: 'u=0, i',
 			'Sec-Ch-Ua': '"Chromium";v="131", "Not_A Brand";v="24"',
 			'sec-ch-ua-mobile': '?0',
+			'sec-fetch-dest': 'document',
 			'sec-fetch-user': '?1'
 		}, urlObj.headers),
 		agent: {}
