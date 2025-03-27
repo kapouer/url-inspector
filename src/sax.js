@@ -1,5 +1,5 @@
 import { Deferred } from 'class-deferred';
-import { WritableStream } from "htmlparser2/lib/WritableStream";
+import { WritableStream } from "htmlparser2/WritableStream";
 import importTags from './tags.js';
 import Debug from 'debug';
 const debug = Debug('url-inspector');
