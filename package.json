@@ -46,29 +46,32 @@
     "content-disposition": "^0.5.4",
     "content-type": "^1.0.5",
     "dashdash": "^2.0.0",
-    "debug": ">=4.4.0",
+    "debug": ">=4.4.1",
     "dom-serializer": "^2.0.0",
     "domhandler": "^5.0.3",
-    "got": "^14.4.6",
+    "got": "^14.4.7",
     "htmlparser2": "^10.0.0",
     "http-errors": "^2.0.0",
     "iconv-lite": "^0.6.3",
-    "luxon": "^3.6.0",
+    "luxon": "^3.6.1",
     "media-typer": "^1.1.0",
-    "mime": "^4.0.6",
-    "oembed-providers": "^1.0.20241022",
+    "mime": "^4.0.7",
+    "oembed-providers": "^1.0.20250430",
     "p-event": "^6.0.1",
     "streat": "^1.0.0",
     "strong-data-uri": "^1.0.6"
   },
   "devDependencies": {
-    "@kapouer/eslint-config": "^2.0.0",
+    "@kapouer/eslint-config": "^2.1.1",
     "expect.js": "^0.3.1",
-    "express": "^4.21.2",
-    "mocha": "^11.1.0"
+    "express": "^5.1.0",
+    "mocha": "^11.7.1"
   },
   "eslintConfig": {
     "extends": "@kapouer/eslint-config",
+    "parserOptions": {
+      "sourceType": "module"
+    },
     "overrides": [
       {
         "files": [
