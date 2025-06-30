@@ -64,7 +64,7 @@ export async function exists(urlObj) {
 		} else {
 			return false;
 		}
-	} catch (err) {
+	} catch {
 		return false;
 	}
 }
@@ -208,7 +208,7 @@ async function doRequest(urlObj) {
 				debug("retrying with default curl ua");
 				delete urlObj.headers["User-Agent"];
 				return doRequest(urlObj);
-			} else if (err.isCurlError && err.code == CurlCode.CURLE_OPERATION_TIMEOUTED) {
+			} else if (err.code == 'ETIMEDOUT') {
 				throw new HttpError[408]("Request Timeout");
 			} else {
 				throw err;
@@ -262,7 +262,7 @@ function parseType(str) {
 		const ct = ContentType.parse(str);
 		const mt = MediaTyper.parse(ct.type);
 		return Object.assign(ct, mt);
-	} catch (e) {
+	} catch {
 		return {};
 	}
 }

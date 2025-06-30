@@ -44,7 +44,7 @@ describe("remote suite", () => {
 		expect(meta.mime).to.be('text/html');
 		expect(meta.ext).to.be('html');
 		expect(meta.width).to.not.be.ok();
-		expect(meta.height).to.not.be.ok()
+		expect(meta.height).to.not.be.ok();
 		expect(meta.duration).to.not.be.ok();
 	}).timeout(10000);
 
